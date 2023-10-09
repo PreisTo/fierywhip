@@ -17,6 +17,10 @@ from astromodels.core.model import Model
 from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianAnalysis,BayesianResults
 import os
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
 
 
 lu = ["n0","n1","n2","n3","n4","n5","n6","n7","n8","n9","na","nb","b0","b1"]
