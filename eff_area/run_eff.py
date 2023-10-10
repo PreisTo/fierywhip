@@ -18,6 +18,7 @@ from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianAnalysis,BayesianResults
 from astropy.stats import bayesian_blocks
 from threeML.plugins.OGIPLike import OGIPLike
+from gbm_drm_gen.io.balrog_like import BALROGLike
 import os
 from mpi4py import MPI
 import numpy as np
@@ -123,20 +124,20 @@ bb_edges_stop = []
 for edge in bb_edges:
     bb_edges_start.append(start_times[np.argwhere(start_times<= edge)[-1,0]])
     bb_edges_stop.append(end_times[np.argwhere(end_times>edge)[0,0]])
-figs = trigreader.view_lightcurve(-10,15,return_plots=True)
 
 lc_path = os.path.join(os.environ.get("GBMDATA"),f"localizing/{GRB}/lightcurves")
 try:
     os.makedirs(lc_path)
 except FileExistsError:
     pass
-
-for fig in figs:
-    ax = fig[1].axes[0]
-    yl = ax.get_ylim()
-    ax.vlines(bb_edges_start,0,10e4)
-    ax.set_ylim(yl)
-    fig[1].savefig(os.path.join(lc_path,f"{fig[0]}.pdf"))
+if rank==0:
+    figs = tsbb.trigreader_object.view_lightcurve(-10,30,return_plots=True)
+    for fig in figs:
+        ax = fig[1].axes[0]
+        yl = ax.get_ylim()
+        ax.vlines(bb_edges_start,0,10e4)
+        ax.set_ylim(yl)
+        fig[1].savefig(os.path.join(lc_path,f"{fig[0]}.pdf"))
 #bb_edges_t = #start_times[bb_edges]
 bkg = (tsbb.background_time_neg,tsbb.background_time_pos)
 
