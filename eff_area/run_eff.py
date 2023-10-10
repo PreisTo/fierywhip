@@ -16,8 +16,11 @@ from astromodels.functions.priors import Log_uniform_prior,Uniform_prior
 from astromodels.core.model import Model
 from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianAnalysis,BayesianResults
+from astropy.stats import bayesian_blocks
+from threeML.plugins.OGIPLike import OGIPLike
 import os
 from mpi4py import MPI
+import numpy as np
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -81,47 +84,133 @@ for d in lu:
 
 tsbb=TimeSelectionBB(GRB,trigdat,fine=True)
 
-trigreader = tsbb.trigreader_object
-balrog_plugin = trigreader.to_plugin(*lu)
-#for i,d in enumerate(balrog_plugin):
-#    balrog_plugin[i] = d.use_effective_area_correction(0.7,1.3)
-datalist = DataList(*balrog_plugin)
-for d in lu:
-    datalist[d].use_effective_area_correction(0.7,1.3)
-cpl = Cutoff_powerlaw()
-cpl.K.prior = Log_uniform_prior(lower_bound=0.0001, upper_bound=500)
-cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=1000)
-cpl.index.set_uninformative_prior(Uniform_prior)
-ps = PointSource("grb",ra = float(swift_position.ra.deg), dec = float(swift_position.dec.deg),spectral_shape=cpl)
-ps.position.fix = True
-ps.position.free = False
-model = Model(ps)
-bayes = BayesianAnalysis(model,datalist)
-bayes.set_sampler("multinest",share_spectrum = True)
-wrap = [0] * len(model.free_parameters)  # not working properlyViel Erfolg und Spaß in den ersten Wochen!
-wrap[0] = 1
 
-bayes.sampler.setup(n_live_points=400, wrapped_params=wrap, chain_name="fit_", verbose=True)
-bayes.sample()
+# TODO Bayesian Blocks with selections, keep background the same
 
-bayes.results.write_to(
-        result_path + "/grb_" + trigger + "_" + spectrum + ".fits", overwrite=True
-    )
+obs_array, _ = tsbb.trigreader_object.observed_and_background()
+start_times, end_times = tsbb.trigreader_object.tstart_tstop()
+start_times = np.array(start_times)
+start_times, nduplicates = np.unique(start_times,return_index=True)
+dup_counter = 0
+duplicates = []
+for d in range(len(lu)):
+    obs_array[d] = list(obs_array[d])
+for i in range(len(obs_array[0])):
+    if i in nduplicates:
+        pass
+    else:
+        duplicates.append(i)
+end_times = list(end_times)
+for duplicate in duplicates:
+    print(duplicate)
+    for d in range(len(lu)):
+        obs_array[d].pop(duplicate-dup_counter)
+    end_times.pop(duplicate-dup_counter)
+    dup_counter += 1
+for d in range(len(lu)):
+    obs_array[d] = np.array(obs_array[d])
+obs_array = np.array(obs_array)
+end_times = np.array(end_times)
 
-results = bayes.results
+mask = np.zeros_like(start_times)
+start_id, stop_id = (np.argwhere(start_times<tsbb.start_trigger)[-1,0],np.argwhere(start_times>tsbb.stop_trigger)[0,0])
+mask[start_id:stop_id] = 1
+mask = mask.astype(bool)
 
-result_path = "."
-# spectrum and residuals
+bb_edges= bayesian_blocks(start_times[mask],np.sum(obs_array,axis = 0)[mask],fitness="events",gamma = 0.01)
+bb_edges_start = []
+bb_edges_stop = []
+for edge in bb_edges:
+    bb_edges_start.append(start_times[np.argwhere(start_times<= edge)[-1,0]])
+    bb_edges_stop.append(end_times[np.argwhere(end_times>edge)[0,0]])
+figs = trigreader.view_lightcurve(-10,15,return_plots=True)
+
+lc_path = os.path.join(os.environ.get("GBMDATA"),f"localizing/{GRB}/lightcurves")
 try:
-    spectrum_plot = display_spectrum_model_counts(bayes)
-    spectrum_plot.savefig(
-        result_path + "/grb_" + trigger + "_spectrum_" + spectrum + ".pdf"
-    )
-except Exception as e:
-    print(f"Spectrum plot not possible due to {e}")
-# corner plot
+    os.makedirs(lc_path)
+except FileExistsError:
+    pass
 
-cc_plot = results.corner_plot_cc()
-cc_plot.savefig(
-    result_path + "/grb_" + trigger + "_cornerplot_" + spectrum + ".pdf"
-)
+for fig in figs:
+    ax = fig[1].axes[0]
+    yl = ax.get_ylim()
+    ax.vlines(bb_edges_start,0,10e4)
+    ax.set_ylim(yl)
+    fig[1].savefig(os.path.join(lc_path,f"{fig[0]}.pdf"))
+#bb_edges_t = #start_times[bb_edges]
+bkg = (tsbb.background_time_neg,tsbb.background_time_pos)
+
+
+for s in range(len(bb_edges)-1):
+    selection = f"{bb_edges_start[s]}-{bb_edges_stop[s]}"
+
+    trigreader = TrigReader(trigdat,fine=True)
+    trigreader.set_active_time_interval(selection)
+    trigreader.set_background_selections(tsbb.background_time_neg,tsbb.background_time_pos)
+
+    #balrog_plugin = trigreader.to_plugin(*lu)
+    #for i,d in enumerate(balrog_plugin):
+    #    balrog_plugin[i] = d.use_effective_area_correction(0.7,1.3)
+    #datalist = DataList(*balrog_plugin)
+    datalist = {}
+    for d in lu:
+        print(d)
+        speclike =  trigreader._time_series[d].to_spectrumlike()
+        #speclike.set_active_measurements("c1-c6")
+        time = 0.5 * (trigreader._time_series[d].tstart + trigreader._time_series[d].tstop)
+
+        balrog_like = BALROGLike.from_spectrumlike(speclike, time=time,free_position = False)
+
+        balrog_like.set_active_measurements("c1-c6")
+        datalist[d] = balrog_like
+        if d not in ("b0","b1"):
+            datalist[d].use_effective_area_correction(0.7,1.3)
+        else:
+            datalist[d].fix_effective_area_correction(1)
+
+
+    cpl = Cutoff_powerlaw()
+    cpl.K.prior = Log_uniform_prior(lower_bound=0.0001, upper_bound=500)
+    cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=1000)
+    cpl.index.set_uninformative_prior(Uniform_prior)
+    ps = PointSource("grb",ra = float(swift_position.ra.deg), dec = float(swift_position.dec.deg),spectral_shape=cpl)
+    ps.position.fix = True
+    ps.position.free = False
+    model = Model(ps)
+    bayes = BayesianAnalysis(model,datalist)
+    bayes.set_sampler("multinest",share_spectrum = True)
+    wrap = [0] * len(model.free_parameters)  # not working properlyViel Erfolg und Spaß in den ersten Wochen!
+    wrap[0] = 1
+
+    fit_path = os.path.join(os.environ.get("GBMDATA"),f"localizing/{GRB}/{selection}")
+    try:
+        os.makedirs(fit_path)
+    except FileExistsError:
+        pass
+
+    bayes.sampler.setup(n_live_points=800, wrapped_params=wrap, chain_name=os.path.join(fit_path,"fit_"), verbose=True)
+    bayes.sample()
+
+    result_path = fit_path
+    trigger = GRB
+    spectrum = "cpl"
+    bayes.results.write_to(
+            result_path + "/grb_" + trigger + "_" + spectrum + ".fits", overwrite=True
+        )
+
+    results = bayes.results
+
+    # spectrum and residuals
+    try:
+        spectrum_plot = display_spectrum_model_counts(bayes)
+        spectrum_plot.savefig(
+            result_path + "/grb_" + trigger + "_spectrum_" + spectrum + ".pdf"
+        )
+    except Exception as e:
+        print(f"Spectrum plot not possible due to {e}")
+    # corner plot
+
+    cc_plot = results.corner_plot()
+    cc_plot.savefig(
+        result_path + "/grb_" + trigger + "_cornerplot_" + spectrum + ".pdf"
+    )
