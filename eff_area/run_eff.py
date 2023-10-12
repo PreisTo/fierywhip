@@ -188,6 +188,8 @@ mod_len = len_bins_trigger%5
 bb_edges_start = []
 bb_edges_stop = []
 
+bb_edges_start.append(tsbb.start_trigger)
+bb_edges_stop.append(tsbb.stop_trigger)
 for i in range(5):
     if i<4:
         bb_edges_start.append(start_times[start_id +i*block_len])
@@ -318,13 +320,13 @@ for s in range(len(bb_edges_start)):
         if rank == 0:
             opt_model = results.optimized_model
             result_dict = {}
-            result_dict["K"] = opt_model["grb.spectrum.main.Cutoff_powerlaw.K"].value
-            result_dict["index"] = opt_model["grb.spectrum.main.Cutoff_powerlaw.index"]
-            result_dict["xc"] = opt_model["grb.spectrum.main.Cutoff_powerlaw.xc"]
+            result_dict["K"] = float(opt_model["grb.spectrum.main.Cutoff_powerlaw.K"].value)
+            result_dict["index"] = float(opt_model["grb.spectrum.main.Cutoff_powerlaw.index"].value)
+            result_dict["xc"] = float(opt_model["grb.spectrum.main.Cutoff_powerlaw.xc"].value)
             for d in lu:
-                result_dict[d] = opt_model[f"cons_{d}"].value
+                result_dict[d] = float(opt_model[f"cons_{d}"].value)
             final_dict[selection] = result_dict
-            with open(result_path+"res.yml","w+") as f:
+            with open(os.path.join(result_path,"res.yml"),"w+") as f:
                 yaml.dump(final_dict,f)
         plt.close("all")
         bayes = None
@@ -333,7 +335,7 @@ for s in range(len(bb_edges_start)):
 
 final_dict["separation"] = {}
 for d in lu:
-    final_dict["separation"][d] = sep[d]
+    final_dict["separation"][d] = float(sep[d])
 
 if os.path.isfile(results_yml) and os.path.exists(result_yml):
     temp = {}
