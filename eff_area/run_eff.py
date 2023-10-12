@@ -165,17 +165,36 @@ detsel = [
 for i, d in enumerate(lu):
     if d in detsel:
         counts_sum += obs_array[i]
-bb_edges = bayesian_blocks(
-    start_times[mask], counts_sum[mask], fitness="events", p0=0.025
-)
+def get_bb_edges(start_times,mask,count_sum):
+    bb_edges = bayesian_blocks(
+        start_times[mask], counts_sum[mask], fitness="events", p0=0.025
+    )
+    bb_edges_start = []
+    bb_edges_stop = []
+    for e, edge in enumerate(bb_edges):
+        if e < len(bb_edges) - 1:
+            start_temp = start_times[np.argwhere(start_times <= edge)[-1, 0]]
+            stop_temp =  start_times[np.argwhere(start_times <= bb_edges[e+1])[-1,0]]
+            if start_temp == stop_temp:
+                stop_temp = start_times[np.argwhere(start_times == start_temp)[-1,0]+1]
+            bb_edges_start.append(start_temp)
+            bb_edges_stop.append(stop_temp)
+    return bb_edges_start,bb_edges_stop
+
+len_bins_trigger = len(start_times[mask]>0)
+block_len = int(len_bins_trigger/5)
+mod_len = len_bins_trigger%5
+
 bb_edges_start = []
 bb_edges_stop = []
-for e, edge in enumerate(bb_edges):
-    if e < len(bb_edges) - 1:
-        bb_edges_start.append(start_times[np.argwhere(start_times <= edge)[-1, 0]])
-        bb_edges_stop.append(
-            start_times[np.argwhere(start_times <= bb_edges[e + 1])[-1, 0]]
-        )
+
+for i in range(5):
+    if i<4:
+        bb_edges_start.append(start_times[start_id +i*block_len])
+        bb_edges_stop.append(start_times[start_id+(i+1)*block_len])
+    else:
+        bb_edges_start.append(start_times[start_id + i*block_len])
+        bb_edges_stop.append(start_times[start_id+(i+1)*block_len + mod_len])
 
 lc_path = os.path.join(os.environ.get("GBMDATA"), f"localizing/{GRB}/lightcurves")
 try:
@@ -200,9 +219,9 @@ dir_list = os.listdir(os.path.join(os.environ.get("GBMDATA"), f"localizing/{GRB}
 dir_list = [str(i).strip("/") for i in dir_list]
 print(dir_list)
 comm.Barrier()
-for s in range(len(bb_edges) - 1):
+for s in range(len(bb_edges_start)):
     selection = f"{bb_edges_start[s]}-{bb_edges_stop[s]}"
-    print(selection)
+    print(f"Running selection {selection}")
     if selection in dir_list:
         pass
     else:
@@ -305,7 +324,8 @@ for s in range(len(bb_edges) - 1):
             for d in lu:
                 result_dict[d] = opt_model[f"cons_{d}"].value
             final_dict[selection] = result_dict
-
+            with open(result_path+"res.yml","w+") as f:
+                yaml.dump(final_dict,f)
         plt.close("all")
         bayes = None
         results = None
@@ -315,14 +335,13 @@ final_dict["separation"] = {}
 for d in lu:
     final_dict["separation"][d] = sep[d]
 
-if rank == 0:
-    if os.path.isfile(results_yml) and os.path.exists(result_yml):
-        temp = {}
-        temp[GRB] = final_dict
-        with open(result_yml, "a") as f:
-            yaml.dump(temp, f)
-    else:
-        temp = {}
-        temp[GRB] = final_dict
-        with open(results_yml, "w+") as f:
-            yaml.dump(temp, f)
+if os.path.isfile(results_yml) and os.path.exists(result_yml):
+    temp = {}
+    temp[GRB] = final_dict
+    with open(results_yml, "a") as f:
+        yaml.dump(temp, f)
+else:
+    temp = {}
+    temp[GRB] = final_dict
+    with open(results_yml, "w+") as f:
+        yaml.dump(temp, f)
