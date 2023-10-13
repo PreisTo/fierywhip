@@ -83,6 +83,9 @@ class FitTTE:
         print(f"new energy range set to {self.energy_range}")
         print("Setting new TimeSeries and setting up plugins")
         self._to_plugin()
+        self._setup_model()
+        self.fit()
+        self.save_results()
 
     def download_files(self):
         """
@@ -237,12 +240,9 @@ class FitTTE:
         wrap[0] = 1
 
         # define temp chain save path
+        self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing", self.grb)
         self._temp_chains_dir = os.path.join(
-            os.environ.get("GBMDATA"),
-            "localizing",
-            self.grb,
-            self.energy_range,
-            "TTE_fit",
+            self._base_dir, self.energy_range, "TTE_fit"
         )
         chain_path = os.path.join(self._temp_chains_dir, f"chain")
 
@@ -258,12 +258,38 @@ class FitTTE:
             n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         self._bayes.sample()
-        results = self._bayes.results
-        fig = results.corner_plot()
+        self.results = self._bayes.results
+        fig = self.results.corner_plot()
         fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
+        fig.close()
+
+    def save_results(self):
+        self.results.write_to(
+            os.path.join(self._base_dir, "fit_results.fits"), overwrite=True
+        )
+
+        if os.path.exists(os.path.join(self._base_dir, "results.yml")):
+            with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
+                resutls_yaml_dict = yaml.safe_load(f)
+        else:
+            results_yaml_dict = {}
+            results_yaml_dict[self.grb] = {}
+        temp = {}
+        for d in lu:
+            temp[d] = float(
+                self.results.optimized_model.free_parameters[f"cons_{d}"].value
+            )
+        results_yaml_dict[self.grb][self.energy_range] = temp
+        with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
+            yaml.dump(results_yaml_dict, f)
 
 
 if __name__ == "__main__":
+    energy_list = ["10-12", "90-110", "270-330", "450-550"]
     GRB = FitTTE("GRB230903724")
     GRB.fit()
+    GRB.save_results()
+    for energy in energy_list:
+        GRB.set_energy_range(energy)
     # TODO fix MPI
+    # TODO OUtput
