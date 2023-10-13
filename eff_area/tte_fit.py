@@ -263,6 +263,30 @@ class FitTTE:
         fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
         fig.close()
 
+    def get_separations(self):
+        poshist = os.path.join(
+            os.environ.get("GBMDATA"),
+            "poshist",
+            self.grb.strip("GRB")[:-3],
+            f"glg_poshist_all_{self.grb.strip('GRB')[:-3]}_v00.fit",
+        )
+        if not os.path.exists(poshist):
+            download_gbm_file(date=self.grb.strip("GRB")[:-3], data_type="poshist")
+            print("Done downloading poshist")
+        self.interpolator = PositionInterpolator.from_poshist(poshist)
+
+        t0 = time.Time(self.grb_time, format="datetime", scale="utc")
+        gbm_time = GBMTime(t0)
+        self.gbm = GBM(
+            self.interpolator.quaternion(gbm_time.met),
+            sc_pos=self.interpolator.sc_pos(gbm_time.met) * u.km,
+        )
+        sep = gbm.get_separation(self.grb_position)
+        self.separations = {}
+        for d in lu:
+            self.separations[d] = sep[d]
+        return self.separations
+
     def save_results(self):
         self.results.write_to(
             os.path.join(self._base_dir, "fit_results.fits"), overwrite=True
@@ -270,11 +294,19 @@ class FitTTE:
 
         if os.path.exists(os.path.join(self._base_dir, "results.yml")):
             with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
-                resutls_yaml_dict = yaml.safe_load(f)
+                results_yaml_dict = yaml.safe_load(f)
+            if self.grb in results_yaml_dict.keys():
+                if self.energy_range in results_yaml_dict[self.grb].keys():
+                    temp = results_yaml_dict[self.grb]
+                else:
+                    temp = {}
+            else:
+                results_yaml_dict[self.grb] = self.get_separations()
         else:
             results_yaml_dict = {}
-            results_yaml_dict[self.grb] = {}
-        temp = {}
+            results_yaml_dict[self.grb] = self.get_separations()
+            results_yaml_dict[self.grb][self.energy_range] = {}
+            temp = {}
         for d in lu:
             temp[d] = float(
                 self.results.optimized_model.free_parameters[f"cons_{d}"].value
