@@ -158,7 +158,7 @@ class FitTTE:
             ts.set_active_time_interval(self.tsbb.active_time)
             self._timeseries[d] = ts
 
-    def _to_plugin(self):
+    def _to_plugin(self, fix_correction=None, free_position=False):
         response_time = self.tsbb.stop_trigger - self.tsbb.start_trigger
         spectrum_likes = []
         for d in lu:
@@ -172,14 +172,20 @@ class FitTTE:
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
         for i, d in enumerate(lu):
-            balrog_likes.append(
-                BALROGLike.from_spectrumlike(
-                    spectrum_likes[i],
-                    response_time,
-                    self._responses[d],
-                    free_position=False,
-                )
+            bl = BALROGLike.from_spectrumlike(
+                spectrum_likes[i],
+                response_time,
+                self._responses[d],
+                free_position=free_position,
             )
+            if fix_correction is None:
+                if d not in ("b0", "b1"):
+                    bl.use_effective_area_correction(0.7, 1.3)
+                else:
+                    bl.fix_effective_area_correction(1)
+            else:
+                raise NotImplementedError
+            balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
 
     def _set_grb_time(self):
@@ -205,7 +211,10 @@ class FitTTE:
         band.beta.set_uninformative_prior(Uniform_prior)
         self._model = Model(
             PointSource(
-                "GRB", self.grb_position.ra, self.grb_position.dec, spectral_shape=band
+                "GRB",
+                self.grb_position.ra.deg,
+                self.grb_position.dec.deg,
+                spectral_shape=band,
             )
         )
 
@@ -245,4 +254,3 @@ class FitTTE:
 if __name__ == "__main__":
     GRB = FitTTE("GRB230903724")
     GRB.fit()
-    # TODO Change energy and update output path
