@@ -88,6 +88,7 @@ class FitTTE:
         """
         Downloading TTE and CSPEC files from FTP
         """
+        print("Downloading TTE and CSPEC files")
         self.tte_files = {}
         self.cspec_files = {}
         for d in lu:
@@ -98,13 +99,16 @@ class FitTTE:
         """
         get active time using morgoths TimeSelectionBB
         """
+        print("Starting Timeselection Trigdat")
+        trigdat = download_trigdata_file(f"bn{self.grb.strip('GRB')}")
 
-        self.trigdat = download_trigdata_file(f"bn{self.grb.strip('GRB')}")
-
-        self.tsbb = TimeSelectionBB(self.grb, self.trigdat, fine=True)
+        tsbb = TimeSelectionBB(self.grb, trigdat, fine=True)
+        self.trigdat = trigdat
+        self.tsbb = tsbb
 
     def get_swift(self):
         """ """
+        print("Getting coinciding Swift GRB")
         swift_grb, swift_position = check_swift(self.grb, self.grb_time)
         assert swift_grb is not None, "No conciding Swift GRB found"
         assert swift_position is not None, "Only BAT localization available"
@@ -115,8 +119,10 @@ class FitTTE:
         """
         Fitting the TTE Background and creating the Plugins
         """
-        self._timeseries = {}
-        self._responses = {}
+        print("Fitting the Background for TTE")
+        temp_timeseries = {}
+        temp_responses = {}
+
         for d in lu:
             print(f"Calculating Response for {d}")
             response = BALROG_DRM(
@@ -129,7 +135,7 @@ class FitTTE:
                 self.grb_position.ra,
                 self.grb_position.dec,
             )
-            self._responses[d] = response
+            temp_responses[d] = response
             tte_file = GBMTTEFile(self.tte_files[d])
             event_list = EventListWithDeadTime(
                 arrival_times=tte_file.arrival_times - tte_file.trigger_time,
@@ -156,9 +162,12 @@ class FitTTE:
                 self.tsbb.background_time_neg, self.tsbb.background_time_pos
             )
             ts.set_active_time_interval(self.tsbb.active_time)
-            self._timeseries[d] = ts
+            temp_timeseries[d] = ts
+        self._timeseries = temp_timeseries
+        self._responses = temp_responses
 
     def _to_plugin(self, fix_correction=None, free_position=False):
+        print("Creating BALROG like plugins")
         response_time = self.tsbb.stop_trigger - self.tsbb.start_trigger
         spectrum_likes = []
         for d in lu:
@@ -192,6 +201,7 @@ class FitTTE:
         """
         sets the grb_time (datetime object)
         """
+        print("Setting the GRB time")
         total_seconds = 24 * 60 * 60
         trigger = self.grb.strip("GRB")
         year = int(f"20{trigger[:2]}")
@@ -204,6 +214,7 @@ class FitTTE:
         self.grb_time = dt
 
     def _setup_model(self):
+        print("Setting up the model for the fit")
         band = Band()
         band.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1200)
         band.alpha.set_uninformative_prior(Uniform_prior)
@@ -219,6 +230,7 @@ class FitTTE:
         )
 
     def fit(self):
+        print("Starting the Fit")
         self._bayes = BayesianAnalysis(self._model, self._data_list)
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
@@ -228,7 +240,7 @@ class FitTTE:
         self._temp_chains_dir = os.path.join(
             os.environ.get("GBMDATA"),
             "localizing",
-            self.GRB,
+            self.grb,
             self.energy_range,
             "TTE_fit",
         )
@@ -236,7 +248,7 @@ class FitTTE:
 
         # Make temp chains folder if it does not exists already
         if not os.path.exists(self._temp_chains_dir):
-            os.mkdir(os.path.join(self._temp_chains_dir))
+            os.makedirs(os.path.join(self._temp_chains_dir))
 
         # use multinest to sample the posterior
         # set main_path+trigger to whatever you want to use
@@ -254,3 +266,4 @@ class FitTTE:
 if __name__ == "__main__":
     GRB = FitTTE("GRB230903724")
     GRB.fit()
+    # TODO fix MPI
