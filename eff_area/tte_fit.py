@@ -59,17 +59,30 @@ lu = [
 
 
 class FitTTE:
-    def __init__(self, grb):
+    def __init__(self, grb, energy_range="8.1-700"):
         self.grb = grb
+        assert type(energy_range) == str, "energy_range must be string"
+        assert (
+            len(energy_range.split("-")) == 2
+        ), "energy_range must consist of two floats separated by a -, e.g 8.1-700"
+        self.energy_range = energy_range
+
         self._set_grb_time()
         self.download_files()
         self.get_swift()
         self.timeselection()
         self.bkg_fitting()
+        self._to_plugin()
         self._setup_model()
         # TODO
         # bkg fitting TTE and storing
         # https://github.com/PreisTo/morgoth/blob/master/morgoth/auto_loc/utils/fit.py#L536
+
+    def set_energy_range(self, energy_range):
+        self.energy_range = energy_range
+        print(f"new energy range set to {self.energy_range}")
+        print("Setting new TimeSeries and setting up plugins")
+        self._to_plugin()
 
     def download_files(self):
         """
@@ -144,12 +157,14 @@ class FitTTE:
             )
             ts.set_active_time_interval(self.tsbb.active_time)
             self._timeseries[d] = ts
+
+    def _to_plugin(self):
         response_time = self.tsbb.stop_trigger - self.tsbb.start_trigger
         spectrum_likes = []
         for d in lu:
-            if self._timeseries[d].name not in ("b0", "b1"):
+            if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurement("8.1-700")
+                spectrum_like.set_active_measurement(self.energy_range)
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
@@ -226,3 +241,4 @@ class FitTTE:
 if __name__ == "__main__":
     GRB = FitTTE("GRB230903724")
     GRB.fit()
+    # TODO Change energy and update output path
