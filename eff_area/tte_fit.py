@@ -164,11 +164,11 @@ class FitTTE:
         for d in lu:
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurement(self.energy_range)
+                spectrum_like.set_active_measurements(self.energy_range)
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurement("350-25000")
+                spectrum_like.set_active_measurements("350-25000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
         for i, d in enumerate(lu):
@@ -217,7 +217,11 @@ class FitTTE:
 
         # define temp chain save path
         self._temp_chains_dir = os.path.join(
-            os.environ.get("GBMDATA"), "localizing", self.GRB, "TTE_fit"
+            os.environ.get("GBMDATA"),
+            "localizing",
+            self.GRB,
+            self.energy_range,
+            "TTE_fit",
         )
         chain_path = os.path.join(self._temp_chains_dir, f"chain")
 
