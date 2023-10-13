@@ -140,11 +140,11 @@ class FitTTE:
                 container_type=BinnedSpectrumWithDispersion,
             )
             ts.set_background_interval(
-                tsbb.background_time_neg, tsbb.background_time_pos
+                self.tsbb.background_time_neg, self.tsbb.background_time_pos
             )
-            ts.set_active_time_interval(tsbb.active_time)
+            ts.set_active_time_interval(self.tsbb.active_time)
             self._timeseries[d] = ts
-        response_time = tsbb.stop_trigger - tsbb.start_trigger
+        response_time = self.tsbb.stop_trigger - self.tsbb.start_trigger
         spectrum_likes = []
         for d in lu:
             if self._timeseries[d].name not in ("b0", "b1"):
