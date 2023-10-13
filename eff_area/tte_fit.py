@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 from gbmgeometry import PositionInterpolator, GBM
 from astropy.coordinates import SkyCoord
 from gbmgeometry.utils.gbm_time import GBMTime
@@ -24,9 +23,8 @@ from mpi4py import MPI
 import numpy as np
 import yaml
 import matplotlib.pyplot as plt
-from eff_area.src.run_eff import check_swift
-import sys
-from eff_area.src.io.downloading import download_tte_file, download_cspec_file
+from effarea.run_eff import check_swift
+from effarea.io.downloading import download_tte_file, download_cspec_file
 
 
 comm = MPI.COMM_WORLD
