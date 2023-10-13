@@ -260,7 +260,7 @@ class FitTTE:
         self._bayes.sample()
         results = self._bayes.results
         fig = results.corner_plot()
-        fig.savefig(os.path.join(self._temp_chains_dir), "cplot.pdf")
+        fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
 
 
 if __name__ == "__main__":
