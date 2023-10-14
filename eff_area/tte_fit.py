@@ -319,7 +319,12 @@ class FitTTE:
 
 
 if __name__ == "__main__":
-    energy_list = ["10-12", "98-102", "148-152", ""]
+    bin_start = 1
+    bin_stop = 128
+    num_selections = 10
+    tot_bins = np.arange(bin_start, bin_stop, 1)
+    bins = np.array_split(tot_bins, num_selections)
+    energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = ["GRB230903724", "GRB230826814", "GRB230818977", "GRB230805475"]
     for G in GRBS:
         GRB = FitTTE(G)
