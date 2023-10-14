@@ -302,6 +302,7 @@ class FitTTE:
                     temp = {}
             else:
                 results_yaml_dict[self.grb] = self.get_separations()
+                temp = {}
         else:
             results_yaml_dict = {}
             results_yaml_dict[self.grb] = self.get_separations()
