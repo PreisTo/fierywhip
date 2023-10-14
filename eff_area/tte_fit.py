@@ -31,7 +31,7 @@ import yaml
 import matplotlib.pyplot as plt
 from effarea.utils.swift import check_swift
 from effarea.io.downloading import download_tte_file, download_cspec_file
-from gbmbkgpy.io.downloading import download_trigdata_file
+from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -319,7 +319,7 @@ class FitTTE:
 
 
 if __name__ == "__main__":
-    energy_list = ["10-12", "90-110", "270-330", "450-550"]
+    energy_list = ["10-12", "98-102", "148-152", ""]
     GRBS = ["GRB230903724", "GRB230826814", "GRB230818977", "GRB230805475"]
     for G in GRBS:
         GRB = FitTTE(G)
