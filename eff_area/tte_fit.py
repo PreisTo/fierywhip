@@ -261,7 +261,7 @@ class FitTTE:
         self.results = self._bayes.results
         fig = self.results.corner_plot()
         fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
-        fig.close()
+        plt.close("all")
 
     def get_separations(self):
         poshist = os.path.join(
@@ -281,7 +281,7 @@ class FitTTE:
             self.interpolator.quaternion(gbm_time.met),
             sc_pos=self.interpolator.sc_pos(gbm_time.met) * u.km,
         )
-        sep = gbm.get_separation(self.grb_position)
+        sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         for d in lu:
             self.separations[d] = sep[d]
