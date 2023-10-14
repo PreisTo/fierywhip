@@ -308,9 +308,10 @@ class FitTTE:
             results_yaml_dict[self.grb][self.energy_range] = {}
             temp = {}
         for d in lu:
-            temp[d] = float(
-                self.results.optimized_model.free_parameters[f"cons_{d}"].value
-            )
+            if d not in ("b0", "b1"):
+                temp[d] = float(
+                    self.results.optimized_model.free_parameters[f"cons_{d}"].value
+                )
         results_yaml_dict[self.grb][self.energy_range] = temp
         with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
             yaml.dump(results_yaml_dict, f)
