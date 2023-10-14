@@ -319,10 +319,12 @@ class FitTTE:
 
 if __name__ == "__main__":
     energy_list = ["10-12", "90-110", "270-330", "450-550"]
-    GRB = FitTTE("GRB230903724")
-    GRB.fit()
-    GRB.save_results()
-    for energy in energy_list:
-        GRB.set_energy_range(energy)
+    GRBS = ["GRB230903724", "GRB230826814", "GRB230818977", "GRB230805475"]
+    for G in GRBS:
+        GRB = FitTTE(G)
+        GRB.fit()
+        GRB.save_results()
+        for energy in energy_list:
+            GRB.set_energy_range(energy)
     # TODO fix MPI
     # TODO OUtput
