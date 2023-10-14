@@ -284,7 +284,7 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         for d in lu:
-            self.separations[d] = sep[d]
+            self.separations[d] = float(sep[d])
         return self.separations
 
     def save_results(self):
