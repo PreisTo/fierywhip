@@ -285,7 +285,7 @@ class FitTTE:
         self.separations = {}
         for d in lu:
             self.separations[d] = float(sep[d])
-        return self.separations
+        return {"separations": self.separations}
 
     def save_results(self):
         self.results.write_to(
