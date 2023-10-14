@@ -240,9 +240,9 @@ class FitTTE:
         wrap[0] = 1
 
         # define temp chain save path
-        self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing", self.grb)
+        self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing")
         self._temp_chains_dir = os.path.join(
-            self._base_dir, self.energy_range, "TTE_fit"
+            self._base_dir, self.grb, self.energy_range, "TTE_fit"
         )
         chain_path = os.path.join(self._temp_chains_dir, f"chain")
 
