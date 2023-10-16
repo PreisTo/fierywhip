@@ -126,6 +126,7 @@ class FitTTE:
             assert swift_position is not None, "Only BAT localization available"
         except AssertionError:
             raise AlreadyRun(f"No swift position for {self.grb}")
+
         self._swift_grb_dict = swift_grb
         self.grb_position = swift_position
 

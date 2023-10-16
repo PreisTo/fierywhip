@@ -24,7 +24,6 @@ def check_swift(GRB, grb_time):
         file_path, sep="\t", decimal=".", encoding="latin-1", index_col=False
     )
     swift_table.insert(1, "Date", [i[0:-1] for i in swift_table["GRB"]], True)
-    swift_table.dropna(inplace=True)
     coinc = swift_table.loc[swift_table["Date"] == GRB.strip("GRB")[:-3]]
 
     print(f"Total number of {len(coinc['Date'])} Swift trigger(s) found")
@@ -47,12 +46,21 @@ def check_swift(GRB, grb_time):
 
         if swift_grb["XRT RA (J2000)"] != "nan":
             sgd = list(swift_grb["Date"].keys())
+            ra = float(swift_grb["XRT RA (J2000)"])
+            dec = float(swift_grb["XRT Dec (J2000)"])
             swift_position = SkyCoord(
-                ra=swift_grb["XRT RA (J2000)"][sgd[0]],
-                dec=swift_grb["XRT Dec (J2000)"][sgd[0]],
+                ra=ra[sgd[0]],
+                dec=dec[sgd[0]],
                 unit=(u.hourangle, u.deg),
             )
             print(swift_position)
         else:
             print("Only BAT localization available")
-    return swift_grb, swift_position
+            ra = float(swift_grb["XRT RA (J2000)"])
+            dec = float(swift_grb["XRT Dec (J2000)"])
+            swift_position = SkyCoord(
+                ra=ra[sgd[0]],
+                dec=dec[sgd[0]],
+                unit=(u.hourangle, u.deg),
+            )
+        return swift_grb, swift_position
