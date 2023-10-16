@@ -36,7 +36,7 @@ class Plots:
             self._result_dict = yaml.safe_load(f)
 
         self._grbs = list(self._result_dict.keys())
-        self.detectors_array = np.empty(len(nai))
+        self.detectors_array = np.empty(len(nai), dtype=dict)
         self._energies = []
 
         for d, det in enumerate(nai):
