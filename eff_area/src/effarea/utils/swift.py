@@ -54,11 +54,10 @@ def check_swift(GRB, grb_time):
                 dec=dec[sgd[0]],
                 unit=(u.hourangle, u.deg),
             )
-            print(swift_position)
         elif not np.isnan(float(swift_grb["BAT RA (J2000)"][sgd[0]])):
             print("Only BAT localization available")
-            ra = swift_grb["XRT RA (J2000)"]
-            dec = swift_grb["XRT Dec (J2000)"]
+            ra = swift_grb["BAT RA (J2000)"]
+            dec = swift_grb["BAT Dec (J2000)"]
             swift_position = SkyCoord(
                 ra=ra[sgd[0]],
                 dec=dec[sgd[0]],
@@ -66,4 +65,5 @@ def check_swift(GRB, grb_time):
             )
         else:
             swift_position = None
+        print(swift_position)
         return swift_grb, swift_position
