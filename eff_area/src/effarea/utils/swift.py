@@ -31,22 +31,36 @@ def check_swift(GRB, grb_time):
 
     swift_grb = None
     swift_position = None
+    swift_candidates = []
     for c in coinc["Time [UT]"]:
-        cd = datetime.strptime(c, "%H:%M:%S")
+        Flag = True
+        while Flag:
+            try:
+                cd = datetime.strptime(c, "%H:%M:%S")
+                Flag = False
+            except ValueError:
+                c = c[:-1]
         cd = cd.replace(year=grb_date.year, month=grb_date.month, day=grb_date.day)
         if grb_time >= cd - timedelta(minutes=2) and grb_time <= cd + timedelta(
             minutes=2
         ):
-            swift_grb = coinc.loc[coinc["Time [UT]"] == c]
+            swift_candidates.append([coinc.loc[coinc["Time [UT]"] == c],float((grb_time-cd).total_seconds())])
         else:
             print(cd)
             print(grb_time)
             print((grb_time - cd).total_seconds())
+    time_distance = 100
+    for i in range(len(swift_candidates)):
+        if np.abs(swift_candidates[i][1]) < time_distance:
+            swift_grb = swift_candidates[i][0]
     if swift_grb is not None:
         swift_grb = swift_grb.to_dict()
 
         sgd = list(swift_grb["Date"].keys())
-        if not np.isnan(float(swift_grb["XRT RA (J2000)"][sgd[0]])):
+        if len(sgd) == 0:
+            return None,None
+        print(f"This is sgd {sgd}")
+        if str(swift_grb["XRT RA (J2000)"][sgd[0]]) != "nan":
             ra = swift_grb["XRT RA (J2000)"]
             dec = swift_grb["XRT Dec (J2000)"]
             swift_position = SkyCoord(
@@ -54,7 +68,8 @@ def check_swift(GRB, grb_time):
                 dec=dec[sgd[0]],
                 unit=(u.hourangle, u.deg),
             )
-        elif not np.isnan(float(swift_grb["BAT RA (J2000)"][sgd[0]])):
+        
+        if np.isnan(float(swift_position.ra.deg)):
             print("Only BAT localization available")
             ra = swift_grb["BAT RA (J2000)"]
             dec = swift_grb["BAT Dec (J2000)"]
@@ -63,7 +78,7 @@ def check_swift(GRB, grb_time):
                 dec=dec[sgd[0]],
                 unit=(u.hourangle, u.deg),
             )
-        else:
+        if np.isnan(float(swift_position.ra.deg)):
             swift_position = None
         print(swift_position)
         return swift_grb, swift_position
