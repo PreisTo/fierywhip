@@ -7,6 +7,7 @@ import pkg_resources
 from astropy.coordinates import SkyCoord
 import astropy.time as time
 import astropy.units as u
+import numpy as np
 
 
 def check_swift(GRB, grb_time):
