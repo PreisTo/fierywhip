@@ -288,6 +288,7 @@ class FitTTE:
         return {"separations": self.separations}
 
     def save_results(self):
+        # TODO save the fit results to yaml not just normalizations
         self.results.write_to(
             os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
         )

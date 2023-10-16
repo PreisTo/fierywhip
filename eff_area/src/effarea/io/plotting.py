@@ -5,6 +5,7 @@ import numpy as np
 import yaml
 from effarea.utils.detectors import detector_list, nai_list, name_to_id
 import math
+import os
 
 lu = detector_list()
 nai = nai_list()
