@@ -321,6 +321,9 @@ class FitTTE:
 
 
 def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/grbs.txt")):
+    """
+    returns a list of GRBs with Swift localization
+    """
     csv_content = pd.read_csv(csv, sep="\t", index_col=False)
     grbs = csv_content["name"].loc[csv_content["swift_ra"] != None]
     grbs = grbs.to_list()
@@ -334,7 +337,7 @@ if __name__ == "__main__":
     tot_bins = np.geomspace(bin_start, bin_stop)
     bins = np.array_split(tot_bins, num_selections)
     energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
-    GRBS = get_grbs
+    GRBS = get_grbs()
     for G in GRBS:
         GRB = FitTTE(G)
         GRB.fit()
