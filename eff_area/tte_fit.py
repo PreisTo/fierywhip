@@ -67,26 +67,26 @@ class FitTTE:
             len(energy_range.split("-")) == 2
         ), "energy_range must consist of two floats separated by a -, e.g 8.1-700"
         self.energy_range = energy_range
-
-        self._set_grb_time()
-        self.download_files()
-        self.get_swift()
-        self.timeselection()
-        self.bkg_fitting()
-        self._to_plugin()
-        self._setup_model()
-        # TODO
-        # bkg fitting TTE and storing
-        # https://github.com/PreisTo/morgoth/blob/master/morgoth/auto_loc/utils/fit.py#L536
+        if not self._already_run_check():
+            self._set_grb_time()
+            self.download_files()
+            self.get_swift()
+            self.timeselection()
+            self.bkg_fitting()
+            self._to_plugin()
+            self._setup_model()
+        else:
+            print("Already run ... continuing")
 
     def set_energy_range(self, energy_range):
         self.energy_range = energy_range
-        print(f"new energy range set to {self.energy_range}")
-        print("Setting new TimeSeries and setting up plugins")
-        self._to_plugin()
-        self._setup_model()
-        self.fit()
-        self.save_results()
+        if not self._already_run_check():
+            print(f"new energy range set to {self.energy_range}")
+            print("Setting new TimeSeries and setting up plugins")
+            self._to_plugin()
+            self._setup_model()
+            self.fit()
+            self.save_results()
 
     def download_files(self):
         """
@@ -289,7 +289,6 @@ class FitTTE:
         return {"separations": self.separations}
 
     def save_results(self):
-        # TODO save the fit results to yaml not just normalizations
         self.results.write_to(
             os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
         )
@@ -319,6 +318,18 @@ class FitTTE:
         with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
             yaml.dump(results_yaml_dict, f)
 
+    def _already_run_check(self):
+        with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
+            res_dict = yaml.safe_load(f)
+        try:
+            grb_dict = res_dict[self.grb]
+            energy_dict = grb_dict[self.energy_range]
+            for d in lu[:2]:
+                test = energy_dict[d]
+            return True
+        except KeyError:
+            return False
+
 
 def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/grbs.txt")):
     """
@@ -346,3 +357,6 @@ if __name__ == "__main__":
             GRB.set_energy_range(energy)
     # TODO fix MPI
     # TODO OUtput
+    # TODO spectrum
+    # TODO errors on paramaters
+    #
