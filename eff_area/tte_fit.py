@@ -121,8 +121,11 @@ class FitTTE:
         """ """
         print("Getting coinciding Swift GRB")
         swift_grb, swift_position = check_swift(self.grb, self.grb_time)
-        assert swift_grb is not None, "No conciding Swift GRB found"
-        assert swift_position is not None, "Only BAT localization available"
+        try:
+            assert swift_grb is not None, "No conciding Swift GRB found"
+            assert swift_position is not None, "Only BAT localization available"
+        except AssertionError:
+            raise AlreadyRun(f"No swift position for {self.grb}")
         self._swift_grb_dict = swift_grb
         self.grb_position = swift_position
 
