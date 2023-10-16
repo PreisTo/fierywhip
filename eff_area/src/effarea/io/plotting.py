@@ -40,7 +40,7 @@ class Plots:
         self._energies = []
 
         for d, det in enumerate(nai):
-            self.detectors_array[i] = self._detector_array(det)
+            self.detectors_array[d] = self._detector_array(det)
 
     def _detector_array(self, det):
         energies_dict = {}
