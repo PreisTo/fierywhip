@@ -59,6 +59,11 @@ lu = [
 ]
 
 
+class AlreadyRun(Exception):
+    print("Already run")
+    pass
+
+
 class FitTTE:
     def __init__(self, grb, energy_range="8.1-700"):
         self.grb = grb
@@ -78,7 +83,7 @@ class FitTTE:
             self._to_plugin()
             self._setup_model()
         else:
-            print("Already run ... continuing")
+            raise AlreadyRun
 
     def set_energy_range(self, energy_range):
         self.energy_range = energy_range
@@ -357,8 +362,8 @@ if __name__ == "__main__":
             GRB.save_results()
             for energy in energy_list:
                 GRB.set_energy_range(energy)
-        except ZeroDivisionError as e:
-            print(e)
+        except Exeption in (ZeroDivisionError, AlreadyRun):
+            print("passing")
     # TODO fix MPI
     # TODO OUtput
     # TODO spectrum
