@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 from effarea.utils.swift import check_swift
 from effarea.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
+import pkg_resources
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -319,6 +320,13 @@ class FitTTE:
             yaml.dump(results_yaml_dict, f)
 
 
+def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/grbs.txt")):
+    csv_content = pd.read_csv(csv, sep="\t", index_col=False)
+    grbs = csv_content["name"].loc[csv_content["swift_ra"] != None]
+    grbs = grbs.to_list()
+    return grbs
+
+
 if __name__ == "__main__":
     bin_start = 10
     bin_stop = 700
@@ -326,7 +334,7 @@ if __name__ == "__main__":
     tot_bins = np.geomspace(bin_start, bin_stop)
     bins = np.array_split(tot_bins, num_selections)
     energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
-    GRBS = ["GRB230903724", "GRB230826814", "GRB230818977", "GRB230805475"]
+    GRBS = get_grbs
     for G in GRBS:
         GRB = FitTTE(G)
         GRB.fit()
