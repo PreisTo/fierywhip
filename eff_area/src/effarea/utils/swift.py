@@ -46,8 +46,8 @@ def check_swift(GRB, grb_time):
 
         if swift_grb["XRT RA (J2000)"] != "nan":
             sgd = list(swift_grb["Date"].keys())
-            ra = float(swift_grb["XRT RA (J2000)"])
-            dec = float(swift_grb["XRT Dec (J2000)"])
+            ra = swift_grb["XRT RA (J2000)"]
+            dec = swift_grb["XRT Dec (J2000)"]
             swift_position = SkyCoord(
                 ra=ra[sgd[0]],
                 dec=dec[sgd[0]],
@@ -56,8 +56,8 @@ def check_swift(GRB, grb_time):
             print(swift_position)
         else:
             print("Only BAT localization available")
-            ra = float(swift_grb["XRT RA (J2000)"])
-            dec = float(swift_grb["XRT Dec (J2000)"])
+            ra = swift_grb["XRT RA (J2000)"]
+            dec = swift_grb["XRT Dec (J2000)"]
             swift_position = SkyCoord(
                 ra=ra[sgd[0]],
                 dec=dec[sgd[0]],
