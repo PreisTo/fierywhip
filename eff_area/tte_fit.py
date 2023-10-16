@@ -362,8 +362,8 @@ if __name__ == "__main__":
             GRB.save_results()
             for energy in energy_list:
                 GRB.set_energy_range(energy)
-        except e in (ZeroDivisionError, AlreadyRun):
-            print("passing")
+        except (ZeroDivisionError, AlreadyRun) as e:
+            print(f"passing  because {e}")
     # TODO fix MPI
     # TODO OUtput
     # TODO spectrum
