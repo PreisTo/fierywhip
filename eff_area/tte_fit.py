@@ -350,11 +350,14 @@ if __name__ == "__main__":
     energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
-        GRB = FitTTE(G)
-        GRB.fit()
-        GRB.save_results()
-        for energy in energy_list:
-            GRB.set_energy_range(energy)
+        try:
+            GRB = FitTTE(G)
+            GRB.fit()
+            GRB.save_results()
+            for energy in energy_list:
+                GRB.set_energy_range(energy)
+        except ZeroDivisionError as e:
+            print(e)
     # TODO fix MPI
     # TODO OUtput
     # TODO spectrum
