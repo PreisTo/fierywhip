@@ -67,6 +67,8 @@ class FitTTE:
             len(energy_range.split("-")) == 2
         ), "energy_range must consist of two floats separated by a -, e.g 8.1-700"
         self.energy_range = energy_range
+
+        self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing")
         if not self._already_run_check():
             self._set_grb_time()
             self.download_files()
@@ -241,7 +243,6 @@ class FitTTE:
         wrap[0] = 1
 
         # define temp chain save path
-        self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing")
         self._temp_chains_dir = os.path.join(
             self._base_dir, self.grb, self.energy_range, "TTE_fit"
         )
