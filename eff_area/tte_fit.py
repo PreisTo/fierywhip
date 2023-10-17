@@ -360,6 +360,7 @@ if __name__ == "__main__":
     energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
+        print(G)
         try:
             GRB = FitTTE(G)
             GRB.fit()
