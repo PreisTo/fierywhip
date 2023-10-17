@@ -379,11 +379,14 @@ class FitTTE:
             for fp in self.results.optimized_model.free_parameters.keys():
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
             temp["confidence"] = {}
-            for fp in self._result_data_frame.index:
-                temp["confidence"][fp] = (
-                    float(self._result_data_frame.loc[fp]["negative_error"]),
-                    float(self._result_data_frame.loc[fp]["positive_error"]),
-                )
+            print(self._result_data_frame)
+            for i in range(len(self._result_data_frame)):
+                try:
+                    temp["confidence"][self._result_data_frame.index[i]]["negative_error"] = float(self._result_data_frame.iloc[i]["negative_error"])
+                    temp["confidence"][self._result_data_frame.index[i]]["positive_error"] = float(self._result_data_frame.iloc[i]["positive_error"])
+                except KeyError:
+                    print(f"Did not find {fp}")
+
             results_yaml_dict[self.grb][self.energy_range] = temp
             with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
                 yaml.dump(results_yaml_dict, f)
@@ -431,9 +434,12 @@ if __name__ == "__main__":
     GRBS = get_grbs()
     for G in GRBS:
         G = f"GRB{G}"
-        GRB = FitTTE(G, fix_position=True)
-        GRB.fit()
-        GRB.save_results()
+        try:
+            GRB = FitTTE(G, fix_position=True)
+            GRB.fit()
+            GRB.save_results()
+        except AlreadyRun:
+            pass
         #    for energy in energy_list:
         #        GRB.set_energy_range(energy)
         # except (ZeroDivisionError, AlreadyRun) as e:
