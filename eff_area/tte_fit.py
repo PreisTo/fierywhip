@@ -279,14 +279,46 @@ class FitTTE:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
+            n_live_points=400, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         self._bayes.sample()
         self.results = self._bayes.results
         self._results_loaded = True
-        fig = self.results.corner_plot()
-        fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
-        plt.close("all")
+        if rank == 0:
+            fig = self.results.corner_plot()
+            fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
+            plt.close("all")
+        color_dict = {
+            "n0": "#FF9AA2",
+            "n1": "#FFB7B2",
+            "n2": "#FFDAC1",
+            "n3": "#E2F0CB",
+            "n4": "#B5EAD7",
+            "n5": "#C7CEEA",
+            "n6": "#DF9881",
+            "n7": "#FCE2C2",
+            "n8": "#B3C8C8",
+            "n9": "#DFD8DC",
+            "na": "#D2C1CE",
+            "nb": "#6CB2D1",
+            "b0": "#58949C",
+            "b1": "#4F9EC4",
+        }
+        if rank == 0:
+            try:
+                spectrum_plot = display_spectrum_model_counts(
+                    self._bayes, data_colors=color_list, model_colors=color_list
+                )
+                spectrum_plot.tight_layout()
+                spectrum_plot.savefig(
+                    os.path.join(self._temp_chains_dir, "splot.pdf"),
+                    bbox_inches="tight",
+                )
+
+            except:
+                print("No spectral plot possible...")
+
+            plt.close("all")
 
     def calc_separations(self):
         poshist = os.path.join(
