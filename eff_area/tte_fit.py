@@ -435,6 +435,18 @@ class FitTTE:
             raise ValueError("Model was not fitted! No optimized one available!")
 
 
+def alread_run_externally(
+    grb, result_yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
+):
+    if rank == 0:
+        with open(result_yaml, "r") as f:
+            res_dict = yaml.safe_load(f)
+        if grb in res_dict.keys():
+            return True
+        else:
+            return False
+
+
 def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis")):
     """
     returns a list of GRBs with Swift localization
@@ -455,19 +467,20 @@ if __name__ == "__main__":
     # energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
-        G = f"GRB{G}"
-        try:
-            GRB = FitTTE(G, fix_position=True)
-            GRB.fit()
-            GRB.save_results()
-        except (AlreadyRun, RuntimeError):
-            pass
-        #    for energy in energy_list:
-        #        GRB.set_energy_range(energy)
-        # except (ZeroDivisionError, AlreadyRun) as e:
-        #    print(f"passing  because {e}")
-    # TODO fix MPI
-    # TODO OUtput
-    # TODO spectrum
-    # TODO errors on paramaters
-    #
+        if not alread_run_externally(G):
+            G = f"GRB{G}"
+            try:
+                GRB = FitTTE(G, fix_position=True)
+                GRB.fit()
+                GRB.save_results()
+            except (AlreadyRun, RuntimeError):
+                pass
+            #    for energy in energy_list:
+            #        GRB.set_energy_range(energy)
+            # except (ZeroDivisionError, AlreadyRun) as e:
+            #    print(f"passing  because {e}")
+        # TODO fix MPI
+        # TODO OUtput
+        # TODO spectrum
+        # TODO errors on paramaters
+        #
