@@ -354,9 +354,10 @@ class FitTTE:
                 self._use_dets.append(d)
 
     def save_results(self):
-        self.results.write_to(
-            os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
-        )
+        if rank == 0:
+            self.results.write_to(
+                os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
+            )
 
         if os.path.exists(os.path.join(self._base_dir, "results.yml")):
             with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
