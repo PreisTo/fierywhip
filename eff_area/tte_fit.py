@@ -328,6 +328,7 @@ class FitTTE:
             except:
                 self.results.data_list = self._data_list
                 spectrum_plot = display_spectrum_model_counts(self.results)
+                ca = spectrum_plot.get_axes()[0]
                 y_lims = ca.get_ylim()
                 if y_lims[0] < 10e-6:
                     # y_lims_new = [10e-6, y_lims[1]]
@@ -373,7 +374,7 @@ class FitTTE:
 
     def save_results(self):
         if rank == 0:
-            self._result_data_frame = self.results.get_data_frame("hpd")
+            df = self.results.get_data_frame("hpd")
             self.results.write_to(
                 os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
             )
@@ -398,12 +399,13 @@ class FitTTE:
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
             temp["confidence"] = {}
             print(self._result_data_frame)
-            for i in self._result_data_frame.index:
+            for i in df.index:
+                print(f"Index {i}")
                 try:
-                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(
+                    temp["confidence"][self._result_data_frame.loc[i].name] = float(
                         self._result_data_frame.loc[i]["negative_error"]
                     )
-                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(
+                    temp["confidence"][self._result_data_frame.loc[i].name] = float(
                         self._result_data_frame.loc[i]["positive_error"]
                     )
                 except KeyError:
