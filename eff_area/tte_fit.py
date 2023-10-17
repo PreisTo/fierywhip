@@ -65,7 +65,9 @@ class AlreadyRun(Exception):
 
 
 class FitTTE:
-    def __init__(self, grb, energy_range="8.1-700"):
+    def __init__(self, grb, energy_range="8.1-700", fix_position=True):
+        self._results_loaded = False
+        self._fix_position = fix_position
         self.grb = grb
         assert type(energy_range) == str, "energy_range must be string"
         assert (
@@ -79,19 +81,23 @@ class FitTTE:
             self.download_files()
             self.get_swift()
             self.timeselection()
+            self.calc_separations()
             self.bkg_fitting()
             self._to_plugin()
             self._setup_model()
         else:
             raise AlreadyRun
 
-    def set_energy_range(self, energy_range):
+    def set_energy_range(self, energy_range, optimized_model=None):
         self.energy_range = energy_range
         if not self._already_run_check():
             print(f"new energy range set to {self.energy_range}")
             print("Setting new TimeSeries and setting up plugins")
             self._to_plugin()
-            self._setup_model()
+            if optimized_model is None:
+                self._setup_model()
+            else:
+                self._model = optimized_model
             self.fit()
             self.save_results()
 
@@ -138,7 +144,7 @@ class FitTTE:
         temp_timeseries = {}
         temp_responses = {}
 
-        for d in lu:
+        for d in self._use_dets:
             print(f"Calculating Response for {d}")
             response = BALROG_DRM(
                 DRMGenTTE(
@@ -181,11 +187,16 @@ class FitTTE:
         self._timeseries = temp_timeseries
         self._responses = temp_responses
 
-    def _to_plugin(self, fix_correction=None, free_position=False):
+    def _to_plugin(self, fix_correction=None):
+        if self._fix_position:
+            free_position = False
+        else:
+            free_position = True
+
         print("Creating BALROG like plugins")
         response_time = self.tsbb.stop_trigger - self.tsbb.start_trigger
         spectrum_likes = []
-        for d in lu:
+        for d in self._use_dets:
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements(self.energy_range)
@@ -195,7 +206,8 @@ class FitTTE:
                 spectrum_like.set_active_measurements("350-25000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
-        for i, d in enumerate(lu):
+        print(f"We are going to use {self._use_dets}")
+        for i, d in enumerate(self._use_dets):
             bl = BALROGLike.from_spectrumlike(
                 spectrum_likes[i],
                 response_time,
@@ -258,8 +270,9 @@ class FitTTE:
         chain_path = os.path.join(self._temp_chains_dir, f"chain")
 
         # Make temp chains folder if it does not exists already
-        if not os.path.exists(self._temp_chains_dir):
-            os.makedirs(os.path.join(self._temp_chains_dir))
+        if rank == 0:
+            if not os.path.exists(self._temp_chains_dir):
+                os.makedirs(os.path.join(self._temp_chains_dir))
 
         # use multinest to sample the posterior
         # set main_path+trigger to whatever you want to use
@@ -270,11 +283,12 @@ class FitTTE:
         )
         self._bayes.sample()
         self.results = self._bayes.results
+        self._results_loaded = True
         fig = self.results.corner_plot()
         fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
         plt.close("all")
 
-    def get_separations(self):
+    def calc_separations(self):
         poshist = os.path.join(
             os.environ.get("GBMDATA"),
             "poshist",
@@ -294,9 +308,11 @@ class FitTTE:
         )
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
+        self._use_dets = []
         for d in lu:
             self.separations[d] = float(sep[d])
-        return {"separations": self.separations}
+            if float(sep[d]) <= 60:
+                self._use_dets.append(d)
 
     def save_results(self):
         self.results.write_to(
@@ -312,25 +328,25 @@ class FitTTE:
                 else:
                     temp = {}
             else:
-                results_yaml_dict[self.grb] = self.get_separations()
+                results_yaml_dict[self.grb] = {"separations": self.separations}
                 temp = {}
         else:
             results_yaml_dict = {}
-            results_yaml_dict[self.grb] = self.get_separations()
+            results_yaml_dict[self.grb] = {"separations": self.separations}
             results_yaml_dict[self.grb][self.energy_range] = {}
             temp = {}
-        for d in lu:
-            if d not in ("b0", "b1"):
-                temp[d] = float(
-                    self.results.optimized_model.free_parameters[f"cons_{d}"].value
-                )
+        for fp in self.results.optimized_model.free_parameters.keys():
+            temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
         results_yaml_dict[self.grb][self.energy_range] = temp
         with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
             yaml.dump(results_yaml_dict, f)
 
     def _already_run_check(self):
-        with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
-            res_dict = yaml.safe_load(f)
+        try:
+            with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
+                res_dict = yaml.safe_load(f)
+        except FileNotFoundError:
+            return False
         try:
             grb_dict = res_dict[self.grb]
             energy_dict = grb_dict[self.energy_range]
@@ -340,34 +356,41 @@ class FitTTE:
         except KeyError:
             return False
 
+    def get_optimized_mode(self):
+        if self._results_loaded:
+            return self.results.optimized_model
+        else:
+            raise ValueError("Model was not fitted! No optimized one available!")
 
-def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/grbs.txt")):
+
+def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis")):
     """
     returns a list of GRBs with Swift localization
     """
-    csv_content = pd.read_csv(csv, sep="\t", index_col=False)
-    grbs = csv_content["name"].loc[csv_content["swift_ra"] != None]
+    csv_content = pd.read_csv(csv, sep=" ", index_col=False, header=None)
+    # grbs = csv_content["name"].loc[csv_content["swift_ra"] != None]
+    grbs = csv_content.iloc[:, 0].copy()
     grbs = grbs.to_list()
     return grbs
 
 
 if __name__ == "__main__":
-    bin_start = 10
-    bin_stop = 700
-    num_selections = 10
-    tot_bins = np.geomspace(bin_start, bin_stop)
-    bins = np.array_split(tot_bins, num_selections)
-    energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
+    # bin_start = 10
+    # bin_stop = 700
+    # num_selections = 10
+    # tot_bins = np.geomspace(bin_start, bin_stop)
+    # bins = np.array_split(tot_bins, num_selections)
+    # energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
-        try:
-            GRB = FitTTE(G)
-            GRB.fit()
-            GRB.save_results()
-            for energy in energy_list:
-                GRB.set_energy_range(energy)
-        except (ZeroDivisionError, AlreadyRun) as e:
-            print(f"passing  because {e}")
+        G = f"GRB{G}"
+        GRB = FitTTE(G, fix_position=False)
+        GRB.fit()
+        GRB.save_results()
+        #    for energy in energy_list:
+        #        GRB.set_energy_range(energy)
+        # except (ZeroDivisionError, AlreadyRun) as e:
+        #    print(f"passing  because {e}")
     # TODO fix MPI
     # TODO OUtput
     # TODO spectrum
