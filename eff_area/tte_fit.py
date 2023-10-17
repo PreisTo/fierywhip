@@ -286,7 +286,7 @@ class FitTTE:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=400, chain_name=chain_path, wrapped_params=wrap, verbose=True
+            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         self._bayes.sample()
         self.results = self._bayes.results
@@ -355,31 +355,36 @@ class FitTTE:
 
     def save_results(self):
         if rank == 0:
+            self._result_data_frame = self.results.get_data_frame("HPD")
             self.results.write_to(
                 os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
             )
 
-        if os.path.exists(os.path.join(self._base_dir, "results.yml")):
-            with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
-                results_yaml_dict = yaml.safe_load(f)
-            if self.grb in results_yaml_dict.keys():
-                if self.energy_range in results_yaml_dict[self.grb].keys():
-                    temp = results_yaml_dict[self.grb]
+            if os.path.exists(os.path.join(self._base_dir, "results.yml")):
+                with open(os.path.join(self._base_dir, "results.yml"), "r") as f:
+                    results_yaml_dict = yaml.safe_load(f)
+                if self.grb in results_yaml_dict.keys():
+                    if self.energy_range in results_yaml_dict[self.grb].keys():
+                        temp = results_yaml_dict[self.grb]
+                    else:
+                        temp = {}
                 else:
+                    results_yaml_dict[self.grb] = {"separations": self.separations}
                     temp = {}
             else:
+                results_yaml_dict = {}
                 results_yaml_dict[self.grb] = {"separations": self.separations}
+                results_yaml_dict[self.grb][self.energy_range] = {}
                 temp = {}
-        else:
-            results_yaml_dict = {}
-            results_yaml_dict[self.grb] = {"separations": self.separations}
-            results_yaml_dict[self.grb][self.energy_range] = {}
-            temp = {}
-        for fp in self.results.optimized_model.free_parameters.keys():
-            temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
-        results_yaml_dict[self.grb][self.energy_range] = temp
-        with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
-            yaml.dump(results_yaml_dict, f)
+            for fp in self.results.optimized_model.free_parameters.keys():
+                temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
+                temp["confidence"][fp] = (
+                    float(self._result_data_frame[fp]["negative_error"]),
+                    float(self._result_data_frame[fp]["positive_error"]),
+                )
+            results_yaml_dict[self.grb][self.energy_range] = temp
+            with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
+                yaml.dump(results_yaml_dict, f)
 
     def _already_run_check(self):
         try:
@@ -424,7 +429,7 @@ if __name__ == "__main__":
     GRBS = get_grbs()
     for G in GRBS:
         G = f"GRB{G}"
-        GRB = FitTTE(G, fix_position=False)
+        GRB = FitTTE(G, fix_position=True)
         GRB.fit()
         GRB.save_results()
         #    for energy in energy_list:
