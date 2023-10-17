@@ -248,12 +248,22 @@ class FitTTE:
         band.alpha.set_uninformative_prior(Uniform_prior)
         band.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=1e4)
         band.beta.set_uninformative_prior(Uniform_prior)
+
+        pl = Powerlaw()
+        pl.index.set.uninformative_prior(Uniform_prior)
+        pl.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1e4)
+
+        bb = Blackbody()
+        bb.kT.prior = Log_uniform_prior(lower_bound=0, upper_bound=200)
+        bb.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1e4)
+        spectrum = pl + bb
+
         self._model = Model(
             PointSource(
                 "GRB",
                 self.grb_position.ra.deg,
                 self.grb_position.dec.deg,
-                spectral_shape=band,
+                spectral_shape=spectrum,
             )
         )
 
