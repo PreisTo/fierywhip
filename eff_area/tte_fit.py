@@ -355,7 +355,7 @@ class FitTTE:
 
     def save_results(self):
         if rank == 0:
-            self._result_data_frame = self.results.get_data_frame("HPD")
+            self._result_data_frame = self.results.get_data_frame("hpd")
             self.results.write_to(
                 os.path.join(self._temp_chains_dir, "fit_results.fits"), overwrite=True
             )
@@ -378,9 +378,11 @@ class FitTTE:
                 temp = {}
             for fp in self.results.optimized_model.free_parameters.keys():
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
+            temp["confidence"] = {}
+            for fp in self._result_data_frame.index:
                 temp["confidence"][fp] = (
-                    float(self._result_data_frame[fp]["negative_error"]),
-                    float(self._result_data_frame[fp]["positive_error"]),
+                    float(self._result_data_frame.loc[fp]["negative_error"]),
+                    float(self._result_data_frame.loc[fp]["positive_error"]),
                 )
             results_yaml_dict[self.grb][self.energy_range] = temp
             with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
