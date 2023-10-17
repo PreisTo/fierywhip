@@ -313,8 +313,12 @@ class FitTTE:
         }
         if rank == 0:
             try:
-                spectrum_plot = display_spectrum_model_counts(
-                    self.results)
+                spectrum_plot = display_spectrum_model_counts(self.results)
+                ca = spectrum_plot.get_axes()[0]
+                y_lims = ca.get_ylim()
+                if y_lims[0] < 10e-6:
+                    # y_lims_new = [10e-6, y_lims[1]]
+                    ca.set_ylim(bottom=10e-6)
                 spectrum_plot.tight_layout()
                 spectrum_plot.savefig(
                     os.path.join(self._temp_chains_dir, "splot.pdf"),
@@ -323,14 +327,17 @@ class FitTTE:
 
             except:
                 self.results.data_list = self._data_list
-                spectrum_plot = display_spectrum_model_counts(
-                    self.results)
+                spectrum_plot = display_spectrum_model_counts(self.results)
+                y_lims = ca.get_ylim()
+                if y_lims[0] < 10e-6:
+                    # y_lims_new = [10e-6, y_lims[1]]
+                    ca.set_ylim(bottom=10e-6)
+
                 spectrum_plot.tight_layout()
                 spectrum_plot.savefig(
                     os.path.join(self._temp_chains_dir, "splot.pdf"),
                     bbox_inches="tight",
                 )
-
 
                 print("No spectral plot possible...")
 
@@ -363,6 +370,7 @@ class FitTTE:
                 self._use_dets.append(d)
         if len(self._use_dets) < 2:
             raise RuntimeError("Too little detectors with separation <= 60deg")
+
     def save_results(self):
         if rank == 0:
             self._result_data_frame = self.results.get_data_frame("hpd")
@@ -392,8 +400,12 @@ class FitTTE:
             print(self._result_data_frame)
             for i in self._result_data_frame.index:
                 try:
-                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(self._result_data_frame.loc[i]["negative_error"])
-                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(self._result_data_frame.loc[i]["positive_error"])
+                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(
+                        self._result_data_frame.loc[i]["negative_error"]
+                    )
+                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(
+                        self._result_data_frame.loc[i]["positive_error"]
+                    )
                 except KeyError:
                     print(f"Did not find {i}")
 
