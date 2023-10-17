@@ -1,2 +1,6 @@
 eff_area/fit*
 eff_area/src/effarea.egg-info/
+eff_area/__pycache__
+eff_area/src/effarea.egg-info
+eff_area/src/effarea/*/__pycache__
+eff_area/src/effarea/__pycache__
