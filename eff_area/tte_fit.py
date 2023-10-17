@@ -250,9 +250,9 @@ class FitTTE:
         band.beta.set_uninformative_prior(Uniform_prior)
 
         spectrum = Cutoff_powerlaw_Ep()
-        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-30, upper_bound=1000)
-        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
-        spectrum.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
+        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
+        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=1)
+        spectrum.xp.prior = Log_uniform_prior(lower_bound=100, upper_bound=10000)
 
         self._model = Model(
             PointSource(
