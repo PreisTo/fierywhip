@@ -314,8 +314,7 @@ class FitTTE:
         if rank == 0:
             try:
                 spectrum_plot = display_spectrum_model_counts(
-                    self._bayes, data_colors=color_list, model_colors=color_list
-                )
+                    self.results)
                 spectrum_plot.tight_layout()
                 spectrum_plot.savefig(
                     os.path.join(self._temp_chains_dir, "splot.pdf"),
@@ -323,6 +322,16 @@ class FitTTE:
                 )
 
             except:
+                self.results.data_list = self._data_list
+                spectrum_plot = display_spectrum_model_counts(
+                    self.results)
+                spectrum_plot.tight_layout()
+                spectrum_plot.savefig(
+                    os.path.join(self._temp_chains_dir, "splot.pdf"),
+                    bbox_inches="tight",
+                )
+
+
                 print("No spectral plot possible...")
 
             plt.close("all")
@@ -352,7 +361,8 @@ class FitTTE:
             self.separations[d] = float(sep[d])
             if float(sep[d]) <= 60:
                 self._use_dets.append(d)
-
+        if len(self._use_dets) < 2:
+            raise RuntimeError("Too little detectors with separation <= 60deg")
     def save_results(self):
         if rank == 0:
             self._result_data_frame = self.results.get_data_frame("hpd")
@@ -380,12 +390,12 @@ class FitTTE:
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
             temp["confidence"] = {}
             print(self._result_data_frame)
-            for i in range(len(self._result_data_frame)):
+            for i in self._result_data_frame.index:
                 try:
-                    temp["confidence"][self._result_data_frame.index[i]]["negative_error"] = float(self._result_data_frame.iloc[i]["negative_error"])
-                    temp["confidence"][self._result_data_frame.index[i]]["positive_error"] = float(self._result_data_frame.iloc[i]["positive_error"])
+                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(self._result_data_frame.loc[i]["negative_error"])
+                    temp["confidence"][self._result_data_frame.loc[i]["Name"]] = float(self._result_data_frame.loc[i]["positive_error"])
                 except KeyError:
-                    print(f"Did not find {fp}")
+                    print(f"Did not find {i}")
 
             results_yaml_dict[self.grb][self.energy_range] = temp
             with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
@@ -406,7 +416,7 @@ class FitTTE:
         except KeyError:
             return False
 
-    def get_optimized_mode(self):
+    def get_optimized_model(self):
         if self._results_loaded:
             return self.results.optimized_model
         else:
@@ -438,7 +448,7 @@ if __name__ == "__main__":
             GRB = FitTTE(G, fix_position=True)
             GRB.fit()
             GRB.save_results()
-        except AlreadyRun:
+        except (AlreadyRun, RuntimeError):
             pass
         #    for energy in energy_list:
         #        GRB.set_energy_range(energy)
