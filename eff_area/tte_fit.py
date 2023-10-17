@@ -66,7 +66,7 @@ class AlreadyRun(Exception):
 
 
 class FitTTE:
-    def __init__(self, grb, energy_range="8.1-700", fix_position=True):
+    def __init__(self, grb, energy_range="8.1-900", fix_position=True):
         self._results_loaded = False
         self._fix_position = fix_position
         self.grb = grb
@@ -369,7 +369,7 @@ class FitTTE:
             self.separations[d] = float(sep[d])
             if float(sep[d]) <= 60:
                 self._use_dets.append(d)
-        if len(self._use_dets) < 2:
+        if len(self._use_dets) < 3:
             raise RuntimeError("Too little detectors with separation <= 60deg")
 
     def save_results(self):
@@ -398,16 +398,12 @@ class FitTTE:
             for fp in self.results.optimized_model.free_parameters.keys():
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
             temp["confidence"] = {}
-            print(self._result_data_frame)
+            print(df)
             for i in df.index:
                 print(f"Index {i}")
                 try:
-                    temp["confidence"][self._result_data_frame.loc[i].name] = float(
-                        self._result_data_frame.loc[i]["negative_error"]
-                    )
-                    temp["confidence"][self._result_data_frame.loc[i].name] = float(
-                        self._result_data_frame.loc[i]["positive_error"]
-                    )
+                    temp["confidence"][df.loc[i].name] = float(df.iloc[i]["negative_error"])
+                    temp["confidence"][df.loc[i].name] = float(df.loc[i]["positive_error"])
                 except KeyError:
                     print(f"Did not find {i}")
 
@@ -441,6 +437,8 @@ def alread_run_externally(
     grb, result_yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
 ):
     if rank == 0:
+        if not os.path.exists(result_yaml):
+            return False
         with open(result_yaml, "r") as f:
             res_dict = yaml.safe_load(f)
         if grb in res_dict.keys():
