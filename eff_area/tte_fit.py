@@ -367,9 +367,9 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         self._use_dets = []
-        use_dets = self.gbm.get_good_detectors(self.grb_position, 60 * u.deg)
+        use_dets = self.gbm.get_good_detectors(self.grb_position, 60)
 
-        for d in use_dets.keys():
+        for d in use_dets:
             self.separations[d] = float(sep[d])
             if float(sep[d]) <= 60:
                 self._use_dets.append(d)
@@ -482,10 +482,13 @@ if __name__ == "__main__":
     GRBS = get_grbs()
     for G in GRBS:
         if not alread_run_externally(f"GRB{G}"):
-            G = f"GRB{G}"
-            GRB = FitTTE(G, fix_position=True)
-            GRB.fit()
-            GRB.save_results()
+            try:
+                G = f"GRB{G}"
+                GRB = FitTTE(G, fix_position=True)
+                GRB.fit()
+                GRB.save_results()
+            except RuntimeError:
+                print(f"GRB{G} has too little dets seeing the burst")
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
