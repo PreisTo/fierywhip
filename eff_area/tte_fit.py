@@ -366,6 +366,8 @@ class FitTTE:
         )
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
+        for d in lu:
+            self.separations[d] = sep[d]
         self._use_dets = []
         self._angular_incident, self._use_dets = calc_angular_incident(
             self.grb_position, self.gbm, self._gbm_time, self.interpolator
