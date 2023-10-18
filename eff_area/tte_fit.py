@@ -367,7 +367,9 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         self._use_dets = []
-        for d in lu:
+        use_dets = self.gbm.get_good_detectors(self.grb_position, 60 * u.deg)
+
+        for d in use_dets.keys():
             self.separations[d] = float(sep[d])
             if float(sep[d]) <= 60:
                 self._use_dets.append(d)
