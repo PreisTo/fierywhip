@@ -31,6 +31,7 @@ import numpy as np
 import yaml
 import matplotlib.pyplot as plt
 from effarea.utils.swift import check_swift
+from effarea.utils.detectors import calc_angular_incident
 from effarea.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 import pkg_resources
@@ -358,6 +359,7 @@ class FitTTE:
 
         t0 = time.Time(self.grb_time, format="datetime", scale="utc")
         gbm_time = GBMTime(t0)
+        self._gbm_time = gbm_time
         self.gbm = GBM(
             self.interpolator.quaternion(gbm_time.met),
             sc_pos=self.interpolator.sc_pos(gbm_time.met) * u.km,
@@ -371,6 +373,9 @@ class FitTTE:
                 self._use_dets.append(d)
         if len(self._use_dets) < 3:
             raise RuntimeError("Too little detectors with separation <= 60deg")
+        self._angular_incident = calc_angular_incident(
+            self.grb_position, self.gbm, self._gbm_time, self.interpolator
+        )
 
     def save_results(self):
         if rank == 0:
@@ -403,11 +408,15 @@ class FitTTE:
                 print(f"Index {i}")
                 try:
                     temp["confidence"][df.loc[i].name] = {}
-                    temp["confidence"][df.loc[i].name]["negative_error"]= float(df.loc[i]["negative_error"])
-                    temp["confidence"][df.loc[i].name]["positive_error"] = float(df.loc[i]["positive_error"])
+                    temp["confidence"][df.loc[i].name]["negative_error"] = float(
+                        df.loc[i]["negative_error"]
+                    )
+                    temp["confidence"][df.loc[i].name]["positive_error"] = float(
+                        df.loc[i]["positive_error"]
+                    )
                 except KeyError:
                     print(f"Did not find {i}")
-
+            temp["angles"] = self._angular_incident
             results_yaml_dict[self.grb][self.energy_range] = temp
             with open(os.path.join(self._base_dir, "results.yml"), "w+") as f:
                 yaml.dump(results_yaml_dict, f)
@@ -476,7 +485,7 @@ if __name__ == "__main__":
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except (AlreadyRun, RuntimeError,TypeError,FileNotFoundError):
+            except (AlreadyRun, RuntimeError, TypeError):
                 pass
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
