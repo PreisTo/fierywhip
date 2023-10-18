@@ -367,17 +367,11 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         self._use_dets = []
-        use_dets = self.gbm.get_good_detectors(self.grb_position, 60)
-
-        for d in use_dets:
-            self.separations[d] = float(sep[d])
-            if float(sep[d]) <= 60:
-                self._use_dets.append(d)
-        if len(self._use_dets) < 3:
-            raise RuntimeError("Too little detectors with separation <= 60deg")
-        self._angular_incident = calc_angular_incident(
+        self._angular_incident, self._use_dets = calc_angular_incident(
             self.grb_position, self.gbm, self._gbm_time, self.interpolator
         )
+        if len(self._use_dets) < 3:
+            raise RuntimeError("Too little number of dets seeing the burst")
 
     def save_results(self):
         if rank == 0:
