@@ -66,7 +66,7 @@ class AlreadyRun(Exception):
 
 
 class FitTTE:
-    def __init__(self, grb, energy_range="8.1-900", fix_position=True):
+    def __init__(self, grb, energy_range="10-900", fix_position=True):
         self._results_loaded = False
         self._fix_position = fix_position
         self.grb = grb
@@ -204,7 +204,7 @@ class FitTTE:
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurements("350-25000")
+                spectrum_like.set_active_measurements("300-30000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
         print(f"We are going to use {self._use_dets}")
@@ -402,8 +402,9 @@ class FitTTE:
             for i in df.index:
                 print(f"Index {i}")
                 try:
-                    temp["confidence"][df.loc[i].name] = float(df.iloc[i]["negative_error"])
-                    temp["confidence"][df.loc[i].name] = float(df.loc[i]["positive_error"])
+                    temp["confidence"][df.loc[i].name] = {}
+                    temp["confidence"][df.loc[i].name]["negative_error"]= float(df.loc[i]["negative_error"])
+                    temp["confidence"][df.loc[i].name]["positive_error"] = float(df.loc[i]["positive_error"])
                 except KeyError:
                     print(f"Did not find {i}")
 
@@ -437,6 +438,8 @@ def alread_run_externally(
     grb, result_yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
 ):
     if rank == 0:
+        if grb in ("GRB230818977"):
+            return True
         if not os.path.exists(result_yaml):
             return False
         with open(result_yaml, "r") as f:
@@ -467,13 +470,13 @@ if __name__ == "__main__":
     # energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
-        if not alread_run_externally(G):
+        if not alread_run_externally(f"GRB{G}"):
             G = f"GRB{G}"
             try:
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except (AlreadyRun, RuntimeError):
+            except (AlreadyRun, RuntimeError,TypeError,FileNotFoundError):
                 pass
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
