@@ -1,5 +1,43 @@
 #!/usr/bin/env python3
 
+from astropy.coordinates import SkyCoord
+from gbmgeometry.gbm_frame import GBMFrame
+from gbmgeometry.gbm import GBM
+from gbmgeometry.utils.gbm_time import GBMTime
+from astropy import units as u
+from gbmgeometry.position_interpolator import PositionInterpolator
+
+
+def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
+    assert type(grb_position) is SkyCoord, "grb_position has to be SkyCoord"
+    assert type(gbm) is GBM, "gbm_frame has to be GBM"
+    assert type(gbm_time) is GBMTime, "gbm_time has to be GBMTime"
+    assert (
+        type(interpolator) is PositionInterpolator
+    ), "interpolator has to be PositionInterpolator"
+    quats = interpolator.quaternion(gbm_time.met)
+    sc_pos = interpolator.sc_pos(gbm_time.met)
+    gbm_frame = GBMFrame(
+        quaternion_1=quats[0],
+        quaternion_2=quats[1],
+        quaternion_3=quats[2],
+        quaternion_4=quats[3],
+        sc_pos_X=sc_pos[0],
+        sc_pos_Y=sc_pos[1],
+        sc_pos_Z=sc_pos[2],
+    )
+    grb_position.transform_to(gbm_frame)
+    return_dict = {}
+    for det_name, det in gbm.detectors.items():
+        return_dict[det_name] = {}
+        return_dict[det_name]["lon"] = float(
+            grb_position.lon.deg - det.get_center().lon.deg
+        )
+        return_dict[det_name]["lat"] = float(
+            grb_position.lat.deg - det.get_center().lat.deg
+        )
+    return return_dict
+
 
 def detector_list():
     lu = [
