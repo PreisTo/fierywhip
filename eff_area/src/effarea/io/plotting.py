@@ -53,6 +53,7 @@ class Plots:
             # 2 lat
             # 3 norm
             # 4 error on norm
+            # TODO add det lon lat
             res[name_to_id(d)] = [[], [], [], [], []]
             # iterate over grbs
             for g in grbs:
@@ -62,27 +63,34 @@ class Plots:
                 for k in t:
                     # if det normalization exists for this grb
                     if f"cons_{d}" in rd[g][k].keys():
+                        lon = float(rd[g][k]["angles"][d]["lon"])
+                        lat = float(rd[g][k]["angles"][d]["lat"])
+                        if lon < 0:
+                            lon += 360
+                        elif lon >= 360:
+                            lon -= 360
+                        if lat < 0:
+                            lat += 180
+                        elif lat >= 180:
+                            lat -= 180
+
                         res[det_id][0].append(float(rd[g]["separations"][d]))
-                        res[det_id][1].append(float(rd[g][k]["angles"][d]["lon"]))
-                        res[det_id][2].append(float(rd[g][k]["angles"][d]["lat"]))
+                        res[det_id][1].append(lon)
+                        res[det_id][2].append(lat)
                         res[det_id][3].append(float(rd[g][k][f"cons_{d}"]))
                         res[det_id][4].append(
                             (
-                                deg2rad(
-                                    float(
-                                        rd[g][k]["confidence"][f"cons_{d}"][
-                                            "negative_error"
-                                        ]
-                                    )
+                                float(
+                                    rd[g][k]["confidence"][f"cons_{d}"][
+                                        "negative_error"
+                                    ]
                                 ),
-                                deg2rad(
-                                    float(
-                                        rd[g][k]["confidence"][f"cons_{d}"][
-                                            "positive_error"
-                                        ]
-                                    )
+                                float(
+                                    rd[g][k]["confidence"][f"cons_{d}"][
+                                        "positive_error"
+                                    ]
                                 ),
-                            )
+                            ),
                         )
         self._detector_lists = res
 
@@ -242,11 +250,11 @@ class Plots:
             fig.savefig(os.path.join(plot_path, f"{e_start}-{e_stop}.pdf"))
             plt.close(fig)
 
-    def detector_mollweide(self, vlims=(0.7, 1.3)):
+    def detector_polar_plot(self, vlims=(0.7, 1.3)):
         for i, det in enumerate(nai):
             d_lists = self._detector_lists[i]
             fig = plt.figure()
-            ax = fig.add_subplot(111, projection="hammer")
+            ax = fig.add_subplot(111, projection="polar")
             ax.grid(True)
             sc = ax.scatter(
                 d_lists[1][:],
@@ -256,6 +264,7 @@ class Plots:
                 vmax=vlims[1],
                 cmap="gnuplot",
             )
+            ax.set_ylim(0, 180)
             fig.colorbar(sc)
             try:
                 fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
@@ -263,6 +272,12 @@ class Plots:
                 os.makedirs(os.path.join(self._base_dir, "mollweide"))
                 fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
 
+            plt.close(fig)
+
 
 def deg2rad(deg):
     return deg / 180 * np.pi
+
+
+def rad2deg(rad):
+    return rad / np.pi * 180
