@@ -44,7 +44,7 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
             lat -= 180
         return_dict[det_name]["lon"] = lon
         return_dict[det_name]["lat"] = lat
-    return return_dict
+    return return_dict, use_dets
 
 
 def detector_list():
