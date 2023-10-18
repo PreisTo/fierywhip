@@ -367,11 +367,12 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
         for d in lu:
-            self.separations[d] = sep[d]
+            self.separations[d] = float(sep[d])
         self._use_dets = []
         self._angular_incident, self._use_dets = calc_angular_incident(
             self.grb_position, self.gbm, self._gbm_time, self.interpolator
         )
+        print(self._use_dets)
         if len(self._use_dets) < 3:
             raise RuntimeError("Too little number of dets seeing the burst")
 
