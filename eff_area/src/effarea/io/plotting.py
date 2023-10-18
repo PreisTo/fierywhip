@@ -35,12 +35,56 @@ class Plots:
         with open(self._yaml_path, "r") as f:
             self._result_dict = yaml.safe_load(f)
 
-        self._grbs = list(self._result_dict.keys())
-        self.detectors_array = np.empty(len(nai), dtype=dict)
-        self._energies = []
+        self._process_dict()
+        # self._grbs = list(self._result_dict.keys())
+        # self.detectors_array = np.empty(len(nai), dtype=dict)
+        # self._energies = []
 
-        for d, det in enumerate(nai):
-            self.detectors_array[d] = self._detector_array(det)
+        # for d, det in enumerate(nai):
+        #    self.detectors_array[d] = self._detector_array(det)
+
+    def _process_dict(self):
+        rd = self._result_dict
+        grbs = list(rd.keys())
+        res = np.empty(12, dtype=list)
+        for det_id, d in enumerate(nai):
+            # 0 separation
+            # 1 lon
+            # 2 lat
+            # 3 norm
+            # 4 error on norm
+            res[name_to_id(d)] = [[], [], [], [], []]
+            # iterate over grbs
+            for g in grbs:
+                t = list(rd[g].keys())
+                t.pop(t.index("separations"))
+                # iterate over energies without separations
+                for k in t:
+                    # if det normalization exists for this grb
+                    if f"cons_{d}" in rd[g][k].keys():
+                        res[det_id][0].append(float(rd[g]["separations"][d]))
+                        res[det_id][1].append(float(rd[g][k]["angles"][d]["lon"]))
+                        res[det_id][2].append(float(rd[g][k]["angles"][d]["lat"]))
+                        res[det_id][3].append(float(rd[g][k][f"cons_{d}"]))
+                        res[det_id][4].append(
+                            (
+                                deg2rad(
+                                    float(
+                                        rd[g][k]["confidence"][f"cons_{d}"][
+                                            "negative_error"
+                                        ]
+                                    )
+                                ),
+                                deg2rad(
+                                    float(
+                                        rd[g][k]["confidence"][f"cons_{d}"][
+                                            "positive_error"
+                                        ]
+                                    )
+                                ),
+                            )
+                        )
+        self._detector_lists = res
 
     def _detector_array(self, det):
         energies_dict = {}
@@ -48,7 +92,15 @@ class Plots:
             sep = self._result_dict[g]["separations"][det]
             for e in self._result_dict[g].keys():
                 if e != "separations":
-                    norm = self._result_dict[g][e][det]
+                    try:
+                        d = det
+                        norm = self._result_dict[g][e][d]
+                    except KeyError:
+                        try:
+                            d = f"cons_{det}"
+                            norm = self._result_dict[g][e][d]
+                        except KeyError:
+                            pass
                     if e not in energies_dict.keys():
                         energies_dict[e] = [[], []]
                         if e not in self._energies:
@@ -189,3 +241,28 @@ class Plots:
             fig.tight_layout()
             fig.savefig(os.path.join(plot_path, f"{e_start}-{e_stop}.pdf"))
             plt.close(fig)
+
+    def detector_mollweide(self, vlims=(0.7, 1.3)):
+        for i, det in enumerate(nai):
+            d_lists = self._detector_lists[i]
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection="hammer")
+            ax.grid(True)
+            sc = ax.scatter(
+                d_lists[1][:],
+                d_lists[2][:],
+                c=d_lists[3][:],
+                vmin=vlims[0],
+                vmax=vlims[1],
+                cmap="gnuplot",
+            )
+            fig.colorbar(sc)
+            try:
+                fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
+            except FileNotFoundError:
+                os.makedirs(os.path.join(self._base_dir, "mollweide"))
+                fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
+
+
+def deg2rad(deg):
+    return deg / 180 * np.pi
