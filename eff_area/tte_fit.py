@@ -481,12 +481,9 @@ if __name__ == "__main__":
     for G in GRBS:
         if not alread_run_externally(f"GRB{G}"):
             G = f"GRB{G}"
-            try:
-                GRB = FitTTE(G, fix_position=True)
-                GRB.fit()
-                GRB.save_results()
-            except (AlreadyRun, RuntimeError, TypeError):
-                pass
+            GRB = FitTTE(G, fix_position=True)
+            GRB.fit()
+            GRB.save_results()
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
