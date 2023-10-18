@@ -36,9 +36,9 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
             lon += 360
         elif lon >= 360:
             lon -= 360
-        if lat < -90:
+        if lat < 0:
             lat += 180
-        elif lat >= 90:
+        elif lat >= 180:
             lat -= 180
         return_dict[det_name]["lon"] = lon
         return_dict[det_name]["lat"] = lat
