@@ -43,14 +43,6 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
             grb_position.transform_to(gbm_frame).lat.deg
             - det.get_center().transform_to(gbm_frame).lat.deg
         )
-        if lon < 0:
-            lon += 360
-        elif lon >= 360:
-            lon -= 360
-        if lat < 0:
-            lat += 180
-        elif lat >= 180:
-            lat -= 180
         return_dict[det_name]["lon"] = lon
         return_dict[det_name]["lat"] = lat
     return return_dict, use_dets
