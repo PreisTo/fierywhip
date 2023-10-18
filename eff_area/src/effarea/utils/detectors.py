@@ -37,10 +37,11 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
         return_dict["grb"]["lat"] = float(grb_position.transform_to(gbm_frame).lat.deg)
         lon = float(
             grb_position.transform_to(gbm_frame).lon.deg
-            - det.get_center().transform_tolon.deg
+            - det.get_center().transform_to(gbm_frame).lon.deg
         )
         lat = float(
-            grb_position.transform_to(gbm_frame).lat.deg - det.get_center().lat.deg
+            grb_position.transform_to(gbm_frame).lat.deg
+            - det.get_center().transform_to(gbm_frame).lat.deg
         )
         if lon < 0:
             lon += 360
