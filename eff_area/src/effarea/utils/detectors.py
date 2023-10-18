@@ -30,12 +30,12 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
     return_dict = {}
     for det_name, det in gbm.detectors.items():
         return_dict[det_name] = {}
-        return_dict[det_name]["lon"] = float(
-            grb_position.lon.deg - det.get_center().lon.deg
-        )
-        return_dict[det_name]["lat"] = float(
-            grb_position.lat.deg - det.get_center().lat.deg
-        )
+        lon = float(grb_position.lon.deg - det.get_center().lon.deg)
+        lat = float(grb_position.lat.deg - det.get_center().lat.deg)
+        if lon < 0:
+            lon += 360
+        return_dict[det_name]["lon"] = lon
+        return_dict[det_name]["lat"] = lat
     return return_dict
 
 
