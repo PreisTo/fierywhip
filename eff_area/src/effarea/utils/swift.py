@@ -44,7 +44,12 @@ def check_swift(GRB, grb_time):
         if grb_time >= cd - timedelta(minutes=2) and grb_time <= cd + timedelta(
             minutes=2
         ):
-            swift_candidates.append([coinc.loc[coinc["Time [UT]"] == c],float((grb_time-cd).total_seconds())])
+            swift_candidates.append(
+                [
+                    coinc.loc[coinc["Time [UT]"] == c],
+                    float((grb_time - cd).total_seconds()),
+                ]
+            )
         else:
             print(cd)
             print(grb_time)
@@ -58,29 +63,27 @@ def check_swift(GRB, grb_time):
 
         sgd = list(swift_grb["Date"].keys())
         if len(sgd) == 0:
-            return None,None
+            return None, None
         print(f"This is sgd {sgd}")
-        if str(swift_grb["XRT RA (J2000)"][sgd[0]]) != "nan":
-            ra = swift_grb["XRT RA (J2000)"]
-            dec = swift_grb["XRT Dec (J2000)"]
+        # if str(swift_grb["XRT RA (J2000)"][sgd[0]]) != "nan":
+        #    ra = swift_grb["XRT RA (J2000)"]
+        #    dec = swift_grb["XRT Dec (J2000)"]
+        #    swift_position = SkyCoord(
+        #        ra=ra[sgd[0]],
+        #        dec=dec[sgd[0]],
+        #        unit=(u.hourangle, u.deg),
+        #    )
+        try:
+            print("Only BAT localization available")
+            ra = swift_grb["BAT RA (J2000)"]
+            dec = swift_grb["BAT Dec (J2000)"]
             swift_position = SkyCoord(
                 ra=ra[sgd[0]],
                 dec=dec[sgd[0]],
                 unit=(u.hourangle, u.deg),
             )
-        try: 
-            if np.isnan(float(swift_position.ra.deg)):
-                print("Only BAT localization available")
-                ra = swift_grb["BAT RA (J2000)"]
-                dec = swift_grb["BAT Dec (J2000)"]
-                swift_position = SkyCoord(
-                    ra=ra[sgd[0]],
-                    dec=dec[sgd[0]],
-                    unit=(u.hourangle, u.deg),
-                )
-            if np.isnan(float(swift_position.ra.deg)):
-                swift_position = None
-        except AttributeError:
-            swift_position = None
+        except Exception as e:
+            print(e)
+            return None, None
         print(swift_position)
         return swift_grb, swift_position
