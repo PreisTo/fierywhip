@@ -92,10 +92,8 @@ def check_swift(GRB, grb_time):
     csv = pd.read_csv(file_path, header=None, index_col=None, sep=" ")
     g = int(GRB.strip("GRB"))
     sel = csv[csv.iloc[:, 0] == g].index[0]
-    ra = str(csv.iloc[sel, 4])
-    dec = str(csv.iloc[sel, 5])
-    swift_position = SkyCoord(
-        ra=ra, dec=dec, unit=(u.hourangle, u.hourangle), frame="icrs"
-    )
+    ra = str(csv.iloc[sel, 5])
+    dec = str(csv.iloc[sel, 6])
+    swift_position = SkyCoord(ra=ra, dec=dec, unit=(u.hourangle, u.deg), frame="icrs")
     swift_grb = sel
     return swift_grb, swift_position
