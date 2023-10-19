@@ -97,3 +97,5 @@ def check_swift(GRB, grb_time):
     swift_position = SkyCoord(
         ra=ra, dec=dec, unit=(u.hourangle, u.hourangle), frame="icrs"
     )
+    swift_grb = sel
+    return swift_grb, swift_position
