@@ -82,8 +82,8 @@ class FitTTE:
             self._set_grb_time()
             self.download_files()
             self.get_swift()
-            self.timeselection()
             self.calc_separations()
+            self.timeselection()
             self.bkg_fitting()
             self._to_plugin()
             self._setup_model()
@@ -368,7 +368,6 @@ class FitTTE:
         self.separations = {}
         for d in lu:
             self.separations[d] = float(sep[d])
-        self._use_dets = []
         self._angular_incident, self._use_dets = calc_angular_incident(
             self.grb_position, self.gbm, self._gbm_time, self.interpolator
         )
