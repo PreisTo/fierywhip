@@ -89,11 +89,11 @@ def check_swift_old(GRB, grb_time):
 
 def check_swift(GRB, grb_time):
     file_path = pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis")
-    csv = pd.read_csv(file_path, header=False, sep=" ")
-    g = GRB.strip("GRB")
-    sel = csv.loc[g].copy()
-    ra = str(sel.iloc[4])
-    dec = str(sel.iloc[5])
+    csv = pd.read_csv(file_path, header=None, index_col=None, sep=" ")
+    g = int(GRB.strip("GRB"))
+    sel = csv[csv.iloc[:, 0] == g].index[0]
+    ra = str(csv.iloc[sel, 4])
+    dec = str(csv.iloc[sel, 5])
     swift_position = SkyCoord(
         ra=ra, dec=dec, unit=(u.hourangle, u.hourangle), frame="icrs"
     )
