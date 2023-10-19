@@ -373,7 +373,11 @@ class FitTTE:
             self.grb_position, self.gbm, self._gbm_time, self.interpolator
         )
         print(self._use_dets)
-        if len(self._use_dets) < 3:
+        counter = 0
+        for d in self._use_dets:
+            if d not in ("b0", "b1"):
+                counter += 1
+        if counter < 3:
             raise RuntimeError("Too little number of dets seeing the burst")
 
     def save_results(self):
