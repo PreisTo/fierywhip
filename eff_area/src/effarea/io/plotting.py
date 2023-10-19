@@ -16,7 +16,9 @@ class Plots:
     def __init__(self):
         return None
 
-    def from_result_yaml(self, yaml_path, base_dir=None):
+    def from_result_yaml(
+        self, yaml_path, base_dir=None, error_dependence=True, error_limit=0.025
+    ):
         """ """
         if base_dir is None:
             self._base_dir = os.path.join(
@@ -28,6 +30,8 @@ class Plots:
             self._base_dir = base_dir
 
         self._yaml_path = yaml_path
+        self._error_dependence = error_dependence
+        self._error_limit = error_limit
         if not os.path.exists(self._yaml_path):
             raise FileNotFoundError(
                 "you have to supply the path to the correct yaml file"
@@ -45,7 +49,8 @@ class Plots:
 
     def _process_dict(self):
         rd = self._result_dict
-        grbs = list(rd.keys())
+        self._grbs = list(rd.keys())
+        grbs = self._grbs
         res = np.empty(12, dtype=list)
         for det_id, d in enumerate(nai):
             # 0 separation
@@ -62,18 +67,17 @@ class Plots:
                 # iterate over energies without separations
                 for k in t:
                     # if det normalization exists for this grb
-                    if f"cons_{d}" in rd[g][k].keys():
+                    if f"cons_{d}" in rd[g][k].keys() and not self._error_dependence:
                         lon = float(rd[g][k]["angles"][d]["lon"])
                         lat = float(rd[g][k]["angles"][d]["lat"])
-                        if lon < 0:
+                        if lon < -180:
                             lon += 360
-                        elif lon >= 360:
+                        elif lon >= 180:
                             lon -= 360
-                        if lat < 0:
+                        if lat < -90:
                             lat += 180
-                        elif lat >= 180:
+                        elif lat >= 90:
                             lat -= 180
-
                         res[det_id][0].append(float(rd[g]["separations"][d]))
                         res[det_id][1].append(lon)
                         res[det_id][2].append(lat)
@@ -92,6 +96,44 @@ class Plots:
                                 ),
                             ),
                         )
+                    elif f"cons_{d}" in rd[g][k].keys() and self._error_dependence:
+                        conf = rd[g][k]["confidence"][f"cons_{d}"]
+                        neg = float(conf["negative_error"])
+                        pos = float(conf["positive_error"])
+                        error_condition = self._error_limit
+                        if (
+                            np.abs(neg) <= error_condition
+                            and np.abs(pos) <= error_condition
+                        ):
+                            lon = float(rd[g][k]["angles"][d]["lon"])
+                            lat = float(rd[g][k]["angles"][d]["lat"])
+                            if lon < -180:
+                                lon += 360
+                            elif lon >= 180:
+                                lon -= 360
+                            if lat < -90:
+                                lat += 180
+                            elif lat >= 90:
+                                lat -= 180
+                            res[det_id][0].append(float(rd[g]["separations"][d]))
+                            res[det_id][1].append(lon)
+                            res[det_id][2].append(lat)
+                            res[det_id][3].append(float(rd[g][k][f"cons_{d}"]))
+                            res[det_id][4].append(
+                                (
+                                    float(
+                                        rd[g][k]["confidence"][f"cons_{d}"][
+                                            "negative_error"
+                                        ]
+                                    ),
+                                    float(
+                                        rd[g][k]["confidence"][f"cons_{d}"][
+                                            "positive_error"
+                                        ]
+                                    ),
+                                ),
+                            )
+
         self._detector_lists = res
 
     def _detector_array(self, det):
@@ -251,28 +293,47 @@ class Plots:
             plt.close(fig)
 
     def detector_polar_plot(self, vlims=(0.7, 1.3)):
+        fig, axes = plt.subplots(
+            ncols=2, nrows=6, figsize=(10, 22)
+        )  # , subplot_kw={"projection": "hammer"})
+        axes = axes.flatten()
         for i, det in enumerate(nai):
             d_lists = self._detector_lists[i]
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection="polar")
-            ax.grid(True)
-            sc = ax.scatter(
+            axes[i].grid(False)
+            axes[i].set_title(f"{det} - grbs: {len(d_lists[1][:])}")
+
+            axes[i].spines["left"].set_position(("axes", 0.5))
+            axes[i].spines["bottom"].set_position(("axes", 0.5))
+            axes[i].spines[["top", "right"]].set_visible(False)
+            sc = axes[i].scatter(
                 d_lists[1][:],
                 d_lists[2][:],
                 c=d_lists[3][:],
                 vmin=vlims[0],
                 vmax=vlims[1],
-                cmap="gnuplot",
+                cmap="coolwarm",
             )
-            ax.set_ylim(0, 180)
-            fig.colorbar(sc)
-            try:
-                fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
-            except FileNotFoundError:
-                os.makedirs(os.path.join(self._base_dir, "mollweide"))
-                fig.savefig(os.path.join(self._base_dir, f"mollweide/{det}.pdf"))
+            circle = plt.Circle((0, 0), 60, fill=False, linestyle="--")
+            axes[i].add_patch(circle)
+            axes[i].set_ylim((-90, 90))
+            axes[i].set_xlim((-180, 180))
+        title = f"Normalizations in dependence of incidence angle for each detector\nfor a total of {len(self._grbs)}"
+        if self._error_dependence:
+            title += (
+                f" selecting only normalizations with an error <= {self._error_limit}\n"
+            )
+        fig.suptitle(title)
+        fig.tight_layout()
+        plt.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        fig.colorbar(sc, cax=cbar_ax)
+        try:
+            fig.savefig(os.path.join(self._base_dir, f"mollweide/test.pdf"))
+        except FileNotFoundError:
+            os.makedirs(os.path.join(self._base_dir, "mollweide"))
+            fig.savefig(os.path.join(self._base_dir, f"mollweide/test.pdf"))
 
-            plt.close(fig)
+        plt.close(fig)
 
 
 def deg2rad(deg):

@@ -26,22 +26,22 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
         sc_pos_Y=sc_pos[1],
         sc_pos_Z=sc_pos[2],
     )
-
-    use_dets = gbm.get_good_fov(grb_position, 60, fermi_frame=False)[1]
+    grb_position = grb_position.transform_to("icrs")
+    use_dets = gbm.get_good_detectors(grb_position, 60)
 
     return_dict = {}
-    for det_name, det in gbm.detectors.items():
+    for det_name in use_dets:
         return_dict[det_name] = {}
         return_dict["grb"] = {}
         return_dict["grb"]["lon"] = float(grb_position.transform_to(gbm_frame).lon.deg)
         return_dict["grb"]["lat"] = float(grb_position.transform_to(gbm_frame).lat.deg)
         lon = float(
             grb_position.transform_to(gbm_frame).lon.deg
-            - det.get_center().transform_to(gbm_frame).lon.deg
+            - gbm.detectors[det_name].get_center().transform_to(gbm_frame).lon.deg
         )
         lat = float(
             grb_position.transform_to(gbm_frame).lat.deg
-            - det.get_center().transform_to(gbm_frame).lat.deg
+            - gbm.detectors[det_name].get_center().transform_to(gbm_frame).lat.deg
         )
         return_dict[det_name]["lon"] = lon
         return_dict[det_name]["lat"] = lat
