@@ -78,9 +78,7 @@ def check_swift(GRB, grb_time):
             ra = swift_grb["BAT RA (J2000)"]
             dec = swift_grb["BAT Dec (J2000)"]
             swift_position = SkyCoord(
-                ra=ra[sgd[0]],
-                dec=dec[sgd[0]],
-                unit=(u.hourangle, u.deg),
+                ra=ra[sgd[0]], dec=dec[sgd[0]], unit=(u.hourangle, u.deg), frame="icrs"
             )
         except Exception as e:
             print(e)
