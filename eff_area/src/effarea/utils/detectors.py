@@ -26,9 +26,9 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
         sc_pos_Y=sc_pos[1],
         sc_pos_Z=sc_pos[2],
     )
-    grb_position = grb_position.transform_to("icrs")
+    # grb_position = grb_position.transform_to("icrs")
     use_dets = gbm.get_good_detectors(grb_position, 60)
-
+    print(gbm_time)
     return_dict = {}
     for det_name in use_dets:
         return_dict[det_name] = {}
