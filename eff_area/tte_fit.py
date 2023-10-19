@@ -465,7 +465,7 @@ def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.li
     csv_content = pd.read_csv(csv, sep=" ", index_col=False, header=None)
     # grbs = csv_content["name"].loc[csv_content["swift_ra"] != None]
     grbs = csv_content.iloc[:, 0].copy()
-    grbs = grbs.to_list()
+    grbs = list(map(str, grbs.to_list()))
     return grbs
 
 
@@ -478,6 +478,8 @@ if __name__ == "__main__":
     # energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
     GRBS = get_grbs()
     for G in GRBS:
+        if len(G) < 9:
+            G = "0" + G
         if not alread_run_externally(f"GRB{G}"):
             try:
                 G = f"GRB{G}"
@@ -486,7 +488,7 @@ if __name__ == "__main__":
                 GRB.save_results()
             except Exception as e:
                 print(f"GRB{G} failed")
-                with open("/data/tpreis/log_tte_fit.txt","a+") as f:
+                with open("/data/tpreis/log_tte_fit.txt", "a+") as f:
                     f.write(str(e))
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
