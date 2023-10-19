@@ -22,6 +22,7 @@ from threeML.io.plotting.post_process_data_plots import display_spectrum_model_c
 from astropy.stats import bayesian_blocks
 from threeML.plugins.OGIPLike import OGIPLike
 from threeML import *
+from threeML.minimizer.minimization import FitFailed
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
@@ -484,8 +485,10 @@ if __name__ == "__main__":
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except RuntimeError:
-                print(f"GRB{G} has too little dets seeing the burst")
+            except Exception as e:
+                print(f"GRB{G} failed")
+                with open("/data/tpreis/log_tte_fit.txt","a+") as f:
+                    f.write(str(e))
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
