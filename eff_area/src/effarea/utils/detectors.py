@@ -15,9 +15,9 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
     assert (
         type(interpolator) is PositionInterpolator
     ), "interpolator has to be PositionInterpolator"
-    interpolator.met(gbm_time.met)
-    quats = interpolator.quaternion(gbm_time.met)
-    sc_pos = interpolator.sc_pos(gbm_time.met)
+    gbm = GBM(interpolator.quaternion(0), sc_pos=interpolator.sc_pos(0))
+    quats = interpolator.quaternion(0)
+    sc_pos = interpolator.sc_pos(0)
     gbm_frame = GBMFrame(
         quaternion_1=quats[0],
         quaternion_2=quats[1],
@@ -28,24 +28,18 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
         sc_pos_Z=sc_pos[2],
     )
     # grb_position = grb_position.transform_to("icrs")
+    print(grb_position)
     use_dets = gbm.get_good_detectors(grb_position, 60)
-    print(gbm_time)
     return_dict = {}
     for det_name in use_dets:
         return_dict[det_name] = {}
         return_dict["grb"] = {}
+        return_dict["grb"]["ra"] = float(grb_position.transform_to("icrs").ra.deg)
+        return_dict["grb"]["dec"] = float(grb_position.transform_to("icrs").dec.deg)
         return_dict["grb"]["lon"] = float(grb_position.transform_to(gbm_frame).lon.deg)
         return_dict["grb"]["lat"] = float(grb_position.transform_to(gbm_frame).lat.deg)
-        lon = float(
-            float(grb_position.transform_to(gbm_frame).lon.deg)
-            - float(gbm.get_centers([det_name])[0].transform_to(gbm_frame).lon.deg)
-        )
-        lat = float(
-            float(grb_position.transform_to(gbm_frame).lat.deg)
-            - float(gbm.get_centers([det_name])[0].transform_to(gbm_frame).lat.deg)
-        )
-        return_dict[det_name]["lon"] = lon
-        return_dict[det_name]["lat"] = lat
+        return_dict[det_name]["lon"] = float(gbm.get_centers([det_name])[0].lon.deg)
+        return_dict[det_name]["lat"] = float(gbm.get_centers([det_name])[0].lat.deg)
     return return_dict, use_dets
 
 
