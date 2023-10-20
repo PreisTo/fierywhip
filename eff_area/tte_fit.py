@@ -490,10 +490,8 @@ if __name__ == "__main__":
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except Exception as e:
-                print(f"GRB{G} failed")
-                with open("/data/tpreis/log_tte_fit.txt", "a+") as f:
-                    f.write(str(e))
+            except (RuntimeError, FitFailed,IndexError) as e:
+                print(e)
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
