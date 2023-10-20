@@ -6,7 +6,7 @@ from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.gbm_time import GBMTime
 from astropy import units as u
 from gbmgeometry.position_interpolator import PositionInterpolator
-
+import numpy as np
 
 def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
     assert type(grb_position) is SkyCoord, "grb_position has to be SkyCoord"
