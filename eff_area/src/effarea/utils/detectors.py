@@ -15,9 +15,9 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
     assert (
         type(interpolator) is PositionInterpolator
     ), "interpolator has to be PositionInterpolator"
-    gbm = GBM(interpolator.quaternion(0), sc_pos=interpolator.sc_pos(0))
+    gbm = GBM(interpolator.quaternion(0), sc_pos=interpolator.sc_pos(0) * u.km)
     quats = interpolator.quaternion(0)
-    sc_pos = interpolator.sc_pos(0)
+    sc_pos = interpolator.sc_pos(0) * u.km
     gbm_frame = GBMFrame(
         quaternion_1=quats[0],
         quaternion_2=quats[1],
