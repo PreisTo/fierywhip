@@ -353,17 +353,25 @@ class FitTTE:
             self.grb.strip("GRB")[:-3],
             f"glg_poshist_all_{self.grb.strip('GRB')[:-3]}_v00.fit",
         )
+        trigdat = os.path.join(
+            os.environ.get("GBMDATA"),
+            "trigdat",
+            f"20{self.grb.strip('GRB')[0:2]}",
+            f"glg_tridat_all_bn{self.grb.strip('GRB')}_v00.fit",
+        )
         if not os.path.exists(poshist):
             download_gbm_file(date=self.grb.strip("GRB")[:-3], data_type="poshist")
             print("Done downloading poshist")
-        self.interpolator = PositionInterpolator.from_poshist(poshist)
-
+        if not os.path.exists(trigdat):
+            download_trigdata_file(f"bn{self.grb.strip('GRB')}")
+        # self.interpolator = PositionInterpolator.from_poshist(poshist)
+        self.interpolator = PositionInterpolator.from_trigdat(trigdat)
         t0 = time.Time(self.grb_time, format="datetime", scale="utc")
         gbm_time = GBMTime(t0)
         self._gbm_time = gbm_time
         self.gbm = GBM(
-            self.interpolator.quaternion(gbm_time.met),
-            sc_pos=self.interpolator.sc_pos(gbm_time.met) * u.km,
+            self.interpolator.quaternion(0),
+            sc_pos=self.interpolator.sc_pos(0) * u.km,
         )
         sep = self.gbm.get_separation(self.grb_position)
         self.separations = {}
