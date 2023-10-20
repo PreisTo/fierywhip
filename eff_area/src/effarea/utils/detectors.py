@@ -29,7 +29,16 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator):
     )
     # grb_position = grb_position.transform_to("icrs")
     print(grb_position)
-    use_dets = gbm.get_good_detectors(grb_position, 60)
+    b = grb_position.transform_to(gbm_frame)
+    use_dets = gbm.get_good_fov(grb_position, 60, fermi_frame=False)[1]
+    to_pop_indices = []
+    for i, d in enumerate(use_dets):
+        d_c = gbm.detectors[d].center.transform_to(gbm_frame)
+        lon_diff = b.lon.deg - d_c.lon.deg
+        lat_diff = b.lat.deg - d_c.lat.deg
+        if np.abs(lon_diff) > 60 or np.abs(lat_diff) > 60:
+            to_pop_indices.append(i)
+    use_dets.pop(to_pop_indices)
     return_dict = {}
     for det_name in use_dets:
         return_dict[det_name] = {}
