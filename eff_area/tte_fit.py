@@ -357,7 +357,7 @@ class FitTTE:
             os.environ.get("GBMDATA"),
             "trigdat",
             f"20{self.grb.strip('GRB')[0:2]}",
-            f"glg_tridat_all_bn{self.grb.strip('GRB')}_v00.fit",
+            f"glg_trigdat_all_bn{self.grb.strip('GRB')}_v00.fit",
         )
         if not os.path.exists(poshist):
             download_gbm_file(date=self.grb.strip("GRB")[:-3], data_type="poshist")
