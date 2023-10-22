@@ -125,6 +125,13 @@ class FitTTE:
         tsbb = TimeSelectionBB(self.grb, trigdat, fine=True)
         self.trigdat = trigdat
         self.tsbb = tsbb
+        highest_sig = self.tsbb.detector_selection
+        side_0 = ["b0", "n0", "n1", "n2", "n3", "n4", "n5"]
+        side_1 = ["b1", "n6", "n7", "n8", "n9", "na", "nb"]
+        if highest_sig[0] in side_0:
+            self._use_dets = side_0
+        else:
+            self._use_dets = side_1
 
     def get_swift(self):
         """ """
@@ -498,7 +505,7 @@ if __name__ == "__main__":
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except (RuntimeError, FitFailed,IndexError) as e:
+            except (RuntimeError, FitFailed, IndexError) as e:
                 print(e)
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
