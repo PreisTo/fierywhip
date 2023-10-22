@@ -7,6 +7,8 @@ import yaml
 from effarea.utils.detectors import detector_list, nai_list, name_to_id
 import math
 import os
+import matplotlib
+import matplotlib.cm as cm
 
 lu = detector_list()
 nai = nai_list()
@@ -299,7 +301,7 @@ class Plots:
 
     def detector_polar_plot(self, vlims=(0.7, 1.3)):
         fig, axes = plt.subplots(
-            ncols=2, nrows=6, figsize=(10, 22)
+            ncols=2, nrows=6, figsize=(10, 22), sharex=True, sharey=True
         )  # , subplot_kw={"projection": "hammer"})
         axes = axes.flatten()
         for i, det in enumerate(nai):
@@ -307,26 +309,33 @@ class Plots:
             axes[i].grid(False)
             axes[i].set_title(f"{det} - grbs: {len(d_lists[1][:])}")
 
-            axes[i].spines["left"].set_position(("axes", 0.5))
-            axes[i].spines["bottom"].set_position(("axes", 0.5))
-            axes[i].spines[["top", "right"]].set_visible(False)
+            # axes[i].spines["left"].set_position(("axes", 0.5))
+            # axes[i].spines["bottom"].set_position(("axes", 0.5))
+            # axes[i].spines[["top", "right"]].set_visible(False)
             sc = axes[i].scatter(
+                list(map(rad2deg, d_lists[2][:])),
                 d_lists[1][:],
-                d_lists[2][:],
                 c=d_lists[3][:],
                 vmin=vlims[0],
                 vmax=vlims[1],
                 cmap="coolwarm",
             )
-            circle = plt.Circle((0, 0), 60, fill=False, linestyle="--")
-            axes[i].add_patch(circle)
-            axes[i].set_ylim((-90, 90))
-            axes[i].set_xlim((-180, 180))
-        title = f"Normalizations in dependence of incidence angle for each detector\nfor a total of {len(self._grbs)}"
+            # circle = plt.Circle((0, 0), 60, fill=False, linestyle="--")
+            # axes[i].add_patch(circle)
+            axes[i].set_xlim(-180, 180)
+            axes[i].set_ylim(0, 70)
+        title = f"Normalizations in dependence of incidence angle for each detector\nfor a total of {len(self._grbs)} with at least 3 selected NaI dets\n"
         if self._error_dependence:
             title += (
                 f" selecting only normalizations with an error <= {self._error_limit}\n"
             )
+        axes[-2].set_xlabel("Polar Angle [deg]")
+        axes[-2].set_ylabel("Offset Angle [deg]")
+        for top_ax in (0, 1):
+            axes[top_ax].set_xlabel("Polar Angle [deg]")
+            axes[top_ax].xaxis.set_label_position("top")
+            axes[top_ax].set_ylabel("Offset Angle [deg]")
+            axes[top_ax].tick_params(top=True, labeltop=True, labelbottom=False)
         fig.suptitle(title)
         fig.tight_layout()
         plt.subplots_adjust(right=0.8)
@@ -339,6 +348,74 @@ class Plots:
             fig.savefig(os.path.join(self._base_dir, f"mollweide/test.pdf"))
 
         plt.close(fig)
+
+    def error_plot_3d(self, vlims=(0.7, 1.3)):
+        fig, axes = plt.subplots(
+            ncols=2, nrows=6, figsize=(10, 22), subplot_kw={"projection": "3d"}
+        )
+        fig1, dummy = plt.subplots(1)
+        axes = axes.flatten()
+
+        # setting up a parametric curve
+        for i, det in enumerate(nai):
+            d_lists = self._detector_lists[i]
+            axes[i].grid(False)
+            axes[i].set_title(f"{det} - grbs: {len(d_lists[1][:])}")
+            # axes[i].spines["left"].set_position(("axes", 0.5))
+            # axes[i].spines["bottom"].set_position(("axes", 0.5))
+            # axes[i].spines[["top", "right"]].set_visible(False)
+            if len(d_lists[1][:]) > 0:
+                zlo = d_lists[4][:]
+                zup = d_lists[5][:]
+
+                sc = dummy.scatter(
+                    list(map(rad2deg, d_lists[2])),
+                    d_lists[1],
+                    c=d_lists[3],
+                    vmin=vlims[0],
+                    vmax=vlims[1],
+                    cmap="coolwarm",
+                )
+                norm = matplotlib.colors.Normalize(
+                    vmin=vlims[0], vmax=vlims[1], clip=True
+                )
+                mapper = cm.ScalarMappable(norm=norm, cmap="coolwarm")
+                val_color = np.array([(mapper.to_rgba(v)) for v in d_lists[3]])
+                for x, y, z, zl, zu, color in zip(
+                    list(map(rad2deg, d_lists[2])),
+                    d_lists[1],
+                    d_lists[3],
+                    zlo,
+                    zup,
+                    val_color,
+                ):
+                    axes[i].errorbar(
+                        x,
+                        y,
+                        z,
+                        zerr=[zl, zu],
+                        c=color,
+                        marker="*",
+                        capsize=3,
+                        barsabove=True,
+                        linestyle="none",
+                        errorevery=1,
+                    )
+            else:
+                pass
+            axes[i].set_xlim(-180, 180)
+            axes[i].set_ylim(0, 70)
+            axes[i].set_zlim(0.7, 1.3)
+
+        fig.tight_layout()
+        fig.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        fig.colorbar(sc, cax=cbar_ax)
+        try:
+            fig.savefig(os.path.join(self._base_dir, "error_3d", "test.pdf"))
+        except FileNotFoundError:
+            os.makedirs(os.path.join(self._base_dir, "error_3d"))
+            fig.savefig(os.path.join(self._base_dir, "error_3d", "test.pdf"))
 
 
 def deg2rad(deg):
