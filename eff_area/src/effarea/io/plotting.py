@@ -59,7 +59,7 @@ class Plots:
             # 3 norm
             # 4 error on norm
             # TODO add det lon lat
-            res[name_to_id(d)] = [[], [], [], [], []]
+            res[name_to_id(d)] = [[], [], [], [], [], []]
             # iterate over grbs
             for g in grbs:
                 t = list(rd[g].keys())
@@ -68,32 +68,31 @@ class Plots:
                 for k in t:
                     # if det normalization exists for this grb
                     if f"cons_{d}" in rd[g][k].keys() and not self._error_dependence:
-                        lon = float(rd[g][k]["angles"][d]["lon"])
-                        lat = float(rd[g][k]["angles"][d]["lat"])
-                        if lon < -180:
-                            lon += 360
-                        elif lon >= 180:
-                            lon -= 360
+                        lon_det = float(rd[g][k]["angles"][d]["lon"])
+                        lat_det = float(rd[g][k]["angles"][d]["lat"])
+                        lon_grb = float(rd[g][k]["angles"]["grb"]["lon"])
+                        lat_grb = float(rd[g][k]["angles"]["grb"]["lat"])
+
+                        lon = lon_grb - lon_det
+                        lat = lat_grb - lat_det
                         if lat < -90:
                             lat += 180
                         elif lat >= 90:
                             lat -= 180
+                        if lon < -180:
+                            lon += 180
+                        elif lon >= 180:
+                            lon -= 180
                         res[det_id][0].append(float(rd[g]["separations"][d]))
                         res[det_id][1].append(lon)
                         res[det_id][2].append(lat)
                         res[det_id][3].append(float(rd[g][k][f"cons_{d}"]))
                         res[det_id][4].append(
-                            (
-                                float(
-                                    rd[g][k]["confidence"][f"cons_{d}"][
-                                        "negative_error"
-                                    ]
-                                ),
-                                float(
-                                    rd[g][k]["confidence"][f"cons_{d}"][
-                                        "positive_error"
-                                    ]
-                                ),
+                            float(rd[g][k]["confidence"][f"cons_{d}"]["negative_error"])
+                        )
+                        res[det_id][5].append(
+                            float(
+                                rd[g][k]["confidence"][f"cons_{d}"]["positive_error"]
                             ),
                         )
                     elif f"cons_{d}" in rd[g][k].keys() and self._error_dependence:
@@ -105,35 +104,41 @@ class Plots:
                             np.abs(neg) <= error_condition
                             and np.abs(pos) <= error_condition
                         ):
-                            lon = float(rd[g][k]["angles"][d]["lon"])
-                            lat = float(rd[g][k]["angles"][d]["lat"])
-                            if lon < -180:
-                                lon += 360
-                            elif lon >= 180:
-                                lon -= 360
+                            lon_det = float(rd[g][k]["angles"][d]["lon"])
+                            lat_det = float(rd[g][k]["angles"][d]["lat"])
+                            lon_grb = float(rd[g][k]["angles"]["grb"]["lon"])
+                            lat_grb = float(rd[g][k]["angles"]["grb"]["lat"])
+
+                            lon = lon_grb - lon_det
+                            lat = lat_grb - lat_det
                             if lat < -90:
                                 lat += 180
                             elif lat >= 90:
                                 lat -= 180
+                            if lon < -180:
+                                lon += 180
+                            elif lon >= 180:
+                                lon -= 180
+                            sep = np.sqrt(lon**2 + lat**2)
+                            az = np.arctan2(lat, lon)
                             res[det_id][0].append(float(rd[g]["separations"][d]))
-                            res[det_id][1].append(lon)
-                            res[det_id][2].append(lat)
+                            res[det_id][1].append(sep)
+                            res[det_id][2].append(az)
                             res[det_id][3].append(float(rd[g][k][f"cons_{d}"]))
                             res[det_id][4].append(
-                                (
-                                    float(
-                                        rd[g][k]["confidence"][f"cons_{d}"][
-                                            "negative_error"
-                                        ]
-                                    ),
-                                    float(
-                                        rd[g][k]["confidence"][f"cons_{d}"][
-                                            "positive_error"
-                                        ]
-                                    ),
+                                float(
+                                    rd[g][k]["confidence"][f"cons_{d}"][
+                                        "negative_error"
+                                    ]
+                                )
+                            )
+                            res[det_id][5].append(
+                                float(
+                                    rd[g][k]["confidence"][f"cons_{d}"][
+                                        "positive_error"
+                                    ]
                                 ),
                             )
-
         self._detector_lists = res
 
     def _detector_array(self, det):
