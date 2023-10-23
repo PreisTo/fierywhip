@@ -126,7 +126,7 @@ class FitTTE:
         self.trigdat = trigdat
         self.tsbb = tsbb
         highest_sig = self.tsbb.detector_selection
-        highest_sig_temp = [highest_sig[i:i+2] for i in range(0,5,2)]
+        highest_sig_temp = [highest_sig[i : i + 2] for i in range(0, 5, 2)]
         highest_sig = highest_sig_temp
         side_0 = ["b0", "n0", "n1", "n2", "n3", "n4", "n5"]
         side_1 = ["b1", "n6", "n7", "n8", "n9", "na", "nb"]
@@ -389,7 +389,11 @@ class FitTTE:
         for d in lu:
             self.separations[d] = float(sep[d])
         self._angular_incident, self._use_dets = calc_angular_incident(
-            self.grb_position, self.gbm, self._gbm_time, self.interpolator,self._use_dets
+            self.grb_position,
+            self.gbm,
+            self._gbm_time,
+            self.interpolator,
+            self._use_dets,
         )
         print(self._use_dets)
         counter = 0
@@ -499,18 +503,26 @@ if __name__ == "__main__":
     # tot_bins = np.geomspace(bin_start, bin_stop)
     # bins = np.array_split(tot_bins, num_selections)
     # energy_list = [f"{i[0]}-{i[-1]}" for i in bins]
-    GRBS = get_grbs()
+    GRBS = None
+    if rank == 0:
+        GRBS = get_grbs()
+    GRBS = comm.bcast(GRBS, root=0)
+
     for G in GRBS:
         if len(G) < 9:
-            G = "0" + G
+            if rank == 0:
+                G = "0" + G
+            G = comm.bcast(G, root=0)
         if not alread_run_externally(f"GRB{G}"):
             try:
                 G = f"GRB{G}"
-                GRB = FitTTE(G, fix_position=True)
+                GRB = FitTTE(G, fix_position=false)
                 GRB.fit()
                 GRB.save_results()
-            except (TypeError,RuntimeError, FitFailed, IndexError) as e:
+            except (TypeError, RuntimeError, FitFailed, IndexError) as e:
                 print(e)
+            comm.Barrier()
+
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
