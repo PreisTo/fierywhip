@@ -77,14 +77,14 @@ class FitTTE:
             len(energy_range.split("-")) == 2
         ), "energy_range must consist of two floats separated by a -, e.g 8.1-700"
         self.energy_range = energy_range
-
+        print(f"Running {self.grb}")
         self._base_dir = os.path.join(os.environ.get("GBMDATA"), "localizing")
         if not self._already_run_check():
             self._set_grb_time()
             self.download_files()
             self.get_swift()
-            self.calc_separations()
             self.timeselection()
+            self.calc_separations()
             self.bkg_fitting()
             self._to_plugin()
             self._setup_model()
@@ -126,12 +126,16 @@ class FitTTE:
         self.trigdat = trigdat
         self.tsbb = tsbb
         highest_sig = self.tsbb.detector_selection
+        highest_sig_temp = [highest_sig[i:i+2] for i in range(0,5,2)]
+        highest_sig = highest_sig_temp
         side_0 = ["b0", "n0", "n1", "n2", "n3", "n4", "n5"]
         side_1 = ["b1", "n6", "n7", "n8", "n9", "na", "nb"]
         if highest_sig[0] in side_0:
             self._use_dets = side_0
-        else:
+        elif highest_sig[0] in side_1:
             self._use_dets = side_1
+        else:
+            print(highest_sig)
 
     def get_swift(self):
         """ """
@@ -385,7 +389,7 @@ class FitTTE:
         for d in lu:
             self.separations[d] = float(sep[d])
         self._angular_incident, self._use_dets = calc_angular_incident(
-            self.grb_position, self.gbm, self._gbm_time, self.interpolator
+            self.grb_position, self.gbm, self._gbm_time, self.interpolator,self._use_dets
         )
         print(self._use_dets)
         counter = 0
@@ -505,7 +509,7 @@ if __name__ == "__main__":
                 GRB = FitTTE(G, fix_position=True)
                 GRB.fit()
                 GRB.save_results()
-            except (RuntimeError, FitFailed, IndexError) as e:
+            except (TypeError,RuntimeError, FitFailed, IndexError) as e:
                 print(e)
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
