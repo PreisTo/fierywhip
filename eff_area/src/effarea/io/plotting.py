@@ -417,6 +417,11 @@ class Plots:
             os.makedirs(os.path.join(self._base_dir, "error_3d"))
             fig.savefig(os.path.join(self._base_dir, "error_3d", "test.pdf"))
 
+    def create_all(self, yaml="/home/tobi/Schreibtisch/results_test2.yml"):
+        self.from_result_yaml(yaml, error_dependence=True, error_limit=0.2)
+        self.detector_polar_plot()
+        self.error_plot_3d()
+
 
 def deg2rad(deg):
     return deg / 180 * np.pi
