@@ -36,11 +36,6 @@ from effarea.utils.detectors import calc_angular_incident
 from effarea.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 import pkg_resources
-import h5py
-import dill
-import h5pickle
-
-MPI.pickle.__init__(dill.dumps, dill.loads)
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -268,9 +263,12 @@ class FitTTE:
         band.beta.set_uninformative_prior(Uniform_prior)
 
         spectrum = Cutoff_powerlaw_Ep()
-        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
-        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=1)
-        spectrum.xp.prior = Log_uniform_prior(lower_bound=100, upper_bound=10000)
+        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=100)
+        spectrum.K.value = 1
+        spectrum.index.value = -4
+        spectrum.xp.value = 1e3
+        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
+        spectrum.xp.prior = Log_uniform_prior(lower_bound=1, upper_bound=10000)
 
         self._model = Model(
             PointSource(
@@ -523,6 +521,7 @@ if __name__ == "__main__":
             G = f"GRB{G}"
             print(f"{G} on rank {rank}")
             GRB = FitTTE(G, fix_position=False)
+            comm.Barrier()
             GRB.fit()
             GRB.save_results()
             comm.Barrier()
