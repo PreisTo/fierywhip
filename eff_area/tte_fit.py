@@ -231,7 +231,7 @@ class FitTTE:
                 swift_position=self.grb_position,
             )
             if fix_correction is None:
-                if d not in ("b0", "b1"):
+                if d not in ("b0", "b1", "n0", "n6"):
                     bl.use_effective_area_correction(0.7, 1.3)
                 else:
                     bl.fix_effective_area_correction(1)
@@ -265,11 +265,11 @@ class FitTTE:
         band.beta.set_uninformative_prior(Uniform_prior)
 
         spectrum = Cutoff_powerlaw_Ep()
-        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=100)
+        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1000)
         spectrum.K.value = 1
         spectrum.index.value = -4
-        spectrum.xp.value = 1e3
-        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
+        spectrum.xp.value = 500
+        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=0)
         spectrum.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
