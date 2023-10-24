@@ -26,6 +26,7 @@ from threeML.minimizer.minimization import FitFailed
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
+from effarea.io.balrog_like_add import BALROGLikePositionPrior
 import os
 from mpi4py import MPI
 import numpy as np
@@ -222,11 +223,12 @@ class FitTTE:
         balrog_likes = []
         print(f"We are going to use {self._use_dets}")
         for i, d in enumerate(self._use_dets):
-            bl = BALROGLike.from_spectrumlike(
+            bl = BALROGLikePositionPrior.from_spectrumlike(
                 spectrum_likes[i],
                 response_time,
                 self._responses[d],
                 free_position=free_position,
+                swift_position=self.grb_position,
             )
             if fix_correction is None:
                 if d not in ("b0", "b1"):
@@ -268,7 +270,7 @@ class FitTTE:
         spectrum.index.value = -4
         spectrum.xp.value = 1e3
         spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
-        spectrum.xp.prior = Log_uniform_prior(lower_bound=1, upper_bound=10000)
+        spectrum.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
             PointSource(
