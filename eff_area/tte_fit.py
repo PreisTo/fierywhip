@@ -36,6 +36,11 @@ from effarea.utils.detectors import calc_angular_incident
 from effarea.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 import pkg_resources
+import h5py
+import dill
+import h5pickle
+
+MPI.pickle.__init__(dill.dumps, dill.loads)
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -83,7 +88,7 @@ class FitTTE:
             self._set_grb_time()
             self.download_files()
             self.get_swift()
-            self.timeselection()
+            self.tsbb, self._use_dets, self.trigdat = self.timeselection()
             self.calc_separations()
             self.bkg_fitting()
             self._to_plugin()
@@ -123,19 +128,18 @@ class FitTTE:
         trigdat = download_trigdata_file(f"bn{self.grb.strip('GRB')}")
 
         tsbb = TimeSelectionBB(self.grb, trigdat, fine=True)
-        self.trigdat = trigdat
-        self.tsbb = tsbb
-        highest_sig = self.tsbb.detector_selection
+        highest_sig = tsbb.detector_selection
         highest_sig_temp = [highest_sig[i : i + 2] for i in range(0, 5, 2)]
         highest_sig = highest_sig_temp
         side_0 = ["b0", "n0", "n1", "n2", "n3", "n4", "n5"]
         side_1 = ["b1", "n6", "n7", "n8", "n9", "na", "nb"]
         if highest_sig[0] in side_0:
-            self._use_dets = side_0
+            use_dets = side_0
         elif highest_sig[0] in side_1:
-            self._use_dets = side_1
+            use_dets = side_1
         else:
             print(highest_sig)
+        return tsbb, use_dets, trigdat
 
     def get_swift(self):
         """ """
@@ -157,7 +161,6 @@ class FitTTE:
         print("Fitting the Background for TTE")
         temp_timeseries = {}
         temp_responses = {}
-
         for d in self._use_dets:
             print(f"Calculating Response for {d}")
             response = BALROG_DRM(
@@ -170,7 +173,6 @@ class FitTTE:
                 self.grb_position.ra,
                 self.grb_position.dec,
             )
-            temp_responses[d] = response
             tte_file = GBMTTEFile(self.tte_files[d])
             event_list = EventListWithDeadTime(
                 arrival_times=tte_file.arrival_times - tte_file.trigger_time,
@@ -198,6 +200,9 @@ class FitTTE:
             )
             ts.set_active_time_interval(self.tsbb.active_time)
             temp_timeseries[d] = ts
+
+            temp_responses[d] = response
+            # skip_cache = True by default
         self._timeseries = temp_timeseries
         self._responses = temp_responses
 
@@ -429,6 +434,7 @@ class FitTTE:
             for fp in self.results.optimized_model.free_parameters.keys():
                 temp[fp] = float(self.results.optimized_model.free_parameters[fp].value)
             temp["confidence"] = {}
+
             print(df)
             for i in df.index:
                 print(f"Index {i}")
@@ -514,13 +520,11 @@ if __name__ == "__main__":
                 G = "0" + G
             G = comm.bcast(G, root=0)
         if not alread_run_externally(f"GRB{G}"):
-            try:
-                G = f"GRB{G}"
-                GRB = FitTTE(G, fix_position=false)
-                GRB.fit()
-                GRB.save_results()
-            except (TypeError, RuntimeError, FitFailed, IndexError) as e:
-                print(e)
+            G = f"GRB{G}"
+            print(f"{G} on rank {rank}")
+            GRB = FitTTE(G, fix_position=False)
+            GRB.fit()
+            GRB.save_results()
             comm.Barrier()
 
             #    for energy in energy_list:
