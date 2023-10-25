@@ -85,7 +85,9 @@ class FitTTE:
             self.download_files()
             self.get_swift()
             self.tsbb, self._use_dets, self.trigdat = self.timeselection()
-            self.calc_separations()
+            self._normalizing_det = self.calc_separations()
+            if self._normalizing_det is None:
+                raise (AlreadyRun(f"No Normalizing Detector available for {self.grb}"))
             self.bkg_fitting()
             self._to_plugin()
             self._setup_model()
@@ -232,7 +234,7 @@ class FitTTE:
                     swift_position=self.grb_position,
                 )
             else:
-                 bl = BALROGLike.from_spectrumlike(
+                bl = BALROGLike.from_spectrumlike(
                     spectrum_likes[i],
                     response_time,
                     self._responses[d],
@@ -306,7 +308,10 @@ class FitTTE:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=1000, chain_name=chain_path, wrapped_params=wrap, verbose=False
+            n_live_points=1000,
+            chain_name=chain_path,
+            wrapped_params=wrap,
+            verbose=False,
         )
         self._bayes.sample()
         self.results = self._bayes.results
@@ -392,6 +397,14 @@ class FitTTE:
             sc_pos=self.interpolator.sc_pos(0) * u.km,
         )
         sep = self.gbm.get_separation(self.grb_position)
+        if "n0" in self._use_dets:
+            normalizing_det = "n0"
+        elif "n6" in self._use_dets:
+            normalizing_det = "n6"
+        normalizing_det = sep[normalizing_det]
+        if normalizing_det_separation > 30:
+            normalizing_det = None
+
         self.separations = {}
         for d in lu:
             self.separations[d] = float(sep[d])
@@ -409,6 +422,7 @@ class FitTTE:
                 counter += 1
         if counter < 3:
             raise RuntimeError("Too little number of dets seeing the burst")
+        return normlizing_det
 
     def save_results(self):
         if rank == 0:
@@ -481,7 +495,7 @@ def alread_run_externally(
     grb, result_yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
 ):
     if rank == 0:
-        if grb in ("GRB230818977","GRB230812790"):
+        if grb in ("GRB230818977", "GRB230812790"):
             return True
         if not os.path.exists(result_yaml):
             return False
