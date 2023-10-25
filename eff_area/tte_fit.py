@@ -223,16 +223,24 @@ class FitTTE:
         balrog_likes = []
         print(f"We are going to use {self._use_dets}")
         for i, d in enumerate(self._use_dets):
-            bl = BALROGLikePositionPrior.from_spectrumlike(
-                spectrum_likes[i],
-                response_time,
-                self._responses[d],
-                free_position=free_position,
-                swift_position=self.grb_position,
-            )
+            if free_position:
+                bl = BALROGLikePositionPrior.from_spectrumlike(
+                    spectrum_likes[i],
+                    response_time,
+                    self._responses[d],
+                    free_position=free_position,
+                    swift_position=self.grb_position,
+                )
+            else:
+                 bl = BALROGLike.from_spectrumlike(
+                    spectrum_likes[i],
+                    response_time,
+                    self._responses[d],
+                    free_position=free_position,
+                )
             if fix_correction is None:
                 if d not in ("b0", "b1", "n0", "n6"):
-                    bl.use_effective_area_correction(0.7, 1.3)
+                    bl.use_effective_area_correction(0.5, 1.5)
                 else:
                     bl.fix_effective_area_correction(1)
             else:
@@ -258,18 +266,12 @@ class FitTTE:
 
     def _setup_model(self):
         print("Setting up the model for the fit")
-        band = Band()
-        band.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1200)
-        band.alpha.set_uninformative_prior(Uniform_prior)
-        band.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=1e4)
-        band.beta.set_uninformative_prior(Uniform_prior)
-
         spectrum = Cutoff_powerlaw_Ep()
         spectrum.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1000)
         spectrum.K.value = 1
-        spectrum.index.value = -4
+        spectrum.index.value = -1
         spectrum.xp.value = 500
-        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=0)
+        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
         spectrum.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
@@ -304,7 +306,7 @@ class FitTTE:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
+            n_live_points=1000, chain_name=chain_path, wrapped_params=wrap, verbose=False
         )
         self._bayes.sample()
         self.results = self._bayes.results
@@ -479,7 +481,7 @@ def alread_run_externally(
     grb, result_yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
 ):
     if rank == 0:
-        if grb in ("GRB230818977"):
+        if grb in ("GRB230818977","GRB230812790"):
             return True
         if not os.path.exists(result_yaml):
             return False
@@ -522,12 +524,19 @@ if __name__ == "__main__":
         if not alread_run_externally(f"GRB{G}"):
             G = f"GRB{G}"
             print(f"{G} on rank {rank}")
-            GRB = FitTTE(G, fix_position=False)
-            comm.Barrier()
-            GRB.fit()
-            GRB.save_results()
-            comm.Barrier()
-
+            try:
+                GRB = FitTTE(G, fix_position=True)
+                failed = False
+            except FitFailed as e:
+                print(e)
+                comm.Call_errhandler(1)
+                failed = True
+            if not failed:
+                comm.Barrier()
+                GRB.fit()
+                comm.Barrier()
+                GRB.save_results()
+                comm.Barrier()
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
