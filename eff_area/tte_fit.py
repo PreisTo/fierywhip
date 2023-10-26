@@ -139,9 +139,10 @@ class FitTTE:
                 possible = {}
                 for d, s in seps.items():
                     if s <= 60:
-                        possible[s] = d
-                res = list(sorted(possible).values()[:3])
-                if sep["b0"] <= sep["b1"]:
+                        possible[d] = s
+                res = dict(sorted(possible.items(), key=lambda item: item[1]))
+                res = list(res.keys())[:3]
+                if seps["b0"] <= seps["b1"]:
                     res.append("b0")
                 else:
                     res.append("b1")
@@ -297,7 +298,7 @@ class FitTTE:
                     free_position=free_position,
                 )
             if fix_correction is None:
-                if d not in ("b0", "b1", "n0", "n6"):
+                if d not in ("b0", "b1",self._normalizing_det):
                     bl.use_effective_area_correction(0.5, 1.5)
                 else:
                     bl.fix_effective_area_correction(1)
@@ -453,12 +454,14 @@ class FitTTE:
             sc_pos=self.interpolator.sc_pos(0) * u.km,
         )
         sep = self.gbm.get_separation(self.grb_position)
-        if "n0" in self._use_dets:
-            normalizing_det = "n0"
-        elif "n6" in self._use_dets:
-            normalizing_det = "n6"
+        temp = 180
+        normalizing_det = ""
+        for d,s in sep.items():
+            if s < temp:
+                temp = s
+                normalizing_det = d
         normalizing_det_separation = sep[normalizing_det]
-        if normalizing_det_separation > 30:
+        if normalizing_det_separation > 20:
             normalizing_det = None
 
         self.separations = {}
