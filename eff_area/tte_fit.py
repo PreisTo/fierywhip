@@ -98,7 +98,7 @@ class FitTTE:
             raise AlreadyRun
 
     def check_normalizing_det(self):
-        grb = self.grb
+        grb = self.grb.strip("GRB")
         if len(grb) == 9:
             g = f"GRB{grb}"
             bn = f"bn{grb}"
