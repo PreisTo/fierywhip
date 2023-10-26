@@ -84,6 +84,9 @@ class FitTTE:
             self._set_grb_time()
             self.download_files()
             self.get_swift()
+            runable = self.check_normalizing_det()
+            if not runable:
+                raise (AlreadyRun("n0 and n6 have a too high separation"))
             self.tsbb, self._use_dets, self.trigdat = self.timeselection()
             self._normalizing_det = self.calc_separations()
             if self._normalizing_det is None:
@@ -93,6 +96,41 @@ class FitTTE:
             self._setup_model()
         else:
             raise AlreadyRun
+
+    def check_normalizing_det(self):
+        grb = self.grb
+        if len(grb) == 9:
+            g = f"GRB{grb}"
+            bn = f"bn{grb}"
+            year = int(f"20{grb[:2]}")
+            month = int(grb[2:4])
+            day = int(grb[4:6])
+            frac = int(grb[6:])
+        else:
+            g = f"GRB0{grb}"
+            bn = f"bn0{grb}"
+            year = int(f"200{grb[0]}")
+            month = int(grb[1:3])
+            day = int(grb[3:5])
+            frac = int(grb[5:])
+        try:
+            trigdat = os.path.join(
+                os.environ.get("GBMDATA"),
+                "trigdat",
+                str(year),
+                f"glg_trigdat_all_{bn}_v00.fit",
+            )
+            pi = PositionInterpolator.from_trigdat(trigdat)
+            gbm = GBM(pi.quaternion(0), pi.sc_pos(0))
+            seps = gbm.get_separation(self.grb_position)
+            if seps["n0"] <= 30:
+                return True
+            elif seps["n6"] <= 30:
+                return True
+            else:
+                return False
+        except FileNotFoundError:
+            return False
 
     def set_energy_range(self, energy_range, optimized_model=None):
         self.energy_range = energy_range
@@ -545,7 +583,7 @@ if __name__ == "__main__":
                 comm.Barrier()
                 GRB.save_results()
                 comm.Barrier()
-            except (FitFailed,AlreadyRun,IndexError,RuntimeError,TypeError) as e:
+            except (FitFailed, AlreadyRun, IndexError, RuntimeError, TypeError) as e:
                 print(e)
                 comm.Call_errhandler(1)
 
