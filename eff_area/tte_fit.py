@@ -136,7 +136,11 @@ class FitTTE:
                 for d, s in seps.items():
                     if s <= 60:
                         possible[s] = d
-                res = sorted(possible)[:3]
+                res = list(sorted(possible).values()[:3])
+                if sep["b0"] <= sep["b1"]:
+                    res.append("b0")
+                else:
+                    res.append("b1")
                 self._use_dets = res
                 return True
         except FileNotFoundError:
