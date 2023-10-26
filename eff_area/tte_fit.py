@@ -129,7 +129,10 @@ class FitTTE:
                 return True
             else:
                 return False"""
-            smaller_60 = np.array(seps.values()) <= 60
+            smaller_60 = []
+            for d, s in seps.items():
+                if s <= 60:
+                    smaller_60.append(d)
             if len(smaller_60) < 3:
                 return False
             else:
