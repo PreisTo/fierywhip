@@ -85,6 +85,10 @@ class Plots:
                             lon += 180
                         elif lon >= 180:
                             lon -= 180
+
+                        sep = np.sqrt(lon**2 + lat**2)
+                        az = np.arctan2(lat, lon)
+
                         res[det_id][0].append(float(rd[g]["separations"][d]))
                         res[det_id][1].append(lon)
                         res[det_id][2].append(lat)
@@ -123,6 +127,10 @@ class Plots:
                                 lon -= 180
                             sep = np.sqrt(lon**2 + lat**2)
                             az = np.arctan2(lat, lon)
+                            if az < 0:
+                                az += 360
+                            elif az >= 360:
+                                az -= 360
                             res[det_id][0].append(float(rd[g]["separations"][d]))
                             res[det_id][1].append(sep)
                             res[det_id][2].append(az)
@@ -299,10 +307,16 @@ class Plots:
             fig.savefig(os.path.join(plot_path, f"{e_start}-{e_stop}.pdf"))
             plt.close(fig)
 
-    def detector_polar_plot(self, vlims=(0.7, 1.3)):
+    def detector_polar_plot(self, vlims=(0.5, 1.5)):
+        plt.style.use("dark_background")
         fig, axes = plt.subplots(
-            ncols=2, nrows=6, figsize=(10, 22), sharex=True, sharey=True
-        )  # , subplot_kw={"projection": "hammer"})
+            ncols=2,
+            nrows=6,
+            figsize=(10, 22),
+            sharex=True,
+            sharey=True,
+            subplot_kw={"projection": "polar"},
+        )
         axes = axes.flatten()
         for i, det in enumerate(nai):
             d_lists = self._detector_lists[i]
@@ -318,12 +332,10 @@ class Plots:
                 c=d_lists[3][:],
                 vmin=vlims[0],
                 vmax=vlims[1],
-                cmap="coolwarm",
+                cmap="bwr",
             )
-            # circle = plt.Circle((0, 0), 60, fill=False, linestyle="--")
-            # axes[i].add_patch(circle)
-            axes[i].set_xlim(-180, 180)
-            axes[i].set_ylim(0, 70)
+            axes[i].grid()
+            axes[i].set_ylim(0, 180)
         title = f"Normalizations in dependence of incidence angle for each detector\nfor a total of {len(self._grbs)} with at least 3 selected NaI dets\n"
         if self._error_dependence:
             title += (
@@ -331,11 +343,11 @@ class Plots:
             )
         axes[-2].set_xlabel("Polar Angle [deg]")
         axes[-2].set_ylabel("Offset Angle [deg]")
-        for top_ax in (0, 1):
-            axes[top_ax].set_xlabel("Polar Angle [deg]")
-            axes[top_ax].xaxis.set_label_position("top")
-            axes[top_ax].set_ylabel("Offset Angle [deg]")
-            axes[top_ax].tick_params(top=True, labeltop=True, labelbottom=False)
+        # for top_ax in (0, 1):
+        # axes[top_ax].set_xlabel("Polar Angle [deg]")
+        # axes[top_ax].xaxis.set_label_position("top")
+        # axes[top_ax].set_ylabel("Offset Angle [deg]")
+        # axes[top_ax].tick_params(top=True, labeltop=True, labelbottom=False)
         fig.suptitle(title)
         fig.tight_layout()
         plt.subplots_adjust(right=0.8)
@@ -349,7 +361,7 @@ class Plots:
 
         plt.close(fig)
 
-    def error_plot_3d(self, vlims=(0.7, 1.3)):
+    def error_plot_3d(self, vlims=(0.5, 1.5)):
         fig, axes = plt.subplots(
             ncols=2, nrows=6, figsize=(10, 22), subplot_kw={"projection": "3d"}
         )
@@ -369,7 +381,7 @@ class Plots:
                 zup = d_lists[5][:]
 
                 sc = dummy.scatter(
-                    list(map(rad2deg, d_lists[2])),
+                    list(map(wrap_deg, d_lists[2])),
                     d_lists[1],
                     c=d_lists[3],
                     vmin=vlims[0],
@@ -382,7 +394,7 @@ class Plots:
                 mapper = cm.ScalarMappable(norm=norm, cmap="coolwarm")
                 val_color = np.array([(mapper.to_rgba(v)) for v in d_lists[3]])
                 for x, y, z, zl, zu, color in zip(
-                    list(map(rad2deg, d_lists[2])),
+                    list(map(wrap_deg, d_lists[2])),
                     d_lists[1],
                     d_lists[3],
                     zlo,
