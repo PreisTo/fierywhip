@@ -430,9 +430,33 @@ class Plots:
             fig.savefig(os.path.join(self._base_dir, "error_3d", "test.pdf"))
 
     def create_all(self, yaml="/home/tobi/Schreibtisch/results_test2.yml"):
-        self.from_result_yaml(yaml, error_dependence=True, error_limit=0.2)
+        self.from_result_yaml(yaml, error_dependence=True, error_limit=1)
         self.detector_polar_plot()
-        self.error_plot_3d()
+        for d in nai:
+            self.detector_statistics(d)
+
+    #        self.error_plot_3d()
+
+    def detector_statistics(self, det, max_sep=60):
+        det_id = name_to_id(det)
+        if det not in ("n0", "n6"):
+            dlist = self._detector_lists[det_id]
+            vals = np.array(dlist[3])
+            errors = (np.array(dlist[4]), np.array(dlist[5]))
+            seps = np.array(dlist[1])
+            mask = seps <= max_sep
+            vals = vals[mask]
+            bins = np.linspace(0.5, 1.5, endpoint=True)
+            fig, ax = plt.subplots(1)
+            ax.hist(vals, bins=bins)
+            fig.savefig(os.path.join(self._base_dir, f"{det}_hist.pdf"))
+            if len(vals) > 0:
+                print(
+                    f"Analysis for det {det}\nA total of {len(vals)} burst were selected with an seaparation of max {max_sep}deg"
+                )
+                print(f"Mean:\t{np.mean(vals)}")
+                print(f"1 sigma:\t{np.std(vals)}")
+                print("\n\n")
 
 
 def deg2rad(deg):
@@ -441,3 +465,9 @@ def deg2rad(deg):
 
 def rad2deg(rad):
     return rad / np.pi * 180
+
+
+def wrap_deg(deg):
+    if deg >= 180:
+        deg -= 360
+    return deg
