@@ -269,11 +269,11 @@ class FitTTE:
     def _setup_model(self):
         print("Setting up the model for the fit")
         spectrum = Cutoff_powerlaw_Ep()
-        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1000)
+        spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
         spectrum.K.value = 1
-        spectrum.index.value = -1
+        spectrum.index.value = -3
         spectrum.xp.value = 500
-        spectrum.index.prior = Uniform_prior(lower_bound=-10, upper_bound=10)
+        spectrum.index.prior = Uniform_prior(lower_bound=-8, upper_bound=0)
         spectrum.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
@@ -308,10 +308,10 @@ class FitTTE:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=1000,
+            n_live_points=800,
             chain_name=chain_path,
             wrapped_params=wrap,
-            verbose=False,
+            verbose=True,
         )
         self._bayes.sample()
         self.results = self._bayes.results
@@ -401,7 +401,7 @@ class FitTTE:
             normalizing_det = "n0"
         elif "n6" in self._use_dets:
             normalizing_det = "n6"
-        normalizing_det = sep[normalizing_det]
+        normalizing_det_separation = sep[normalizing_det]
         if normalizing_det_separation > 30:
             normalizing_det = None
 
@@ -422,7 +422,7 @@ class FitTTE:
                 counter += 1
         if counter < 3:
             raise RuntimeError("Too little number of dets seeing the burst")
-        return normlizing_det
+        return normalizing_det
 
     def save_results(self):
         if rank == 0:
@@ -540,17 +540,15 @@ if __name__ == "__main__":
             print(f"{G} on rank {rank}")
             try:
                 GRB = FitTTE(G, fix_position=True)
-                failed = False
-            except FitFailed as e:
-                print(e)
-                comm.Call_errhandler(1)
-                failed = True
-            if not failed:
                 comm.Barrier()
                 GRB.fit()
                 comm.Barrier()
                 GRB.save_results()
                 comm.Barrier()
+            except (FitFailed,AlreadyRun,IndexError,RuntimeError,TypeError) as e:
+                print(e)
+                comm.Call_errhandler(1)
+
             #    for energy in energy_list:
             #        GRB.set_energy_range(energy)
             # except (ZeroDivisionError, AlreadyRun) as e:
