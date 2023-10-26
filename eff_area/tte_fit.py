@@ -129,7 +129,8 @@ class FitTTE:
                 return True
             else:
                 return False"""
-            if len(np.array(seps.values()) <= 60) < 3:
+            smaller_60 = np.array(seps.values()) <= 60
+            if len(smaller_60) < 3:
                 return False
             else:
                 possible = {}
