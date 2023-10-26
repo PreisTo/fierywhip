@@ -87,7 +87,7 @@ class FitTTE:
             runable = self.check_normalizing_det()
             if not runable:
                 raise (AlreadyRun("n0 and n6 have a too high separation"))
-            self.tsbb, self._use_dets, self.trigdat = self.timeselection()
+            self.tsbb, temp_the_tempitemp, self.trigdat = self.timeselection()
             self._normalizing_det = self.calc_separations()
             if self._normalizing_det is None:
                 raise (AlreadyRun(f"No Normalizing Detector available for {self.grb}"))
@@ -123,12 +123,22 @@ class FitTTE:
             pi = PositionInterpolator.from_trigdat(trigdat)
             gbm = GBM(pi.quaternion(0), pi.sc_pos(0))
             seps = gbm.get_separation(self.grb_position)
-            if seps["n0"] <= 30:
+            """if seps["n0"] <= 30:
                 return True
             elif seps["n6"] <= 30:
                 return True
             else:
+                return False"""
+            if len(np.array(seps.values()) <= 60) < 3:
                 return False
+            else:
+                possible = {}
+                for d, s in seps.items():
+                    if s <= 60:
+                        possible[s] = d
+                res = sorted(possible)[:3]
+                self._use_dets = res
+                return True
         except FileNotFoundError:
             return False
 
@@ -310,9 +320,9 @@ class FitTTE:
         spectrum.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
         spectrum.K.value = 1
         spectrum.index.value = -3
-        spectrum.xp.value = 500
-        spectrum.index.prior = Uniform_prior(lower_bound=-8, upper_bound=0)
-        spectrum.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
+        spectrum.xp.value = 200
+        spectrum.index.prior = Uniform_prior(lower_bound=-3, upper_bound=1)
+        spectrum.xp.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
             PointSource(
