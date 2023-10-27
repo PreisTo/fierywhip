@@ -10,6 +10,13 @@ from gbmgeometry.utils.gbm_time import GBMTime
 import os
 from gbmbkgpy.io.downloading import download_trigdata_file
 from urllib.error import URLError
+import yaml
+from mpi4py import MPI
+from effarea.detectors.detectors import DetectorSelection, DetectorSelectionError
+
+comm = MPI.COMM_WORLD
+size = comm.Get_size()
+rank = comm.Get_rank()
 
 
 class GRBList:
