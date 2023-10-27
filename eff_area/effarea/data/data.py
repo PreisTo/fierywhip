@@ -101,12 +101,25 @@ class GRB:
         return self._trigdat
 
     def _get_trigdat_path(self):
-        path = os.path.join(
+        trigdat_path = os.path.join(
             os.environ.get("GBMDATA"),
-            "trigdat",
-            str(self._time.year),
+            "trigdat/",
+            f"20{self._name.strip('GRB')[:2]}",
             f"glg_trigdat_all_bn{self._name.strip('GRB')}_v00.fit",
         )
-        if not os.path.exists(path):
-            download_trigdata_file(f"bn{self._name.strip('GRB')}")
-        self._trigdat = path
+        if not os.path.exists(trigdat_path):
+            try:
+                download_trigdata_file(f"bn{self._name.strip('GRB')}")
+            except (TypeError, URLError):
+                raise GRBInitError
+        if os.path.exists(trigdat_path):
+            self._trigdat = trigdat_path
+        else:
+            raise GRBInitError
+
+    def _create_output_dict(self):
+        raise NotImplementedError
+
+
+class GRBInitError(Exception):
+    pass
