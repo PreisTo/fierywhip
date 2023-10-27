@@ -38,7 +38,16 @@ class DetectorSelection:
         self._set_normalizing_det()
 
     def _set_good_dets(self):
-        self._good_dets = self._gbm.get_good_detectors(self.grb.position, self._max_sep)
+        temp = self._gbm.get_good_detectors(self.grb.position, self._max_sep)
+        det_counter = 0
+        good_dets = []
+        for d in temp:
+            if d not in ("b0", "b1"):
+                det_counter += 1
+                good_dets.append(d)
+        if det_counter < 3:
+            raise DetectorSelectionError("Too litle NaI dets")
+        self._good_dets = good_dets
 
     def _set_normalizing_det(self):
         self._separations = {}
