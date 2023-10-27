@@ -8,11 +8,13 @@ import pandas as pd
 from datetime import datetime, timedelta
 from gbmgeometry.utils.gbm_time import GBMTime
 import os
+from effarea.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file
 from urllib.error import URLError
 import yaml
 from mpi4py import MPI
 from effarea.detectors.detectors import DetectorSelection, DetectorSelectionError
+from morgoth.auto_loc.time_selection import TimeSelectionBB
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -36,8 +38,7 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        # TODO Remove before flight
-        for j, i in table.iloc[0:100].iterrows():
+        for j, i in table.iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
@@ -122,6 +123,7 @@ class GRB:
             self._get_detector_selection()
         except DetectorSelectionError:
             raise GRBInitError
+        self.download_files()
 
     @property
     def position(self):
@@ -173,6 +175,31 @@ class GRB:
         """
         return self._detector_selection
 
+    @property
+    def active_time(self):
+        """
+        :returns: string with start/stop time of trigger
+        """
+        return self._active_time
+
+    @property
+    def bkg_time(self):
+        """
+        :returns: list with bkg neg and bkg pos start/stop time
+        """
+        return self._bkg_time
+
+    def download_files(self):
+        """
+        Downloading TTE and CSPEC files from FTP
+        """
+        print("Downloading TTE and CSPEC files")
+        self.tte_files = {}
+        self.cspec_files = {}
+        for d in self.detector_selection:
+            self.tte_files[d] = download_tte_file(self._name, d)
+            self.cspec_files[d] = download_cspec_file(self._name, d)
+
     def _get_trigdat_path(self):
         """
         sets path to trigdat file
@@ -202,6 +229,14 @@ class GRB:
             self, max_sep=max_sep, max_sep_normalizing=max_sep_normalizing
         )
 
+    def run_timeselection(self):
+        """
+        Timeselection for GRB using morogth auto_loc timeselection
+        """
+        tsbb = TimeSelectionBB(self._trigdat, self._name, fine=True)
+        self._active_time = tsbb.active_time
+        self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+
 
 class GRBInitError(Exception):
     """
@@ -211,4 +246,4 @@ class GRBInitError(Exception):
     def __init__(self, message=None):
         if message is None:
             message = "Failed to initialize GRB Object"
-        super(self).__init__(message)
+        super().__init__(message)
