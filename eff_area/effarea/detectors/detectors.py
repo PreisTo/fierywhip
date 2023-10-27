@@ -31,6 +31,7 @@ class DetectorSelection:
         self._max_numer_nai = max_number_nai
         self._set_position_interpolator()
         self._set_gbm()
+        self._set_gbm_frame()
         self._seps = self.gbm.get_separation(self.grb.position)
         self._set_good_dets()
         self._set_normalizing_det()
@@ -114,13 +115,17 @@ class DetectorSelection:
         return self._position_interpolator
 
     @property
+    def normalizing_det(self):
+        return self._normalizing_det
+
+    @property
     def good_dets(self):
         return self._good_dets
 
-    def _create_ouput_dict(self):
+    def _create_output_dict(self):
         return_dict = {}
         return_dict["grb"] = {}
-        return_dict["gbr"]["lon"] = float(
+        return_dict["grb"]["lon"] = float(
             self.grb.position.transform_to(self._gbm_frame).lon.deg
         )
         return_dict["grb"]["lat"] = float(
@@ -130,9 +135,14 @@ class DetectorSelection:
         return_dict["grb"]["dec"] = float(self.grb.position.dec.deg)
         return_dict["separation"] = {}
         for d in self._good_dets:
+            try:
+                return_dict[d]["lon"] = None
+            except KeyError:
+                return_dict[d] = {}
             return_dict[d]["lon"] = float(self._gbm.get_centers([d])[0].lon.deg)
             return_dict[d]["lat"] = float(self._gbm.get_centers([d])[0].lat.deg)
-        self._ouput_dict = return_dict
+            return_dict["separation"][d] = float(self._seps[d])
+        return return_dict
 
 
 class DetectorSelectionError(Exception):
