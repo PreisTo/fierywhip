@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from gbmgeometry.utils.gbm_time import GBMTime
 import os
 from gbmbkgpy.io.downloading import download_trigdata_file
+from urllib.error import URLError
 
 
 class GRBList:
@@ -31,8 +32,16 @@ class GRBList:
                 name = f"GRB0{name}"
             else:
                 name = f"GRB{name}"
-            grb = GRB(name, ra, dec, ra_dec_units)
-            self._grbs.append(grb)
+            try:
+                grb = GRB(name, ra, dec, ra_dec_units)
+                self._grbs.append(grb)
+            except GRBInitError:
+                pass
+
+    def _check_already_run(
+        self, path=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
+    ):
+        pass
 
     @property
     def grbs(self):
