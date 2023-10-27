@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: effarea
+Version: 0.0.1
+Summary: Test continuity of effective area correction of Fermi/GBM
+Author-email: Tobi Preis <tpreis@mpe.mpg.de>
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+
+# TODOs
+
+- get list of Swift - Fermi triggers (check if coinciding)
+- leave effective area correction free
+- save results to table

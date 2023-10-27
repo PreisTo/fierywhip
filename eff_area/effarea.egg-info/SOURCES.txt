@@ -1,0 +1,17 @@
+MANIFEST.in
+README.md
+pyproject.toml
+effarea/__init__.py
+effarea/run_eff.py
+effarea.egg-info/PKG-INFO
+effarea.egg-info/SOURCES.txt
+effarea.egg-info/dependency_links.txt
+effarea.egg-info/top_level.txt
+effarea/data/__init__.py
+effarea/data/data.py
+effarea/io/__init__.py
+effarea/io/balrog_like_add.py
+effarea/io/downloading.py
+effarea/io/plotting.py
+effarea/utils/detectors.py
+effarea/utils/swift.py
