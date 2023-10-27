@@ -1,10 +1,9 @@
 #!/usr/bin/python
-
-from effarea.data.data import GRB
+from gbmgeometry.gbm import GBM
 from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.gbm_frame import GBMFrame
-from gbmgeometry.gbm import GBM
 import astropy.units as u
+import numpy as np
 
 lu = [
     "n0",
@@ -25,15 +24,14 @@ lu = [
 
 
 class DetectorSelection:
-    def __init__(self, grb, max_sep=60, max_sep_normalizing=20):
-        assert isinstance(
-            grb, GRB
-        ), f"grb needs to be an GRB object but is of typpe {type(grb)}"
+    def __init__(self, grb, max_sep=60, max_sep_normalizing=20, max_number_nai=3):
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
+        self._max_numer_nai = max_number_nai
         self._set_position_interpolator()
         self._set_gbm()
+        self._seps = self.gbm.get_separation(self.grb.position)
         self._set_good_dets()
         self._set_normalizing_det()
 
@@ -45,17 +43,27 @@ class DetectorSelection:
             if d not in ("b0", "b1"):
                 det_counter += 1
                 good_dets.append(d)
-        if det_counter < 3:
+        if det_counter < self._max_numer_nai:
             raise DetectorSelectionError("Too litle NaI dets")
+        elif det_counter > self._max_numer_nai:
+            temp = np.zeros(det_counter)
+            i = 0
+            for d in good_dets:
+                temp[i] = self._seps[d]
+            good_dets_new = []
+            counter = 0
+            for el in temp.argsort():
+                if counter < self._max_numer_nai:
+                    good_dets_new.append(good_dets[el])
+                counter += 1
+            good_dets = good_dets_new
         self._good_dets = good_dets
 
     def _set_normalizing_det(self):
-        self._separations = {}
-        seps = self.gbm.get_separation(self.grb.position)
+        seps = self._seps
         min_sep = 180
         min_sep_det = ""
         for d in self._good_dets:
-            self._separations[d] = seps[d]
             if seps[d] < 180:
                 min_sep = seps[d]
                 min_sep_det = d
@@ -104,6 +112,10 @@ class DetectorSelection:
     @property
     def position_interpolator(self):
         return self._position_interpolator
+
+    @property
+    def good_dets(self):
+        return self._good_dets
 
     def _create_ouput_dict(self):
         return_dict = {}
