@@ -40,15 +40,29 @@ class GRBList:
             else:
                 name = f"GRB{name}"
             try:
-                grb = GRB(name, ra, dec, ra_dec_units)
-                self._grbs.append(grb)
+                if not self._check_already_run(name):
+                    grb = GRB(name, ra, dec, ra_dec_units)
+                    self._grbs.append(grb)
             except GRBInitError:
                 pass
 
     def _check_already_run(
-        self, path=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
+        self,
+        name,
+        path=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml"),
     ):
-        pass
+        if rank == 0:
+            if os.path.exists(path):
+                with open(path, "r") as f:
+                    already_run_dict = yaml.safe_load(f)
+                if name in already_run_dict.keys():
+                    ret = True
+                else:
+                    ret = False
+            else:
+                ret = False
+        ret = comm.bcast(ret, root=0)
+        return ret
 
     @property
     def grbs(self):
