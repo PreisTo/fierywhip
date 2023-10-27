@@ -64,6 +64,10 @@ class DetectorSelection:
             raise DetectorSelectionError
         else:
             self._normalizing_det = min_sep_det
+        if seps["b0"] <= seps["b1"]:
+            self._good_dets.append("b0")
+        else:
+            self._good_dets.append("b1")
 
     def _set_position_interpolator(self):
         self._position_interpolator = PositionInterpolator.from_trigdat(
@@ -116,6 +120,7 @@ class DetectorSelection:
         for d in self._good_dets:
             return_dict[d]["lon"] = float(self._gbm.get_centers([d])[0].lon.deg)
             return_dict[d]["lat"] = float(self._gbm.get_centers([d])[0].lat.deg)
+        self._ouput_dict = return_dict
 
 
 class DetectorSelectionError(Exception):
