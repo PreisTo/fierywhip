@@ -89,3 +89,26 @@ class DetectorSelection:
     @property
     def position_interpolator(self):
         return self._position_interpolator
+
+    def _create_ouput_dict(self):
+        return_dict = {}
+        return_dict["grb"] = {}
+        return_dict["gbr"]["lon"] = float(
+            self.grb.position.transform_to(self._gbm_frame).lon.deg
+        )
+        return_dict["grb"]["lat"] = float(
+            self.grb.position.transform_to(self._gbm_frame).lat.deg
+        )
+        return_dict["grb"]["ra"] = float(self.grb.position.ra.deg)
+        return_dict["grb"]["dec"] = float(self.grb.position.dec.deg)
+        return_dict["separation"] = {}
+        for d in self._good_dets:
+            return_dict[d]["lon"] = float(self._gbm.get_centers([d])[0].lon.deg)
+            return_dict[d]["lat"] = float(self._gbm.get_centers([d])[0].lat.deg)
+
+
+class DetectorSelectionError(Exception):
+    def __init__(self, message=None):
+        if message is None:
+            message = "Failed to select detectors"
+        super().__init__(message)
