@@ -29,8 +29,8 @@ class GRBList:
         swift_list=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis"),
     ):
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-
-        for j, i in table.iterrows():
+        # TODO Remove before flight
+        for j, i in table.iloc[0:100].iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
