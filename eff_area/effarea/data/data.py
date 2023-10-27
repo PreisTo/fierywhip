@@ -20,6 +20,10 @@ rank = comm.Get_rank()
 
 
 class GRBList:
+    """
+    Class to load GRB positions and times from all different sources
+    """
+
     def __init__(self):
         self._grbs = []
         self._load_swift_bursts()
@@ -28,6 +32,9 @@ class GRBList:
         self,
         swift_list=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis"),
     ):
+        """
+        Loads Fermi-Swift burst provided in package resources
+        """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
         # TODO Remove before flight
         for j, i in table.iloc[0:100].iterrows():
@@ -51,6 +58,11 @@ class GRBList:
         name,
         path=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml"),
     ):
+        """
+        Check if GRB is already in result file, if so skip it
+        :param name: grb name as string
+        :param path: path like to result file
+        """
         if rank == 0:
             if os.path.exists(path):
                 with open(path, "r") as f:
@@ -66,11 +78,22 @@ class GRBList:
 
     @property
     def grbs(self):
+        """
+        :returns: list with grb objects
+        """
         return self._grbs
 
 
 class GRB:
     def __init__(self, name, ra, dec, ra_dec_units=None, grb_time=None):
+        """
+        :param name: name of grb - needs to be like GRB231223001
+        :param ra: ra of grb
+        :param dec: dec of grb
+        :param ra_dec_units: units of ra and dec as list like - astropy.units
+        :param grb_time: optional datetime object of grb_time
+
+        """
         self._name = name
         self._ra_icrs = ra
         self._dec_icrs = dec
@@ -102,34 +125,58 @@ class GRB:
 
     @property
     def position(self):
+        """
+        :returns: SkyCoord of GRB
+        """
         return self._position
 
     def name(self):
+        """
+        :returns: str of grb name like GRB231223001
+        """
         return self._name
 
     @property
     def time(self):
+        """
+        :returns: datetime of grb time
+        """
         return self._time
 
     @property
     def time_astropy(self):
+        """
+        :returns: astropy.time.Time object of grb time
+        """
         astro_time = time.Time(self._time, format="datetime", scale="utc")
         return astro_time
 
     @property
     def time_gbm(self):
+        """
+        :returns: gbmgeometry.utils.gbm_time.GBMtime object of grb time
+        """
         gbm_time = GBMTime(self.time_astropy)
         return gbm_time
 
     @property
     def trigdat(self):
+        """
+        :returns: path to trigdat file
+        """
         return self._trigdat
 
     @property
     def detector_selection(self):
+        """
+        :returns: DetectorSelection object for this grb
+        """
         return self._detector_selection
 
     def _get_trigdat_path(self):
+        """
+        sets path to trigdat file
+        """
         trigdat_path = os.path.join(
             os.environ.get("GBMDATA"),
             "trigdat/",
@@ -147,10 +194,21 @@ class GRB:
             raise GRBInitError
 
     def _get_detector_selection(self, max_sep=60, max_sep_normalizing=20):
+        """
+        :param max_sep: max separation of center from det in deg
+        :param max_sep_normalization: max sep of center for det used as normalization
+        """
         self._detector_selection = DetectorSelection(
-            self, max_sep=60, max_sep_normalizing=max_sep_normalizing
+            self, max_sep=max_sep, max_sep_normalizing=max_sep_normalizing
         )
 
 
 class GRBInitError(Exception):
-    pass
+    """
+    Error in Initializing the GRB Object
+    """
+
+    def __init__(self, message=None):
+        if message is None:
+            message = "Failed to initialize GRB Object"
+        super(self).__init__(message)
