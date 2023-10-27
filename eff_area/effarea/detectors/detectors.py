@@ -26,7 +26,9 @@ lu = [
 
 class DetectorSelection:
     def __init__(self, grb, max_sep=60, max_sep_normalizing=20):
-        assert type(grb) is GRB, "grb needs to be an GRB object"
+        assert isinstance(
+            grb, GRB
+        ), f"grb needs to be an GRB object but is of typpe {type(grb)}"
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
