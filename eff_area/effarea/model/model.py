@@ -16,6 +16,18 @@ from threeML.plugins.OGIPLike import OGIPLike
 from threeML import *
 from threeML.minimizer.minimization import FitFailed
 import os
+from gbm_drm_gen.io.balrog_like import BALROGLike
+from gbm_drm_gen.io.balrog_drm import BALROG_DRM
+from gbm_drm_gen.drmgen_tte import DRMGenTTE
+from mpi4py import MPI
+import matplotlib.pyplot as plt
+import yaml
+import numpy as np
+from effarea.detectors.detectors import lu
+
+comm = MPI.COMM_WORLD
+size = comm.Get_size()
+rank = comm.Get_rank()
 
 
 class GRBModel:
@@ -31,6 +43,7 @@ class GRBModel:
         fix_position=True,
     ):
         self.grb = grb
+        self._yaml_path = base_dir
         self._base_dir = os.path.join(base_dir, self.grb.name)
         if not os.path.exists(self._base_dir):
             os.makedirs(self._base_dir)
@@ -42,49 +55,96 @@ class GRBModel:
 
         # run timeselection for grb
         self.grb.run_timeselection()
+        self.bkg_fitting()
+        self._to_plugin()
+        self.fit()
+        self.plot_corners()
+        self.plot_spectrum()
+
+    # TODO BKG Fit and Timeseries
+    def bkg_fitting(self):
+        temp_timeseries = {}
+        temp_responses = {}
+        for d in self.grb.detector_selection.good_dets:
+            print(f"Calculating Response for {d}")
+            response = BALROG_DRM(
+                DRMGenTTE(
+                    tte_file=self.grb.tte_files[d],
+                    trigdat=self.grb.trigdat,
+                    mat_type=2,
+                    cspecfile=self.grb.cspec_files[d],
+                ),
+                self.grb.position.ra.deg,
+                self.grb.position.dec.deg,
+            )
+            tte_file = GBMTTEFile(self.grb.tte_files[d])
+            event_list = EventListWithDeadTime(
+                arrival_times=tte_file.arrival_times - tte_file.trigger_time,
+                measurement=tte_file.energies,
+                n_channels=tte_file.n_channels,
+                start_time=tte_file.tstart - tte_file.trigger_time,
+                stop_time=tte_file.tstop - tte_file.trigger_time,
+                dead_time=tte_file.deadtime,
+                first_channel=0,
+                instrument=tte_file.det_name,
+                mission=tte_file.mission,
+                verbose=True,
+            )
+            ts = TimeSeriesBuilder(
+                d,
+                event_list,
+                response=response,
+                poly_order=-1,
+                unbinned=False,
+                verbose=True,
+                container_type=BinnedSpectrumWithDispersion,
+            )
+            ts.set_background_interval(*self.grb.bkg_time)
+            ts.set_active_time_interval(self.grb.active_time)
+            temp_timeseries[d] = ts
+            temp_responses[d] = response
+        self._timeseries = temp_timeseries
+        self._responses = temp_responses
 
     def _to_plugin(self):
         if self._fix_position:
             free_position = False
         else:
             free_position = True
-
-        response_time
+        active_time = self.grb.active_time.split("-")
+        if len(active_time) == 3:
+            start = float(active_time[0])
+            stop = float(active_time[-1])
+        elif len(active_time) == 4:
+            start = -float(active_time[1])
+            stop = float(active_time[-1])
+        else:
+            start = -float(active_time[1])
+            stop = -float(active_time[-1])
+        response_time = (float(start) + float(stop)) / 2
         spectrum_likes = []
-        for d in self._use_dets:
+        for d in self.grb.detector_selection.good_dets:
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurements(self.energy_range)
+                spectrum_like.set_active_measurements("8.1-700")
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements("300-30000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
-        print(f"We are going to use {self._use_dets}")
-        for i, d in enumerate(self._use_dets):
-            if free_position:
-                bl = BALROGLikePositionPrior.from_spectrumlike(
-                    spectrum_likes[i],
-                    response_time,
-                    self._responses[d],
-                    free_position=free_position,
-                    swift_position=self.grb_position,
-                )
+        print(f"We are going to use {self.grb.detector_selection.good_dets}")
+        for i, d in enumerate(self.grb.detector_selection.good_dets):
+            bl = BALROGLike.from_spectrumlike(
+                spectrum_likes[i],
+                response_time,
+                self._responses[d],
+                free_position=free_position,
+            )
+            if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
+                bl.use_effective_area_correction(0.5, 1.5)
             else:
-                bl = BALROGLike.from_spectrumlike(
-                    spectrum_likes[i],
-                    response_time,
-                    self._responses[d],
-                    free_position=free_position,
-                )
-            if fix_correction is None:
-                if d not in ("b0", "b1", "n0", "n6"):
-                    bl.use_effective_area_correction(0.5, 1.5)
-                else:
-                    bl.fix_effective_area_correction(1)
-            else:
-                raise NotImplementedError
+                bl.fix_effective_area_correction(1)
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
 
@@ -118,10 +178,8 @@ class GRBModel:
         wrap[0] = 1
 
         # define temp chain save path
-        self._temp_chains_dir = os.path.join(
-            self._base_dir, self.grb, self.energy_range, "TTE_fit"
-        )
-        chain_path = os.path.join(self._temp_chains_dir, f"chain")
+        self._temp_chains_dir = self._base_dir
+        chain_path = os.path.join(self._temp_chains_dir, f"chain_")
 
         # Make temp chains folder if it does not exists already
         if rank == 0:
@@ -139,41 +197,95 @@ class GRBModel:
             verbose=True,
         )
         self._bayes.sample()
-        self.results = self._bayes.results
-        self._results_loaded = True
+        self._results = self._bayes.results
+        self._results.data_list = self._data_list
+
+    @property
+    def results(self):
+        return self._results
+
+    @property
+    def bayes(self):
+        return self._bayes
+
+    def plot_corners(self):
         if rank == 0:
-            fig = self.results.corner_plot()
+            fig = self._results.corner_plot()
             fig.savefig(os.path.join(self._temp_chains_dir, "cplot.pdf"))
             plt.close("all")
+
+    def plot_spectrum(self):
         if rank == 0:
-            try:
-                spectrum_plot = display_spectrum_model_counts(self.results)
-                ca = spectrum_plot.get_axes()[0]
-                y_lims = ca.get_ylim()
-                if y_lims[0] < 10e-6:
-                    # y_lims_new = [10e-6, y_lims[1]]
-                    ca.set_ylim(bottom=10e-6)
-                spectrum_plot.tight_layout()
-                spectrum_plot.savefig(
-                    os.path.join(self._temp_chains_dir, "splot.pdf"),
-                    bbox_inches="tight",
-                )
-
-            except:
-                self.results.data_list = self._data_list
-                spectrum_plot = display_spectrum_model_counts(self.results)
-                ca = spectrum_plot.get_axes()[0]
-                y_lims = ca.get_ylim()
-                if y_lims[0] < 10e-6:
-                    # y_lims_new = [10e-6, y_lims[1]]
-                    ca.set_ylim(bottom=10e-6)
-
-                spectrum_plot.tight_layout()
-                spectrum_plot.savefig(
-                    os.path.join(self._temp_chains_dir, "splot.pdf"),
-                    bbox_inches="tight",
-                )
-
-                print("No spectral plot possible...")
-
+            spectrum_plot = display_spectrum_model_counts(self._results)
+            ca = spectrum_plot.get_axes()[0]
+            y_lims = ca.get_ylim()
+            if y_lims[0] < 10e-6:
+                ca.set_ylim(bottom=10e-6)
+            if y_lims[1] > 10e4:
+                ca.set_ylim(top=10e4)
+            spectrum_plot.tight_layout()
+            spectrum_plot.savefig(
+                os.path.join(self._temp_chains_dir, "splot.pdf"),
+                bbox_inches="tight",
+            )
             plt.close("all")
+
+    def export_yaml(self):
+        if rank == 0:
+            df = self._results.get_data_frame("hpd")
+            result_dict = self.grb.detector_selection._create_output_dict()
+            result_dict["fit"] = {}
+            result_dict["fit"]["values"] = {}
+            result_dict["fit"]["errors"] = {}
+            for fp in self._results.optimized_model.free_parameters:
+                result_dict["fit"]["values"][
+                    self._results.optimized_model.free_parameters[fp].name
+                ] = float(self._results.optimized_model.free_parameters[fp].value)
+            for i in df.index:
+                result_dict["fit"]["errors"][df.loc[i].name] = {}
+                result_dict["fit"]["errors"][df.loc[i].name]["negative_error"] = float(
+                    df.loc[i]["negative_error"]
+                )
+                result_dict["fit"]["errors"][df.loc[i].name]["positive_error"] = float(
+                    df.loc[i]["positive_error"]
+                )
+            try:
+                with open(os.path.join(self._yaml_path, "results.yml"), "r") as f:
+                    loaded = yaml.safe_load(f)
+            except FileNotFoundError:
+                loaded = {}
+            loaded[self.grb.name] = result_dict
+            with open(os.path.join(self._yaml_path, "results.yml"), "w") as f:
+                yaml.dump(loaded, f)
+
+    def export_csv(self):
+        if rank == 0:
+            res_df = self._results.get_data_frame("hpd")
+
+            norm = self.grb.detector_selection.normalizing_det
+            try:
+                data = np.load(
+                    os.path.join(self._yaml_path, "det_matrix.npy"), allow_pickle=True
+                )
+            except FileNotFoundError:
+                data = np.empty((12, 12, 3), dtype=list)
+                for i in range(12):
+                    for j in range(12):
+                        for k in range(3):
+                            data[i, j, k] = []
+            indices = [i for i in lu if i not in ("b0", "b1")]
+
+            for i, d_norm in enumerate(indices):
+                for j, d in enumerate(indices):
+                    if d in self.grb.detector_selection.good_dets and d != d_norm:
+                        for fp in res_df.index:
+                            if f"cons_{d}" in res_df.loc[fp].name:
+                                data[i, j, 0].append(res_df.loc[fp].value)
+                                data[i, j, 1].append(res_df.loc[fp].negative_error)
+                                data[i, j, 2].append(res_df.loc[fp].positive_error)
+                    elif d == d_norm:
+                        data[i, j, 0].append(1)
+                        data[i, j, 1].append(0)
+                        data[i, j, 2].append(0)
+            np.save(os.path.join(self._yaml_path, "det_matrix.npy"), data)
+            print("Successfully saved matrix to file")
