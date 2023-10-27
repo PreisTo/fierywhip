@@ -38,7 +38,8 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        for j, i in table.iterrows():
+        # TODO Remove before flight
+        for j, i in table.iloc[:20].iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
@@ -96,6 +97,8 @@ class GRB:
 
         """
         self._name = name
+        self._active_time = None
+        self._bkg_time = None
         self._ra_icrs = ra
         self._dec_icrs = dec
         if grb_time is not None:
@@ -132,6 +135,7 @@ class GRB:
         """
         return self._position
 
+    @property
     def name(self):
         """
         :returns: str of grb name like GRB231223001
@@ -196,7 +200,7 @@ class GRB:
         print("Downloading TTE and CSPEC files")
         self.tte_files = {}
         self.cspec_files = {}
-        for d in self.detector_selection:
+        for d in self.detector_selection.good_dets:
             self.tte_files[d] = download_tte_file(self._name, d)
             self.cspec_files[d] = download_cspec_file(self._name, d)
 
@@ -233,9 +237,10 @@ class GRB:
         """
         Timeselection for GRB using morogth auto_loc timeselection
         """
-        tsbb = TimeSelectionBB(self._trigdat, self._name, fine=True)
-        self._active_time = tsbb.active_time
-        self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+        if self._active_time is None and self._bkg_time is None:
+            tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
+            self._active_time = tsbb.active_time
+            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
 
 class GRBInitError(Exception):
