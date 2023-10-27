@@ -95,6 +95,10 @@ class GRB:
             units = ra_dec_units
         self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
         self._get_trigdat_path()
+        try:
+            self._get_detector_selection()
+        except DetectorSelectionError:
+            raise GRBInitError
 
     @property
     def position(self):
@@ -121,6 +125,10 @@ class GRB:
     def trigdat(self):
         return self._trigdat
 
+    @property
+    def detector_selection(self):
+        return self._detector_selection
+
     def _get_trigdat_path(self):
         trigdat_path = os.path.join(
             os.environ.get("GBMDATA"),
@@ -138,8 +146,10 @@ class GRB:
         else:
             raise GRBInitError
 
-    def _create_output_dict(self):
-        raise NotImplementedError
+    def _get_detector_selection(self, max_sep=60, max_sep_normalizing=20):
+        self._detector_selection = DetectorSelection(
+            self, max_sep=60, max_sep_normalizing=max_sep_normalizing
+        )
 
 
 class GRBInitError(Exception):
