@@ -50,7 +50,7 @@ class GRBList:
 
 class GRB:
     def __init__(self, name, ra, dec, ra_dec_units=None, grb_time=None):
-        self._grb = name
+        self._name = name
         self._ra_icrs = ra
         self._dec_icrs = dec
         if grb_time is not None:
