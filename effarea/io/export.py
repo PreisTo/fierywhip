@@ -12,6 +12,8 @@ class Exporter:
         self._temp_chains_dir = model._temp_chains_dir
         self.grb = model.grb
         self._yaml_path = model._yaml_path
+        self.plot_corners()
+        self.plot_spectrum()
 
     def plot_corners(self):
         if rank == 0:
@@ -35,7 +37,7 @@ class Exporter:
             )
             plt.close("all")
 
-    def export_yaml(self):
+    def export_matrix(self):
         if rank == 0:
             df = self._results.get_data_frame("hpd")
             result_dict = self.grb.detector_selection._create_output_dict()
