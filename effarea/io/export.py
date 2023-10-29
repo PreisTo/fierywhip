@@ -94,6 +94,7 @@ class Exporter:
                         data[norm_id, det_id, 2].append(
                             float(res_df.loc[para_name]["positive_error"])
                         )
-            data[norm_id]
+            data[norm_id, norm_id, 0].append(1)
+            data[norm_id, norm_id, 1:].append(0)
             np.save(os.path.join(self._yaml_path, "det_matrix.npy"), data)
             print("Successfully saved matrix to file")
