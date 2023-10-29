@@ -58,8 +58,6 @@ class GRBModel:
         self.bkg_fitting()
         self._to_plugin()
         self.fit()
-        self.plot_corners()
-        self.plot_spectrum()
 
     # TODO BKG Fit and Timeseries
     def bkg_fitting(self):
