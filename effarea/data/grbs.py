@@ -223,7 +223,7 @@ class GRB:
         else:
             raise GRBInitError
 
-    def _get_detector_selection(self, max_sep=60, max_sep_normalizing=20):
+    def _get_detector_selection(self, max_sep=60, max_sep_normalizing=40):
         """
         :param max_sep: max separation of center from det in deg
         :param max_sep_normalization: max sep of center for det used as normalization
