@@ -8,12 +8,12 @@ import pandas as pd
 from datetime import datetime, timedelta
 from gbmgeometry.utils.gbm_time import GBMTime
 import os
-from effarea.io.downloading import download_tte_file, download_cspec_file
+from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file
 from urllib.error import URLError
 import yaml
 from mpi4py import MPI
-from effarea.detectors.detectors import DetectorSelection, DetectorSelectionError
+from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 
 comm = MPI.COMM_WORLD
@@ -32,7 +32,7 @@ class GRBList:
 
     def _load_swift_bursts(
         self,
-        swift_list=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis"),
+        swift_list=pkg_resources.resource_filename("fierywhip", "data/Fermi_Swift.lis"),
     ):
         """
         Loads Fermi-Swift burst provided in package resources

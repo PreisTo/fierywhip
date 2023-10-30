@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from effarea.data.grbs import GRB, GRBList
-from effarea.model.model import GRBModel
-from effarea.io.export import Exporter
+from fierywhip.data.grbs import GRB, GRBList
+from fierywhip.model.model import GRBModel
+from fierywhip.io.export import Exporter
 if __name__ == "__main__":
     grb_list = GRBList()
     for grb in grb_list.grbs:

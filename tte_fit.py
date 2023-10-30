@@ -26,15 +26,15 @@ from threeML.minimizer.minimization import FitFailed
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
-from effarea.io.balrog_like_add import BALROGLikePositionPrior
+from fierywhip.io.balrog_like_add import BALROGLikePositionPrior
 import os
 from mpi4py import MPI
 import numpy as np
 import yaml
 import matplotlib.pyplot as plt
-from effarea.utils.swift import check_swift
-from effarea.utils.detectors import calc_angular_incident
-from effarea.io.downloading import download_tte_file, download_cspec_file
+from fierywhip.utils.swift import check_swift
+from fierywhip.utils.detectors import calc_angular_incident
+from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 import pkg_resources
 
@@ -566,7 +566,7 @@ def alread_run_externally(
             return False
 
 
-def get_grbs(csv=pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis")):
+def get_grbs(csv=pkg_resources.resource_filename("fierywhip", "data/Fermi_Swift.lis")):
     """
     returns a list of GRBs with Swift localization
     """

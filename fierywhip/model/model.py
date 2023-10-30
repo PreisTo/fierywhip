@@ -23,7 +23,7 @@ from mpi4py import MPI
 import matplotlib.pyplot as plt
 import yaml
 import numpy as np
-from effarea.detectors.detectors import lu
+from fierywhip.detectors.detectors import lu
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()

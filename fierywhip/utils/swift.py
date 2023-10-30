@@ -11,7 +11,7 @@ import numpy as np
 
 
 def check_swift_old(GRB, grb_time):
-    file_path = pkg_resources.resource_filename("effarea", "data/swift_grbs.txt")
+    file_path = pkg_resources.resource_filename("fierywhip", "data/swift_grbs.txt")
     day_seconds = 24 * 60 * 60
     grb_date = datetime(
         int(f"20{GRB.strip('GRB')[:2]}"),
@@ -88,7 +88,7 @@ def check_swift_old(GRB, grb_time):
 
 
 def check_swift(GRB, grb_time):
-    file_path = pkg_resources.resource_filename("effarea", "data/Fermi_Swift.lis")
+    file_path = pkg_resources.resource_filename("fierywhip", "data/Fermi_Swift.lis")
     csv = pd.read_csv(file_path, header=None, index_col=None, sep=" ")
     g = int(GRB.strip("GRB"))
     sel = csv[csv.iloc[:, 0] == g].index[0]
