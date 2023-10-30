@@ -8,4 +8,5 @@ For modelling and fitting ![threeML](https://github.com/threeML/threeML) and ![a
 __Goal:__ Accounting for different detection efficiencies of the NaI detectors, which area most likely the cause of systematic uncertainty on BALROG's current localizations.
 
 ![http://middle-earthencyclopedia.weebly.com/whips-of-balrogs.html](fierywhip.jpeg)
+
 *Taken from http://middle-earthencyclopedia.weebly.com/whips-of-balrogs.html*
