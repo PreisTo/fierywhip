@@ -6,3 +6,5 @@ Exploring effective area corrections of Fermi/GBM NaI detectors using BALROG (![
 For modelling and fitting ![threeML](https://github.com/threeML/threeML) and ![astromodels](https://github.com/threeML/astromodels) are used.
 
 __Goal:__ Accounting for different detection efficiencies of the NaI detectors, which area most likely the cause of systematic uncertainty on BALROG's current localizations.
+
+![http://middle-earthencyclopedia.weebly.com/whips-of-balrogs.html](fierywhip.jpeg)
