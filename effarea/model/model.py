@@ -41,6 +41,7 @@ class GRBModel:
         model=None,
         base_dir=os.path.join(os.environ.get("GBMDATA"), "localizing"),
         fix_position=True,
+        save_lc=False,
     ):
         self.grb = grb
         self._yaml_path = base_dir
@@ -48,6 +49,7 @@ class GRBModel:
         if not os.path.exists(self._base_dir):
             os.makedirs(self._base_dir)
         self._fix_position = fix_position
+        self._save_lc = save_lc
         if model is not None:
             self._model = Model
         else:
@@ -147,6 +149,13 @@ class GRBModel:
                 bl.fix_effective_area_correction(1)
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
+        if self._save_lc:
+            for d in self.grb.detector_selection.good_dets:
+                fig = self._timeseries[d].view_lightcurve()
+                plot_path = os.path.join(self._base_dir, self.grb.name, "lightcurves/")
+                if not os.path.exists(plot_path):
+                    os.makedirs(plot_path)
+                fig.savefig(os.path.join(plot_path, f"{d}.pdf"))
 
     def _setup_model(self):
         """
