@@ -3,7 +3,13 @@
 import matplotlib.pyplot as plt
 from threeML import *
 from effarea.utils.detectors import name_to_id
-
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+import os
+import yaml
+import numpy as np
 
 class Exporter:
     def __init__(self, model):
@@ -37,7 +43,7 @@ class Exporter:
             )
             plt.close("all")
 
-    def export_matrix(self):
+    def export_yaml(self):
         if rank == 0:
             df = self._results.get_data_frame("hpd")
             result_dict = self.grb.detector_selection._create_output_dict()
@@ -65,7 +71,7 @@ class Exporter:
             with open(os.path.join(self._yaml_path, "results.yml"), "w") as f:
                 yaml.dump(loaded, f)
 
-    def export_csv(self):
+    def export_matrix(self):
         if rank == 0:
             res_df = self._results.get_data_frame("hpd")
 
