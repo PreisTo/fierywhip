@@ -2,8 +2,9 @@
 
 import matplotlib.pyplot as plt
 from threeML import *
-from effarea.utils.detectors import name_to_id,detector_list
+from effarea.utils.detectors import name_to_id, detector_list
 from mpi4py import MPI
+
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
@@ -12,6 +13,7 @@ import yaml
 import numpy as np
 
 lu = detector_list()
+
 
 class Exporter:
     def __init__(self, model):
@@ -89,9 +91,9 @@ class Exporter:
                         for k in range(3):
                             data[i, j, k] = []
             indices = [i for i in lu if i not in ("b0", "b1")]
-            norm_id = name_to_id(norm)
+            norm_id = lu.index(norm)
             for det in self.grb.detector_selection.good_dets:
-                det_id = name_to_id(norm)
+                det_id = lu.index(det)
                 for fp in self._results.optimized_model.free_parameters:
                     para_name = self._results.optimized_model.free_parameters[fp].name
                     if f"cons_{det}" in para_name:
@@ -106,6 +108,6 @@ class Exporter:
                         )
             data[norm_id, norm_id, 0].append(1)
             data[norm_id, norm_id, 1].append(0)
-            data[norm_id,norm_id,2].append(0)
+            data[norm_id, norm_id, 2].append(0)
             np.save(os.path.join(self._yaml_path, "det_matrix.npy"), data)
             print("Successfully saved matrix to file")
