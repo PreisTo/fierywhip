@@ -65,7 +65,7 @@ class DetectorSelection:
         min_sep = 180
         min_sep_det = ""
         for d in self._good_dets:
-            if seps[d] < 180:
+            if seps[d] < min_sep:
                 min_sep = seps[d]
                 min_sep_det = d
 
