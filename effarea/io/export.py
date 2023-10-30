@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from threeML import *
 from effarea.utils.detectors import name_to_id, detector_list
 from mpi4py import MPI
+import yaml
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -111,3 +112,42 @@ class Exporter:
             data[norm_id, norm_id, 2].append(0)
             np.save(os.path.join(self._yaml_path, "det_matrix.npy"), data)
             print("Successfully saved matrix to file")
+
+
+def matrix_from_yaml(path, exclude=[]):
+    if rank == 0:
+        data = np.empty((12, 12, 3), dtype=list)
+        for i in range(12):
+            for j in range(12):
+                for k in range(3):
+                    data[i, j, k] = []
+
+        with open(path, "r") as f:
+            res = yaml.safe_load(f)
+        for grb in res.keys():
+            if grb not in exclude:
+                dets = list(res[grb]["separation"].keys())
+                use_dets = []
+                for d in dets:
+                    if f"cons_{d}" not in res[grb]["fit"]["values"].keys():
+                        norm_det = d
+                    else:
+                        use_dets.append(d)
+                norm_id = name_to_id(norm_det)
+                for d in use_dets:
+                    det_id = name_to_id(d)
+                    err_neg = float(
+                        res[grb]["fit"]["errors"][f"cons_{d}"]["negative_error"]
+                    )
+                    err_pos = float(
+                        res[grb]["fit"]["errors"][f"cons_{d}"]["positive_error"]
+                    )
+                    val = float(res[grb]["fit"]["values"][f"cons_{d}"])
+                    data[norm_id, det_id, 0].append(val)
+                    data[norm_id, det_id, 1].append(np.abs(err_neg))
+                    data[norm_id, det_id, 2].append(np.abs(err_pos))
+                data[norm_id, norm_id, 0].append(1)
+                data[norm_id, norm_id, 1].append(0)
+                data[norm_id, norm_id, 2].append(0)
+
+    return data
