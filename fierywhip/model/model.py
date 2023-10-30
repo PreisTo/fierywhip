@@ -128,7 +128,7 @@ class GRBModel:
         for d in self.grb.detector_selection.good_dets:
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurements("8.1-700")
+                spectrum_like.set_active_measurements("40-700")
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
