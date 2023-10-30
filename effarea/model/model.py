@@ -109,16 +109,18 @@ class GRBModel:
             free_position = False
         else:
             free_position = True
-        active_time = self.grb.active_time.split("-")
-        if len(active_time) == 3:
+        active_time = self.grb.active_time
+        active_time = active_time.split("-")
+        if len(active_time) == 2:
             start = float(active_time[0])
+            stop = float(active_time[-1])
+        if len(active_time) == 3:
+            start = -float(active_time[1])
             stop = float(active_time[-1])
         elif len(active_time) == 4:
             start = -float(active_time[1])
-            stop = float(active_time[-1])
-        else:
-            start = -float(active_time[1])
             stop = -float(active_time[-1])
+        assert start < stop, "start is after stop"
         response_time = (float(start) + float(stop)) / 2
         spectrum_likes = []
         for d in self.grb.detector_selection.good_dets:
