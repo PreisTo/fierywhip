@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 from threeML import *
-from effarea.utils.detectors import name_to_id
+from effarea.utils.detectors import name_to_id,detector_list
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -10,6 +10,8 @@ size = comm.Get_size()
 import os
 import yaml
 import numpy as np
+
+lu = detector_list()
 
 class Exporter:
     def __init__(self, model):
@@ -94,7 +96,7 @@ class Exporter:
                     para_name = self._results.optimized_model.free_parameters[fp].name
                     if f"cons_{det}" in para_name:
                         data[norm_id, det_id, 0].append(
-                            float(res_df.loc[para_name]["valie"])
+                            float(res_df.loc[para_name]["value"])
                         )
                         data[norm_id, det_id, 1].append(
                             float(res_df.loc[para_name]["negative_error"])
@@ -103,6 +105,7 @@ class Exporter:
                             float(res_df.loc[para_name]["positive_error"])
                         )
             data[norm_id, norm_id, 0].append(1)
-            data[norm_id, norm_id, 1:].append(0)
+            data[norm_id, norm_id, 1].append(0)
+            data[norm_id,norm_id,2].append(0)
             np.save(os.path.join(self._yaml_path, "det_matrix.npy"), data)
             print("Successfully saved matrix to file")
