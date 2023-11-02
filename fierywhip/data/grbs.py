@@ -231,6 +231,7 @@ class GRB:
         self._detector_selection = DetectorSelection(
             self, max_sep=max_sep, max_sep_normalizing=max_sep_normalizing
         )
+        print(self._detector_selection.good_dets)
 
     def run_timeselection(self):
         """
