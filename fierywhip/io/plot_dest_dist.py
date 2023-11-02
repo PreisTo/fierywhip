@@ -15,11 +15,19 @@ class DetDistPlot:
         blank = np.empty((12, 12))
         for i in range(12):
             for j in range(12):
-                blank[i, j] = np.nan_to_num(np.mean(matrix[i, j]))
+                try:
+                    if i != j:
+                        blank[i, j] = round(np.mean(matrix[i, j]), 3)
+                    else:
+                        blank[i, j] = len(matrix[i, j])
+                except ValueError:
+                    blank[i, j] = np.nan
+
         print(blank)
-        im = ax.imshow(blank, cmap="coolwarm")
+        im = ax.imshow(blank, cmap="coolwarm", vmin=0.5, vmax=1.5)
         for (j, i), label in np.ndenumerate(blank):
-            ax.text(i, j, round(float(label), 3), ha="center", va="center")
+            if str(label) != "nan":
+                ax.text(i, j, label, ha="center", va="center")
         ax.axvline(x=5.5, color="black")
         ax.axhline(y=5.5, color="black")
         ax.set_title(

@@ -58,11 +58,13 @@ class DetectorSelection:
                     good_dets_new.append(good_dets[el])
                 counter += 1
             good_dets = good_dets_new
+        else:
+            good_dets = good_dets
         self._good_dets = good_dets
 
     def _set_normalizing_det(self):
         seps = self._seps
-        min_sep = 180
+        min_sep = 360
         min_sep_det = ""
         for d in self._good_dets:
             if seps[d] < min_sep:
