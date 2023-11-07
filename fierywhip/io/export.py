@@ -106,7 +106,7 @@ class Exporter:
                         for k in range(3):
                             data[i, j, k] = []
             norm_id = lu_id[norm]
-            det in self.grb.detector_selection.good_dets:
+            for det in self.grb.detector_selection.good_dets:
                 det_id = lu_id[det]
                 for fp in self._results.optimized_model.free_parameters:
                     para_name = self._results.optimized_model.free_parameters[fp].name
