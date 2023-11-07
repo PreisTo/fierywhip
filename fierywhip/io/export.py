@@ -13,7 +13,21 @@ import os
 import yaml
 import numpy as np
 
-lu = detector_list()
+lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
+lu_id = {
+    "n0": 0,
+    "n1": 1,
+    "n2": 2,
+    "n3": 3,
+    "n4": 4,
+    "n5": 5,
+    "n6": 6,
+    "n7": 7,
+    "n8": 8,
+    "n9": 9,
+    "na": 10,
+    "nb": 11,
+}
 
 
 class Exporter:
@@ -91,10 +105,9 @@ class Exporter:
                     for j in range(12):
                         for k in range(3):
                             data[i, j, k] = []
-            indices = [i for i in lu if i not in ("b0", "b1")]
-            norm_id = lu.index(norm)
-            for det in self.grb.detector_selection.good_dets:
-                det_id = lu.index(det)
+            norm_id = lu_id[norm]
+            det in self.grb.detector_selection.good_dets:
+                det_id = lu_id[det]
                 for fp in self._results.optimized_model.free_parameters:
                     para_name = self._results.optimized_model.free_parameters[fp].name
                     if f"cons_{det}" in para_name:
