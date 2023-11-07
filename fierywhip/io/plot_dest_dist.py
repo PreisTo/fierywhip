@@ -5,33 +5,77 @@ import matplotlib.pyplot as plt
 
 
 class DetDistPlot:
-    def __init__(self, result_path="/home/tobi/Schreibtisch/localizing/det_matrix.npy"):
-        self._matrix = np.load(result_path, allow_pickle=True)
-
-        fig, ax = plt.subplots(1, figsize=(20, 20))
-        cax = fig.add_axes([0.1, 0.9, 0.6, 0.05])
+    def __init__(
+        self,
+        result_path="/home/tobi/Schreibtisch/localizing/det_matrix.npy",
+        matrix=None,
+        lims=(0.5, 1.5),
+    ):
+        if matrix is None:
+            self._matrix = np.load(result_path, allow_pickle=True)
+        else:
+            self._matrix = matrix
+        fig, ax = plt.subplots(1, figsize=(20, 21))
         matrix = self._matrix[:, :, 0]
+        error_pos = np.array(self._matrix[:, :, 1])
+        error_neg = np.array(self._matrix[:, :, 2])
         print(matrix)
         blank = np.empty((12, 12))
         for i in range(12):
             for j in range(12):
                 try:
                     if i != j:
-                        blank[i, j] = round(np.mean(matrix[i, j]), 3)
+                        ep = error_pos[i, j]
+                        en = error_neg[i, j]
+                        if lims is not None:
+                            pop_indices = []
+                            for ind in range(len(matrix[i, j])):
+                                if (
+                                    np.abs(matrix[i, j][ind] / lims[0] - 1) < 0.1
+                                    or np.abs(matrix[i, j][ind] / lims[1] + 1) < 0.1
+                                ):
+                                    if np.abs(en[ind]) < 0.1 or np.abs(ep[ind]) < 0.1:
+                                        pop_indices.append(ind)
+                            try:
+                                for p in pop_indices.reverse():
+                                    matrix[i, j].pop(p)
+                                    en.pop(p)
+                                    ep.pop(p)
+                            except TypeError:
+                                pass
+                        ep = np.abs(np.array(ep))
+                        en = np.abs(np.array(en))
+                        try:
+                            blank[i, j] = round(
+                                np.average(matrix[i, j], weights=1 / (ep + en)),
+                                3,
+                            )
+                        except ZeroDivisionError:
+                            blank[i, j] = round(np.mean(matrix[i, j]), 3)
                     else:
-                        blank[i, j] = len(matrix[i, j])
+                        blank[i, j] = 100
                 except ValueError:
                     blank[i, j] = np.nan
 
         print(blank)
         im = ax.imshow(blank, cmap="coolwarm", vmin=0.5, vmax=1.5)
-        for (j, i), label in np.ndenumerate(blank):
+        for i in range(12):
+            blank[i, i] = int(np.sum(matrix[i, i]))
+        for index, label in np.ndenumerate(blank):
+            i = index[0]
+            j = index[1]
             if str(label) != "nan":
-                ax.text(i, j, label, ha="center", va="center")
+                label = str(label) + f", {len(self._matrix[i,j,0])}"
+                ax.text(j, i, label, ha="center", va="center")
         ax.axvline(x=5.5, color="black")
         ax.axhline(y=5.5, color="black")
         ax.set_title(
-            "Rel. Normalization of dets - max angle 60deg, max angle norm det 20deg"
+            f"Rel. Normalization of dets - 3 or 4 NaI together + 1 BGO - 60/40deg sep/norm_sep\n{np.trace(blank)} total of grbs"
         )
+        ax.set_ylabel("Normalizing Det")
+        ax.set_xlabel("Detector")
+        fig.tight_layout()
+        plt.subplots_adjust(bottom=0.2, top=0.8)
+        cax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
         fig.colorbar(im, cax=cax, orientation="horizontal")
         fig.savefig("/home/tobi/Schreibtisch/test.pdf")
