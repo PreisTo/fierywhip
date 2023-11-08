@@ -10,7 +10,7 @@ if __name__ == "__main__":
     norm_matrix = NormalizationMatrix(
         result_yml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
     )
-    grb_list = GRBList()
+    grb_list = GRBList(check_finished=False)
 
     for grb in grb_list.grbs:
         grb._get_effective_area_correction(norm_matrix)

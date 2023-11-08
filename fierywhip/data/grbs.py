@@ -42,7 +42,8 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self):
+    def __init__(self, check_finished=True):
+        self._check_finished = check_finished
         self._grbs = []
         self._load_swift_bursts()
 
@@ -85,18 +86,21 @@ class GRBList:
         :param name: grb name as string
         :param path: path like to result file
         """
-        if rank == 0:
-            if os.path.exists(path):
-                with open(path, "r") as f:
-                    already_run_dict = yaml.safe_load(f)
-                if name in already_run_dict.keys():
-                    ret = True
+        if self._check_finished:
+            if rank == 0:
+                if os.path.exists(path):
+                    with open(path, "r") as f:
+                        already_run_dict = yaml.safe_load(f)
+                    if name in already_run_dict.keys():
+                        ret = True
+                    else:
+                        ret = False
                 else:
                     ret = False
-            else:
-                ret = False
-        ret = comm.bcast(ret, root=0)
-        return ret
+            ret = comm.bcast(ret, root=0)
+            return ret
+        else:
+            return False
 
     @property
     def grbs(self):
@@ -263,7 +267,8 @@ class GRB:
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
-    def _get_effective_area_correction(self):
+    def _get_effective_area_correction(self, nm):
+        self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
         good_dets = self._detector_selection.good_dets
         norm_id = lu.index(norm_det)
