@@ -55,7 +55,7 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        for j, i in table.iterrows():
+        for j, i in table.iloc[:30].iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
@@ -279,7 +279,7 @@ class GRB:
                 i = lu.index(gd)
                 eff_area_dict[gd] = row[i]
             else:
-                eff_area_dict[norm_det] = 1
+                eff_area_dict[gd] = 1
 
         self._effective_area_dict = eff_area_dict
 

@@ -11,6 +11,7 @@ from threeML.utils.spectrum.binned_spectrum_set import BinnedSpectrumSet
 from threeML.utils.data_builders.time_series_builder import TimeSeriesBuilder
 from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 from threeML.data_list import DataList
+from threeML.bayesian.bayesian_analysis import BayesianAnalysis
 from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 from threeML.utils.time_interval import TimeIntervalSet
 import os
@@ -26,11 +27,13 @@ class GRBModel:
     def __init__(self, grb):
         self._base_dir = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"))
         self.grb = grb
+        self._grb_name = self.grb.name
         self.grb.run_timeselection()
         self.trigreader = TrigReader(self.grb.trigdat, fine=True)
         self.trigreader.set_active_time_interval(self.grb.active_time)
-        self.trigreader.set_background_selections(self.grb.bkg_time)
-
+        self.trigreader.set_background_selections(*self.grb.bkg_time)
+        self._setup_model()
+        self._to_plugin()
     def _setup_model(self):
         cpl = Cutoff_powerlaw_Ep()
         cpl.index.value = -1.1
@@ -95,14 +98,14 @@ class GRBModel:
 
         # define temp chain save path
         self._temp_chains_dir = os.path.join(
-            self._base_dir, self._grb_name, f"c_trig_{self._version}"
+            self._base_dir, self._grb_name
         )
-        chain_path = os.path.join(self._temp_chains_dir, f"trigdat_{self._version}_")
+        chain_path = os.path.join(self._temp_chains_dir, f"chain_")
 
         # Make temp chains folder if it does not exists already
         if rank == 0:
             if not os.path.exists(self._temp_chains_dir):
-                os.mkdir(os.path.join(self._temp_chains_dir))
+                os.makedirs(os.path.join(self._temp_chains_dir))
 
         # use multinest to sample the posterior
         # set main_path+trigger to whatever you want to use
