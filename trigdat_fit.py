@@ -17,12 +17,10 @@ if __name__ == "__main__":
         nm_object = NormalizationMatrix(
             result_yml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
         )
-        norm_matrix = nm_object.matrix
-        print(norm_matrix)
+        norm_matrix = nm_object.matrix.copy()
     else:
-        norm_matrix = np.empty((12,12))
-    norm_matrix = comm.Bcast(norm_matrix, root=0)
-    comm.Barrier()
+        norm_matrix = np.empty((12, 12), dtype=np.float64)
+    comm.Bcast(norm_matrix, root=0)
     grb_list = GRBList(check_finished=False)
 
     for grb in grb_list.grbs:
