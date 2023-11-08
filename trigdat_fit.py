@@ -15,7 +15,7 @@ if __name__ == "__main__":
     if rank == 0:
         norm_matrix = NormalizationMatrix(
             result_yml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
-        )
+        ).matrix
     else:
         norm_matrix = None
     norm_matrix = comm.Bcast(norm_matrix, root=0)
