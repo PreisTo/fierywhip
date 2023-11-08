@@ -15,6 +15,7 @@ from threeML.bayesian.bayesian_analysis import BayesianAnalysis
 from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 from threeML.utils.time_interval import TimeIntervalSet
 import os
+import matplotlib.pyplot as plt
 from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
@@ -34,6 +35,7 @@ class GRBModel:
         self.trigreader.set_background_selections(*self.grb.bkg_time)
         self._setup_model()
         self._to_plugin()
+
     def _setup_model(self):
         cpl = Cutoff_powerlaw_Ep()
         cpl.index.value = -1.1
@@ -97,9 +99,7 @@ class GRBModel:
         wrap[0] = 1
 
         # define temp chain save path
-        self._temp_chains_dir = os.path.join(
-            self._base_dir, self._grb_name
-        )
+        self._temp_chains_dir = os.path.join(self._base_dir, self._grb_name)
         chain_path = os.path.join(self._temp_chains_dir, f"chain_")
 
         # Make temp chains folder if it does not exists already
