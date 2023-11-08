@@ -119,7 +119,7 @@ class GRBModel:
         )
         self._bayes.sample()
         self.results = self._bayes.results
-        self.results.data_list = self._bayes.data_list
+        self.results.data_list = self._data_list
 
     def export_results(self):
         if rank == 0:
