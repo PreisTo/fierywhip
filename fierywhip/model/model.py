@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import yaml
 import numpy as np
 from fierywhip.detectors.detectors import lu
+from fierywhip.config.configuration import fierywhip_config
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -144,7 +145,7 @@ class GRBModel:
                 free_position=free_position,
             )
             if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
-                bl.use_effective_area_correction(0.5, 1.5)
+                bl.use_effective_area_correction(fierywhip_config.eff_corr_lims)
             else:
                 bl.fix_effective_area_correction(1)
             balrog_likes.append(bl)
@@ -200,7 +201,7 @@ class GRBModel:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=800,
+            n_live_points=fierywhip_config.live_points,
             chain_name=chain_path,
             wrapped_params=wrap,
             verbose=True,

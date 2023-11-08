@@ -3,6 +3,7 @@
 import yaml
 import numpy as np
 from fierywhip.io.export import matrix_from_yaml
+from fierywhip.config.configuration import fierywhip_config
 
 
 class NormalizationMatrix:
@@ -17,7 +18,7 @@ class NormalizationMatrix:
         self.create_norm_matrix()
         print(self._matrix)
 
-    def create_norm_matrix(self, lims=(0.5, 1.5)):
+    def create_norm_matrix(self, lims=fierywhip_config.eff_corr_lims):
         vals = self._result_matrix[:, :, 0]
         error_pos = np.array(self._result_matrix[:, :, 1])
         error_neg = np.array(self._result_matrix[:, :, 2])

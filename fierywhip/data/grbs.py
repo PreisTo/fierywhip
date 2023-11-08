@@ -16,6 +16,7 @@ from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from morgoth.auto_loc.time_selection import TimeSelectionBB
+from fierywhip.config.configuration import fierywhip_config
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -248,7 +249,11 @@ class GRB:
         else:
             raise GRBInitError
 
-    def _get_detector_selection(self, max_sep=60, max_sep_normalizing=40):
+    def _get_detector_selection(
+        self,
+        max_sep=fierywhip_config.max_sep,
+        max_sep_normalizing=fierywhip_config.max_sep_norm,
+    ):
         """
         :param max_sep: max separation of center from det in deg
         :param max_sep_normalization: max sep of center for det used as normalization

@@ -107,10 +107,12 @@ class Exporter:
                             data[i, j, k] = []
             norm_id = lu_id[norm]
             for det in self.grb.detector_selection.good_dets:
-                if det not in ("b0","b1"):
+                if det not in ("b0", "b1"):
                     det_id = lu_id[det]
                     for fp in self._results.optimized_model.free_parameters:
-                        para_name = self._results.optimized_model.free_parameters[fp].name
+                        para_name = self._results.optimized_model.free_parameters[
+                            fp
+                        ].name
                         if f"cons_{det}" in para_name:
                             data[norm_id, det_id, 0].append(
                                 float(res_df.loc[para_name]["value"])
@@ -165,3 +167,8 @@ def matrix_from_yaml(path, exclude=[]):
                 data[norm_id, norm_id, 2].append(0)
 
     return data
+
+
+class ExportTrigdat:
+    def __init__(self, grb_model):
+        raise NotImplementedError

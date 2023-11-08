@@ -4,6 +4,7 @@ from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.gbm_frame import GBMFrame
 import astropy.units as u
 import numpy as np
+from fierywhip.config.configuration import fierywhip_config
 
 lu = [
     "n0",
@@ -24,7 +25,14 @@ lu = [
 
 
 class DetectorSelection:
-    def __init__(self, grb, max_sep=60, max_sep_normalizing=30, min_number_nai = 3,max_number_nai=4):
+    def __init__(
+        self,
+        grb,
+        max_sep=fierywhip_config.max_sep,
+        max_sep_normalizing=fierywhip_config.max_sep_norm,
+        min_number_nai=fierywhip_config.min_number_det,
+        max_number_nai=fierywhip_config.max_number_det,
+    ):
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
