@@ -2,7 +2,8 @@
 from omegaconf import OmegaConf
 
 structure = {}
-structure["eff_corr_lims"] = (0.8, 1.2)
+structure["eff_corr_lim_low"] = 0.8
+structure["eff_corr_lim_high"] = 1.2
 structure["live_points"] = 800
 structure["live_points_trigdat"] = 1200
 structure["max_sep"] = 60
