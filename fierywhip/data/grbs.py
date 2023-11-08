@@ -55,7 +55,7 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        for j, i in table.iloc[:30].iterrows():
+        for j, i in table.iloc[:5].iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
@@ -268,6 +268,7 @@ class GRB:
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
     def _get_effective_area_correction(self, nm):
+        print(type(nm))
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
         good_dets = self._detector_selection.good_dets
