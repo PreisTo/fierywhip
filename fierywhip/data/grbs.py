@@ -155,6 +155,7 @@ class GRB:
 
         if normalizing_matrix is not None:
             self._normalizing_matrix = normalizing_matrix
+            self._get_effective_area_correction()
 
     @property
     def position(self):
