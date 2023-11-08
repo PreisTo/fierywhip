@@ -56,7 +56,7 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        for j, i in table.iloc[:5].iterrows():
+        for j, i in table.iterrows():
             name = str(i.loc[0])
             ra = str(i.loc[5])
             dec = str(i.loc[6])
