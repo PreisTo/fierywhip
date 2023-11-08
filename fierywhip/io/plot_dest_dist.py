@@ -36,7 +36,7 @@ class DetDistPlot:
                                     np.abs(matrix[i, j][ind] / lims[0] - 1) < 0.1
                                     or np.abs(matrix[i, j][ind] / lims[1] + 1) < 0.1
                                 ):
-                                    if np.abs(en[ind]) < 0.1 or np.abs(ep[ind]) < 0.1:
+                                    if (np.abs(en[ind]) + np.abs(en[ind])) < 0.1:
                                         pop_indices.append(ind)
                             try:
                                 for p in pop_indices.reverse():
