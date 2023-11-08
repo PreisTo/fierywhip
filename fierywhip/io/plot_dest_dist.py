@@ -3,6 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
+
 
 class DetDistPlot:
     def __init__(
@@ -73,6 +75,8 @@ class DetDistPlot:
             f"Rel. Normalization of dets - 3 or 4 NaI together + 1 BGO - 60/40deg sep/norm_sep\n{np.trace(blank)} total of grbs"
         )
         ax.set_ylabel("Normalizing Det")
+        ax.set_yticks(range(12), labels=lu)
+        ax.set_xticks(range(12), labels=lu)
         ax.set_xlabel("Detector")
         fig.tight_layout()
         plt.subplots_adjust(bottom=0.2, top=0.8)
