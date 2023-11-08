@@ -39,10 +39,11 @@ lu = [
 def download_tte_file(trigger, detector="none"):
     """
     Downloads a tte file
-    :param trigger: string like bn230903824
+    :param trigger: string like GRB230903824
     :param detector: string like n0, n1, ...
     :return: returns path to file
     """
+    assert detector != "none", "You need to specify a detector"
     d = detector
     date = trigger.strip("GRB")[:6]
     year = "20%s" % date[:2]
@@ -95,10 +96,11 @@ def download_tte_file(trigger, detector="none"):
 def download_cspec_file(trigger, detector="none"):
     """
     Downloads a tte file
-    :param trigger: string like bn230903824
+    :param trigger: string like GRB230903824
     :param detector: string like n0, n1, ...
     :return: returns path to file
     """
+    assert detector != "none", "You need to specify a detector"
     d = detector
     date = trigger.strip("GRB")[:6]
     year = "20%s" % date[:2]
