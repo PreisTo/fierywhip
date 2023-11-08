@@ -80,9 +80,12 @@ class GRBModel:
             balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
 
             balrog_like.set_active_measurements("c1-c6")
-            balrog_like.fix_effective_area_correction(
-                self.grb.effective_area_correction(det)
-            )
+            corr = self.grb.effective_area_correction(det)
+
+            if corr != np.nan:
+                balrog_like.fix_effective_area_correction(corr)
+            else:
+                balrog_like.use_effective_area_correction(0.5, 1.5)
             data.append(balrog_like)
         self._data_list = DataList(*data)
 
