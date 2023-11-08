@@ -15,6 +15,7 @@ from threeML.bayesian.bayesian_analysis import BayesianAnalysis
 from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 from threeML.utils.time_interval import TimeIntervalSet
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 from mpi4py import MPI
 
