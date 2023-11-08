@@ -42,9 +42,7 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self, normalizing_matrix=None):
-        self._normalization_matrix = normalizing_matrix
-
+    def __init__(self):
         self._grbs = []
         self._load_swift_bursts()
 
@@ -72,7 +70,6 @@ class GRBList:
                         ra,
                         dec,
                         ra_dec_units,
-                        normalizing_matrix=self._normalization_matrix,
                     )
                     self._grbs.append(grb)
             except GRBInitError:
@@ -110,9 +107,7 @@ class GRBList:
 
 
 class GRB:
-    def __init__(
-        self, name, ra, dec, ra_dec_units=None, grb_time=None, normalizing_matrix=None
-    ):
+    def __init__(self, name, ra, dec, ra_dec_units=None, grb_time=None):
         """
         :param name: name of grb - needs to be like GRB231223001
         :param ra: ra of grb
@@ -152,10 +147,6 @@ class GRB:
         except DetectorSelectionError:
             raise GRBInitError
         self.download_files()
-
-        if normalizing_matrix is not None:
-            self._normalizing_matrix = normalizing_matrix
-            self._get_effective_area_correction()
 
     @property
     def position(self):
