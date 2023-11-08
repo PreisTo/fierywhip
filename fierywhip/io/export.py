@@ -107,19 +107,20 @@ class Exporter:
                             data[i, j, k] = []
             norm_id = lu_id[norm]
             for det in self.grb.detector_selection.good_dets:
-                det_id = lu_id[det]
-                for fp in self._results.optimized_model.free_parameters:
-                    para_name = self._results.optimized_model.free_parameters[fp].name
-                    if f"cons_{det}" in para_name:
-                        data[norm_id, det_id, 0].append(
-                            float(res_df.loc[para_name]["value"])
-                        )
-                        data[norm_id, det_id, 1].append(
-                            float(res_df.loc[para_name]["negative_error"])
-                        )
-                        data[norm_id, det_id, 2].append(
-                            float(res_df.loc[para_name]["positive_error"])
-                        )
+                if det not in ("b0","b1"):
+                    det_id = lu_id[det]
+                    for fp in self._results.optimized_model.free_parameters:
+                        para_name = self._results.optimized_model.free_parameters[fp].name
+                        if f"cons_{det}" in para_name:
+                            data[norm_id, det_id, 0].append(
+                                float(res_df.loc[para_name]["value"])
+                            )
+                            data[norm_id, det_id, 1].append(
+                                float(res_df.loc[para_name]["negative_error"])
+                            )
+                            data[norm_id, det_id, 2].append(
+                                float(res_df.loc[para_name]["positive_error"])
+                            )
             data[norm_id, norm_id, 0].append(1)
             data[norm_id, norm_id, 1].append(0)
             data[norm_id, norm_id, 2].append(0)
