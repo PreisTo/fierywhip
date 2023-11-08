@@ -276,7 +276,7 @@ class GRB:
         norm_det = self._detector_selection.normalizing_det
         good_dets = self._detector_selection.good_dets
         norm_id = lu.index(norm_det)
-        row = self._normalizing_matrix[norm_id]
+        row = self._normalizing_matrix.matrix[norm_id]
         eff_area_dict = {}
         for gd in good_dets:
             if gd != norm_det and gd not in ("b0", "b1"):
