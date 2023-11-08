@@ -15,12 +15,13 @@ class NormalizationMatrix:
         if result_yml is not None:
             self._result_matrix = matrix_from_yaml(result_yml)
         self.create_norm_matrix()
+        print(self._matrix)
 
     def create_norm_matrix(self, lims=(0.5, 1.5)):
         vals = self._result_matrix[:, :, 0]
         error_pos = np.array(self._result_matrix[:, :, 1])
         error_neg = np.array(self._result_matrix[:, :, 2])
-        matrix = np.empty((12, 12))
+        matrix = np.empty((12, 12), dtype=np.float64)
         for i in range(12):
             for j in range(12):
                 try:
@@ -46,14 +47,16 @@ class NormalizationMatrix:
                         ep = np.abs(np.array(ep))
                         en = np.abs(np.array(en))
                         try:
-                            matrix[i, j] = np.average(vals[i, j], weights=1 / (ep + en))
+                            matrix[i, j] = np.float64(
+                                np.average(vals[i, j], weights=1 / (ep + en))
+                            )
                         except ZeroDivisionError:
-                            matrix[i, j] = np.mean(matrix[i, j])
+                            matrix[i, j] = np.float64(np.mean(vals[i, j]))
                     else:
-                        matrix[i, j] = 0
+                        matrix[i, j] = np.float64(0)
                 except ValueError:
-                    blank[i, j] = np.nan
-
+                    matrix[i, j] = np.nan
+        print(matrix)
         self._matrix = matrix
 
     @property
