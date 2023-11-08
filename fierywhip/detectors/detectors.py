@@ -24,11 +24,12 @@ lu = [
 
 
 class DetectorSelection:
-    def __init__(self, grb, max_sep=60, max_sep_normalizing=20, max_number_nai=3):
+    def __init__(self, grb, max_sep=60, max_sep_normalizing=30, min_number_nai = 3,max_number_nai=4):
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
-        self._max_numer_nai = max_number_nai
+        self._max_number_nai = max_number_nai
+        self._min_number_nai = min_number_nai
         self._set_position_interpolator()
         self._set_gbm()
         self._set_gbm_frame()
@@ -44,17 +45,17 @@ class DetectorSelection:
             if d not in ("b0", "b1"):
                 det_counter += 1
                 good_dets.append(d)
-        if det_counter < self._max_numer_nai:
+        if det_counter < self._min_number_nai:
             raise DetectorSelectionError("Too litle NaI dets")
-        elif det_counter > self._max_numer_nai:
+        elif det_counter >= self._max_number_nai:
             temp = np.zeros(det_counter)
             i = 0
             for d in good_dets:
-                temp[i] = self._seps[d]
+                temp[i] = np.abs(self._seps[d])
             good_dets_new = []
             counter = 0
             for el in temp.argsort():
-                if counter < self._max_numer_nai:
+                if counter < self._max_number_nai:
                     good_dets_new.append(good_dets[el])
                 counter += 1
             good_dets = good_dets_new
@@ -67,8 +68,8 @@ class DetectorSelection:
         min_sep = 360
         min_sep_det = ""
         for d in self._good_dets:
-            if seps[d] < min_sep:
-                min_sep = seps[d]
+            if np.abs(seps[d]) < min_sep:
+                min_sep = np.abs(seps[d])
                 min_sep_det = d
 
         if min_sep > self._max_sep_normalizing:
