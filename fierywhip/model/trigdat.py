@@ -120,8 +120,12 @@ class GRBModel:
         comm.Barrier()
         self._bayes.sample()
         comm.Barrier()
-        self.results = self._bayes.results
-        self.results.data_list = self._bayes.data_list
+        if rank == 0:
+            results = self._bayes.results
+            results.data_list = self._bayes.data_list
+        else:
+            results = None
+        self.results = comm.bcast(results, root=0)
 
     def export_results(self):
         if rank == 0:
