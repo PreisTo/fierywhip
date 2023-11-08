@@ -278,9 +278,12 @@ class GRB:
         row = self._normalizing_matrix[norm_id]
         eff_area_dict = {}
         for gd in good_dets:
-            if gd != norm_det:
+            if gd != norm_det and gd not in ("b0", "b1"):
                 i = lu.index(gd)
                 eff_area_dict[gd] = row[i]
+            else:
+                eff_area_dict[norm_det] = 1
+
         self._effective_area_dict = eff_area_dict
 
     def effective_area_correction(self, det):
