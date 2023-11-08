@@ -54,7 +54,7 @@ class NormalizationMatrix:
                 except ValueError:
                     blank[i, j] = np.nan
 
-    self._matrix = matrix
+        self._matrix = matrix
 
     @property
     def matrix(self):
