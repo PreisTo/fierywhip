@@ -14,11 +14,27 @@ from urllib.error import URLError
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
+from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
+
+lu = [
+    "n0",
+    "n1",
+    "n2",
+    "n3",
+    "n4",
+    "n5",
+    "n6",
+    "n7",
+    "n8",
+    "n9",
+    "na",
+    "nb",
+]
 
 
 class GRBList:
@@ -26,7 +42,9 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self):
+    def __init__(self, normalizing_matrix=None):
+        self._normalization_matrix = normalizing_matrix
+
         self._grbs = []
         self._load_swift_bursts()
 
@@ -49,7 +67,13 @@ class GRBList:
                 name = f"GRB{name}"
             try:
                 if not self._check_already_run(name):
-                    grb = GRB(name, ra, dec, ra_dec_units)
+                    grb = GRB(
+                        name,
+                        ra,
+                        dec,
+                        ra_dec_units,
+                        normalizing_matrix=self._normalization_matrix,
+                    )
                     self._grbs.append(grb)
             except GRBInitError:
                 pass
@@ -86,14 +110,16 @@ class GRBList:
 
 
 class GRB:
-    def __init__(self, name, ra, dec, ra_dec_units=None, grb_time=None):
+    def __init__(
+        self, name, ra, dec, ra_dec_units=None, grb_time=None, normalizing_matrix=None
+    ):
         """
         :param name: name of grb - needs to be like GRB231223001
         :param ra: ra of grb
         :param dec: dec of grb
         :param ra_dec_units: units of ra and dec as list like - astropy.units
         :param grb_time: optional datetime object of grb_time
-
+        :param normalizing_matrix: normalizing matrix used to setting the effective area corrections
         """
         self._name = name
         self._active_time = None
@@ -126,6 +152,9 @@ class GRB:
         except DetectorSelectionError:
             raise GRBInitError
         self.download_files()
+
+        if normalizing_matrix is not None:
+            self._normalizing_matrix = normalizing_matrix
 
     @property
     def position(self):
@@ -241,6 +270,21 @@ class GRB:
             tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+
+    def _get_effective_area_correction(self):
+        norm_det = self._detector_selection.normalizing_det
+        good_dets = self._detector_selection.good_dets
+        norm_id = lu.index(norm_det)
+        row = self._normalizing_matrix[norm_id]
+        eff_area_dict = {}
+        for gd in good_dets:
+            if gd != norm_det:
+                i = lu.index(gd)
+                eff_area_dict[gd] = row[i]
+        self._effective_area_dict = eff_area_dict
+
+    def effective_area_correction(self, det):
+        return self._effective_area_dict[det]
 
 
 class GRBInitError(Exception):
