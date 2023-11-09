@@ -116,14 +116,15 @@ class GRBModel:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
+            n_live_points=1200, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
+        comm.Barrier()
         self._bayes.sample()
-        self.results = self._bayes.results
-        self.results.data_list = self._data_list
 
     def export_results(self):
         if rank == 0:
+            self.results = self._bayes.results
+            self.results.data_list = self._data_list
             self.results.write_to(
                 os.path.join(self._temp_chains_dir, "result.fits"), overwrite=True
             )
