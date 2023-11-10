@@ -146,10 +146,9 @@ class GRBModel:
             )
             if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
                 bl.use_effective_area_correction(
-                    (
-                        fierywhip_config.eff_corr_lim_low,
-                        fierywhip_config.eff_corr_lim_high,
-                    )
+                    min_val=fierywhip_config.eff_corr_lim_low,
+                    max_val=fierywhip_config.eff_corr_lim_high,
+                    use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
                 )
             else:
                 bl.fix_effective_area_correction(1)
