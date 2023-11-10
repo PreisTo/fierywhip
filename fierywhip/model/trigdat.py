@@ -14,6 +14,7 @@ from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianAnalysis
 from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 from threeML.utils.time_interval import TimeIntervalSet
+from fierywhip.config.configuration import fierywhip_config
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -116,7 +117,7 @@ class GRBModel:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=1200, chain_name=chain_path, wrapped_params=wrap, verbose=True
+            n_live_points=fierywhip_config.live_points_trigdat, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         comm.Barrier()
         self._bayes.sample()
