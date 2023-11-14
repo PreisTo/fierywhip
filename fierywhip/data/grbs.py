@@ -78,10 +78,12 @@ class GRBList:
             index=None,
         )
         self._table.sort_values(by="name", inplace=True)
+        self._table.reset_index(inplace=True)
+        print(self._table)
         self._create_grb_objects()
 
     def _create_grb_objects(self):
-        for index, row in self._table.iloc[:10].iterrows():
+        for index, row in self._table.iterrows():
             if not self._check_already_run(row["name"]):
                 try:
                     grb = GRB(row["name"], row["ra"], row["dec"])
