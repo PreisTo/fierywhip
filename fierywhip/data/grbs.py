@@ -154,8 +154,10 @@ class GRBList:
                         ret = True
                     else:
                         ret = False
+                else:
+                    ret = False
             else:
-                ret = False
+                ret = None
             ret = comm.bcast(ret, root=0)
             return ret
         else:
