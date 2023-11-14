@@ -17,6 +17,7 @@ from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionEr
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
+import numpy as np
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -36,6 +37,20 @@ lu = [
     "na",
     "nb",
 ]
+month_lu = {
+    "JAN": "01",
+    "FEB": "02",
+    "MAR": "03",
+    "APR": "04",
+    "MAY": "05",
+    "JUN": "06",
+    "JUL": "07",
+    "AUG": "08",
+    "SEP": "09",
+    "OCT": "10",
+    "NOV": "11",
+    "DEC": "12",
+}
 
 
 class GRBList:
@@ -46,7 +61,33 @@ class GRBList:
     def __init__(self, check_finished=True):
         self._check_finished = check_finished
         self._grbs = []
-        self._load_swift_bursts()
+        namess, rass, decss = self._load_swift_bursts()
+        namesi, rasi, decsi, typesi = self._load_ipn_bursts()
+        names_all = namesi
+        ras_all = rasi
+        decs_all = decsi
+        types_all = list(typesi)
+        for i, n in enumerate(namess):
+            if n not in names_all:
+                names_all.append(n)
+                ras_all.append(rass[i])
+                decs_all.append(decss[i])
+                types_all.append("swift")
+        self._table = pd.DataFrame(
+            {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
+            index=None,
+        )
+        self._table.sort_values(by="name", inplace=True)
+        self._create_grb_objects()
+
+    def _create_grb_objects(self):
+        for index, row in self._table.iloc[:10].iterrows():
+            if not self._check_already_run(row["name"]):
+                try:
+                    grb = GRB(row["name"], row["ra"], row["dec"])
+                    self._grbs.append(grb)
+                except GRBInitError:
+                    pass
 
     def _load_swift_bursts(
         self,
@@ -55,27 +96,44 @@ class GRBList:
         """
         Loads Fermi-Swift burst provided in package resources
         """
-        table = pd.read_csv(swift_list, sep=" ", index_col=False, header=None)
-        for j, i in table.iterrows():
-            name = str(i.loc[0])
-            ra = str(i.loc[5])
-            dec = str(i.loc[6])
-            ra_dec_units = (u.hourangle, u.deg)
-            if len(name) < 9:
-                name = f"GRB0{name}"
-            else:
-                name = f"GRB{name}"
-            try:
-                if not self._check_already_run(name):
-                    grb = GRB(
-                        name,
-                        ra,
-                        dec,
-                        ra_dec_units,
-                    )
-                    self._grbs.append(grb)
-            except GRBInitError:
-                pass
+
+        names, ras, decs = [], [], []
+        if fierywhip_config.swift:
+            self._swift_table = pd.read_csv(
+                swift_list, sep=" ", index_col=False, header=None
+            )
+            for j, i in self._swift_table.iterrows():
+                name = str(i.loc[0])
+                ra = str(i.loc[5])
+                dec = str(i.loc[6])
+                ra_dec_units = (u.hourangle, u.deg)
+                if len(name) < 9:
+                    name = f"GRB0{name}"
+                else:
+                    name = f"GRB{name}"
+                names.append(name)
+                coord = SkyCoord(ra=ra, dec=dec, unit=ra_dec_units)
+                ras.append(round(coord.ra.deg, 3))
+                decs.append(round(coord.dec.deg, 3))
+            print("Done loading Swift List")
+        return names, ras, decs
+
+    def _load_ipn_bursts(
+        self, table_path=pkg_resources.resource_filename("fierywhip", "data/ipn.csv")
+    ):
+        names = []
+        ras = []
+        decs = []
+        types = []
+        if fierywhip_config.ipn:
+            self._ipn_table = pd.read_csv(table_path, sep=" ", index_col=False)
+            for i, b in self._ipn_table.iterrows():
+                names.append(f"GRB{str(b['name']).strip('bn')}")
+                ras.append(float(b["ra"]))
+                decs.append(float(b["dec"]))
+                types.append("ipn")
+            print("Done loading IPN list")
+        return names, ras, decs, types
 
     def _check_already_run(
         self,
@@ -96,8 +154,8 @@ class GRBList:
                         ret = True
                     else:
                         ret = False
-                else:
-                    ret = False
+            else:
+                ret = False
             ret = comm.bcast(ret, root=0)
             return ret
         else:
@@ -109,6 +167,10 @@ class GRBList:
         :returns: list with grb objects
         """
         return self._grbs
+
+    @property
+    def table(self):
+        return self._table
 
 
 class GRB:

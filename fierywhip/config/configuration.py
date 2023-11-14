@@ -11,4 +11,7 @@ structure["max_sep"] = 60
 structure["max_sep_norm"] = 40
 structure["max_number_det"] = 4
 structure["min_number_det"] = 3
+structure["ipn"] = True
+structure["swift"] = True
+
 fierywhip_config = OmegaConf.create(structure)
