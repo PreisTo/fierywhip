@@ -5,6 +5,7 @@ from gbmgeometry.gbm_frame import GBMFrame
 import astropy.units as u
 import numpy as np
 from fierywhip.config.configuration import fierywhip_config
+from morgoth.utils.trig_reader import TrigReader
 
 lu = [
     "n0",
@@ -32,18 +33,53 @@ class DetectorSelection:
         max_sep_normalizing=fierywhip_config.max_sep_norm,
         min_number_nai=fierywhip_config.min_number_det,
         max_number_nai=fierywhip_config.max_number_det,
+        mode=fierywhip_config.det_sel.mode,
     ):
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
         self._max_number_nai = max_number_nai
         self._min_number_nai = min_number_nai
+        self._mode = mode
         self._set_position_interpolator()
         self._set_gbm()
         self._set_gbm_frame()
-        self._seps = self.gbm.get_separation(self.grb.position)
-        self._set_good_dets()
-        self._set_normalizing_det()
+        if self._mode == "min_sep":
+            print("Using minimum separation mode")
+            self._seps = self.gbm.get_separation(self.grb.position)
+            self._set_good_dets()
+            self._set_normalizing_det()
+        elif self._mode == "max_sig":
+            print("Using maximum significance mode")
+            self._trigdat_path = self.grb.trigdat
+        else:
+            raise NotImplementedError("Mode not implemented")
+
+    def _set_good_dets_significance(self):
+        tr = TrigReader(self._trigdat_path, fine=True, verbose=False)
+        self.grb.run_timeselection()
+        tr.set_active_time_interval(self.grb.active_time)
+        tr.set_background_selections(*self.grb.bkg_time)
+        self._significances = {}
+        for d in lu:
+            self._significances[d] = tr.time_series[d].significance_per_interval
+        lu_nai = lu[:-2]
+        sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
+        good_dets = []
+        counter = 0
+        i = 0
+        while counter < self._min_number_nai or counter <= self._max_number_nai:
+            det = sorted_sig[i][0]
+            if det in lu_nai:
+                good_dets.append(det)
+                counter += 1
+            i += 1
+        if self._significances["b0"] >= self._significances["b1"]:
+            good_dets.append("b0")
+        else:
+            good_dets.append("b1")
+        self._good_dets = good_dets
+        self._normalizing_det = good_dets[0]
 
     def _set_good_dets(self):
         temp = self._gbm.get_good_detectors(self.grb.position, self._max_sep)
