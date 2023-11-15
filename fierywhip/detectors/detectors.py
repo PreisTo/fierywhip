@@ -6,6 +6,7 @@ import astropy.units as u
 import numpy as np
 from fierywhip.config.configuration import fierywhip_config
 from morgoth.utils.trig_reader import TrigReader
+import numpy as np
 
 lu = [
     "n0",
@@ -63,7 +64,7 @@ class DetectorSelection:
         tr.set_background_selections(*self.grb.bkg_time)
         self._significances = {}
         for d in lu:
-            self._significances[d] = tr.time_series[d].significance_per_interval
+            self._significances[d] = np.max(tr.time_series[d].significance_per_interval)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
         good_dets = []
