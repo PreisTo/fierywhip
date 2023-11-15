@@ -57,7 +57,8 @@ class GRBModel:
             self._setup_model()
 
         # run timeselection for grb
-        self.grb.run_timeselection()
+        if self.grb.active is None:
+            self.grb.run_timeselection()
         self.bkg_fitting()
         self._to_plugin()
         self.fit()
