@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from fierywhip.config.configuration import fierywhip_config
 
 lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
 
@@ -11,7 +12,7 @@ class DetDistPlot:
         self,
         result_path="/home/tobi/Schreibtisch/localizing/det_matrix.npy",
         matrix=None,
-        lims=(0.5, 1.5),
+        lims=(fierywhip_config.eff_corr_lim_low, fierywhip_config.eff_corr_lim_high),
     ):
         if matrix is None:
             self._matrix = np.load(result_path, allow_pickle=True)
@@ -23,6 +24,7 @@ class DetDistPlot:
         error_neg = np.array(self._matrix[:, :, 2])
         print(matrix)
         blank = np.empty((12, 12))
+        self._rejected = {}
         for i in range(12):
             for j in range(12):
                 try:
@@ -39,6 +41,7 @@ class DetDistPlot:
                                     if (np.abs(en[ind]) + np.abs(en[ind])) < 0.1:
                                         pop_indices.append(ind)
                             try:
+                                self._rejected[f"{i},{j}"] = len(pop_indices)
                                 for p in pop_indices.reverse():
                                     matrix[i, j].pop(p)
                                     en.pop(p)
@@ -60,14 +63,25 @@ class DetDistPlot:
                     blank[i, j] = np.nan
 
         print(blank)
-        im = ax.imshow(blank, cmap="coolwarm", vmin=0.5, vmax=1.5)
+        im = ax.imshow(
+            blank,
+            cmap="coolwarm",
+            vmin=fierywhip_config.eff_corr_lim_low,
+            vmax=fierywhip_config.eff_corr_lim_high,
+        )
         for i in range(12):
             blank[i, i] = int(np.sum(matrix[i, i]))
         for index, label in np.ndenumerate(blank):
             i = index[0]
             j = index[1]
             if str(label) != "nan":
-                label = str(label) + f", {len(self._matrix[i,j,0])}"
+                try:
+                    label = (
+                        str(label)
+                        + f", {len(self._matrix[i,j,0])}, {self._rejected[f'{i},{j}']}"
+                    )
+                except KeyError:
+                    label = str(label) + f", {len(self._matrix[i,j,0])}, 0"
                 ax.text(j, i, label, ha="center", va="center")
         ax.axvline(x=5.5, color="black")
         ax.axhline(y=5.5, color="black")
@@ -83,3 +97,4 @@ class DetDistPlot:
         cax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
         fig.colorbar(im, cax=cax, orientation="horizontal")
         fig.savefig("/home/tobi/Schreibtisch/test.pdf")
+        print(self._rejected)
