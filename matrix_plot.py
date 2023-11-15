@@ -15,7 +15,7 @@ if __name__ == "__main__":
         "GRB210308276",
         "GRB211129410",
     ]
-
+    excludes = []
     print(f"These GRBs are excluded: {excludes}")
 
     matrix = matrix_from_yaml(
