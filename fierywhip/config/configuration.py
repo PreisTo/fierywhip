@@ -14,5 +14,5 @@ structure["min_number_det"] = 3
 structure["ipn"] = True
 structure["swift"] = True
 structure["det_sel"] = {}
-structure["det_sel"]["mode"] = "min_sep"
+structure["det_sel"]["mode"] = "max_sig"
 fierywhip_config = OmegaConf.create(structure)

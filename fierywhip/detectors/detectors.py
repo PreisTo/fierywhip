@@ -52,6 +52,7 @@ class DetectorSelection:
         elif self._mode == "max_sig":
             print("Using maximum significance mode")
             self._trigdat_path = self.grb.trigdat
+            self._set_good_dets_significance()
         else:
             raise NotImplementedError("Mode not implemented")
 
