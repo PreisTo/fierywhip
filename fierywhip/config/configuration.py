@@ -15,4 +15,6 @@ structure["ipn"] = True
 structure["swift"] = True
 structure["det_sel"] = {}
 structure["det_sel"]["mode"] = "max_sig"
+structure["timeselection"] = {}
+structure["timeselection"]["save"] = True
 fierywhip_config = OmegaConf.create(structure)

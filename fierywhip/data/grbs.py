@@ -333,10 +333,54 @@ class GRB:
         """
         Timeselection for GRB using morogth auto_loc timeselection
         """
+        flag = False
         if self._active_time is None and self._bkg_time is None:
-            tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
-            self._active_time = tsbb.active_time
-            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+            if os.path.exists(
+                os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
+            ):
+                with open(
+                    os.path.join(
+                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                    ),
+                    "r",
+                ) as f:
+                    ts = yaml.safe_load(f)
+                if self._name in ts.keys():
+                    flag = True
+            if flag:
+                self._active_time = ts[self._name]["active_time"]
+                self._bkg_time = [ts[self._name]["bkg_neg"], ts[self._name]["bkg_pos"]]
+            else:
+                tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
+                self._active_time = tsbb.active_time
+                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+            if fierywhip_config.timeselection.save and flag is not True:
+                if os.path.exists(
+                    os.path.join(
+                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                    )
+                ):
+                    with open(
+                        os.path.join(
+                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                        ),
+                        "r",
+                    ) as f:
+                        ts = yaml.safe_load(f)
+                else:
+                    ts = {}
+                with open(
+                    os.path.join(
+                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                    ),
+                    "w+",
+                ) as f:
+                    ts[self._name] = {
+                        "active_time": self._active_time,
+                        "bkg_neg": self._bkg_time[0],
+                        "bkg_pos": self._bkg_time[1],
+                    }
+                    yaml.safe_dump(ts, f)
 
     def _get_effective_area_correction(self, nm):
         print(type(nm))
