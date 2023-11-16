@@ -377,9 +377,7 @@ class GRB:
                 else:
                     ts = {}
                 try:
-                    os.path.makedirs(
-                        os.path.join(os.environ.get("GBMDATA"), "localizing")
-                    )
+                    os.makedirs(os.path.join(os.environ.get("GBMDATA"), "localizing"))
                 except FileExistsError:
                     pass
                 with open(
