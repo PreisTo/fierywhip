@@ -376,6 +376,12 @@ class GRB:
                         ts = yaml.safe_load(f)
                 else:
                     ts = {}
+                try:
+                    os.path.makedirs(
+                        os.path.join(os.environ.get("GBMDATA"), "localizing")
+                    )
+                except FileExistsError:
+                    pass
                 with open(
                     os.path.join(
                         os.environ.get("GBMDATA"), "localizing/timeselections.yml"
