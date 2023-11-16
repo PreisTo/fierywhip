@@ -429,7 +429,9 @@ class Plots:
             os.makedirs(os.path.join(self._base_dir, "error_3d"))
             fig.savefig(os.path.join(self._base_dir, "error_3d", "test.pdf"))
 
-    def create_all(self, yaml="/home/tobi/Schreibtisch/results_test2.yml"):
+    def create_all(
+        self, yaml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
+    ):
         self.from_result_yaml(yaml, error_dependence=True, error_limit=1)
         self.detector_polar_plot()
         self.separation_det()

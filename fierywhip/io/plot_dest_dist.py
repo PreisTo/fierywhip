@@ -10,7 +10,7 @@ lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
 class DetDistPlot:
     def __init__(
         self,
-        result_path="/home/tobi/Schreibtisch/localizing/det_matrix.npy",
+        result_path=os.path.join(os.environ.get(GBMDATA), "localizing/det_matrix.npy"),
         matrix=None,
         lims=(fierywhip_config.eff_corr_lim_low, fierywhip_config.eff_corr_lim_high),
     ):
@@ -96,5 +96,5 @@ class DetDistPlot:
         plt.subplots_adjust(bottom=0.2, top=0.8)
         cax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
         fig.colorbar(im, cax=cax, orientation="horizontal")
-        fig.savefig("/home/tobi/Schreibtisch/test.pdf")
+        fig.savefig(os.path.join(fierywhip_config.default_plot_path, "test.pdf"))
         print(self._rejected)
