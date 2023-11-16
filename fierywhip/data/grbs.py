@@ -351,9 +351,16 @@ class GRB:
                 self._active_time = ts[self._name]["active_time"]
                 self._bkg_time = [ts[self._name]["bkg_neg"], ts[self._name]["bkg_pos"]]
             else:
-                tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
-                self._active_time = tsbb.active_time
-                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+                try:
+                    tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
+                    self._active_time = tsbb.active_time
+                    self._bkg_time = [
+                        tsbb.background_time_neg,
+                        tsbb.background_time_pos,
+                    ]
+                except Exception as e:
+                    print(e)
+                    raise GRBInitError
             if fierywhip_config.timeselection.save and flag is not True:
                 if os.path.exists(
                     os.path.join(
