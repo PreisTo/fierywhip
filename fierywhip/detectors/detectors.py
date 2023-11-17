@@ -183,6 +183,7 @@ class DetectorSelection:
         return_dict["grb"]["ra"] = float(self.grb.position.ra.deg)
         return_dict["grb"]["dec"] = float(self.grb.position.dec.deg)
         return_dict["separation"] = {}
+        return_dict["significance"] = {}
         for d in self._good_dets:
             try:
                 return_dict[d]["lon"] = None
@@ -190,7 +191,10 @@ class DetectorSelection:
                 return_dict[d] = {}
             return_dict[d]["lon"] = float(self._gbm.get_centers([d])[0].lon.deg)
             return_dict[d]["lat"] = float(self._gbm.get_centers([d])[0].lat.deg)
-            return_dict["separation"][d] = float(self._seps[d])
+            if self._mode == "min_sep":
+                return_dict["separation"][d] = float(self._seps[d])
+            elif self._mode == "max_sig":
+                return_dict["significance"][d] = float(self._significances[d])
         return return_dict
 
 
