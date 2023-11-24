@@ -11,7 +11,9 @@ lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
 class DetDistPlot:
     def __init__(
         self,
-        result_path=os.path.join(os.environ.get(GBMDATA), "localizing/det_matrix.npy"),
+        result_path=os.path.join(
+            os.environ.get("GBMDATA"), "localizing/det_matrix.npy"
+        ),
         matrix=None,
         lims=(fierywhip_config.eff_corr_lim_low, fierywhip_config.eff_corr_lim_high),
     ):
