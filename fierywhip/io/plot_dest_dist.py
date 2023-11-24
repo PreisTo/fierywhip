@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from fierywhip.config.configuration import fierywhip_config
+import os
 
 lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
 
