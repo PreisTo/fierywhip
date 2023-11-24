@@ -178,7 +178,9 @@ class GRBList:
 
 
 class GRB:
-    def __init__(self, name, ra, dec, ra_dec_units=None, grb_time=None):
+    def __init__(
+        self, name, ra, dec, ra_dec_units=None, grb_time=None, run_det_sel=True
+    ):
         """
         :param name: name of grb - needs to be like GRB231223001
         :param ra: ra of grb
@@ -213,11 +215,12 @@ class GRB:
             units = ra_dec_units
         self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
         self._get_trigdat_path()
-        try:
-            self._get_detector_selection()
-        except DetectorSelectionError:
-            raise GRBInitError
-        self.download_files()
+        if run_det_sel:
+            try:
+                self._get_detector_selection()
+            except DetectorSelectionError:
+                raise GRBInitError
+            self.download_files()
 
     @property
     def position(self):
