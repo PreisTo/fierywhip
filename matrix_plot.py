@@ -3,6 +3,7 @@
 from fierywhip.io.export import matrix_from_yaml
 from fierywhip.io.plot_dest_dist import DetDistPlot
 from fierywhip.config.configuration import fierywhip_config
+import os
 
 if __name__ == "__main__":
     excludes = [
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     print(f"These GRBs are excluded: {excludes}")
 
     matrix = matrix_from_yaml(
-        os.path.join(fierywhip_config.default_plot_path, "/localizing/results.yml"),
+        os.path.join(fierywhip_config.default_plot_path, "localizing/results.yml"),
         exclude=excludes,
     )
     plot = DetDistPlot(matrix=matrix)
