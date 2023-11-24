@@ -130,7 +130,7 @@ class Exporter:
             print("Successfully saved matrix to file")
 
 
-def matrix_from_yaml(path, exclude=[]):
+def matrix_from_yaml(path, exclude=[], type="significance"):
     if rank == 0:
         data = np.empty((12, 12, 3), dtype=list)
         for i in range(12):
@@ -142,7 +142,7 @@ def matrix_from_yaml(path, exclude=[]):
             res = yaml.safe_load(f)
         for grb in res.keys():
             if grb not in exclude:
-                dets = list(res[grb]["separation"].keys())
+                dets = list(res[grb][type].keys())
                 use_dets = []
                 for d in dets:
                     if f"cons_{d}" not in res[grb]["fit"]["values"].keys():
