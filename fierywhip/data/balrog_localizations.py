@@ -71,3 +71,6 @@ class BalrogLocalization:
     @property
     def balrog_exists(self):
         return self._exists
+    def save_to_csv(self):
+        with open(self._csv_path,"r") as f:
+            raise NotImplementedError
