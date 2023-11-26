@@ -5,6 +5,29 @@ import json
 from urllib.request import urlopen
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+import pandas as pd
+import os
+from fierywhip.config.configuration import fierywhip_config
+
+result_df = create_df(fierywhip_config.comarison.csv_path)
+
+
+def create_df(result_path):
+    if os.path.exists(result_path):
+        result_df = pd.read_csv(result_df)
+    else:
+        cols = [
+            "grb",
+            "grb_ra",
+            "grb_dec",
+            "balrog_ra",
+            "balrog_dec",
+            "separation",
+            "balrog_1sigma",
+            "balrog_2sigma",
+        ]
+        result_df = pd.DataFrame(columns=cols)
+    return result_df
 
 
 class BalrogLocalization:
@@ -12,16 +35,18 @@ class BalrogLocalization:
     Class to retrieve Balrog locations from website
     """
 
-    def __init__(self, grb: GRB):
+    def __init__(self, grb: GRB, result_df: pd.DataFrame = None):
         assert isinstance(
             grb, GRB
         ), "grb has to be an instance of fierywhip.data.grbs GRB"
         self._grb = grb
+        self._result_df = result_df
         self._exists = self.check_balrog_exists()
         if self._exists:
             self.load_json()
             self.balrog_separation()
         else:
+            print(f"GRB {self._grb.name} is not on grb.mpe.mpg.de")
 
     def check_balrog_exists(self):
         url = f"https://grb.mpe.mpg.de/grb/{self._grb.name}/json"
@@ -71,6 +96,3 @@ class BalrogLocalization:
     @property
     def balrog_exists(self):
         return self._exists
-    def save_to_csv(self):
-        with open(self._csv_path,"r") as f:
-            raise NotImplementedError
