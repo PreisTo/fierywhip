@@ -9,8 +9,6 @@ import pandas as pd
 import os
 from fierywhip.config.configuration import fierywhip_config
 
-result_df = create_df(fierywhip_config.comarison.csv_path)
-
 
 def create_df(result_path):
     if os.path.exists(result_path):
@@ -28,6 +26,16 @@ def create_df(result_path):
         ]
         result_df = pd.DataFrame(columns=cols)
     return result_df
+
+
+def save_df(df, result_path=fierywhip_config.comparison.csv_path):
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+        # TODO
+    df.to_csv(result_path)
+
+
+result_df = create_df(fierywhip_config.comarison.csv_path)
 
 
 class BalrogLocalization:
