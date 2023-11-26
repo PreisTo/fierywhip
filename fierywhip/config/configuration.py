@@ -31,4 +31,6 @@ if not external_config:
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = True
     structure["default_plot_path"] = None
+    structure["comparison"] = {}
+    structure["comparison"]["csv_path"] = None
 fierywhip_config = OmegaConf.create(structure)
