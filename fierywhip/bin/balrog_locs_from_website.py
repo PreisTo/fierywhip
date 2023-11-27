@@ -12,74 +12,70 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 if __name__ == "__main__":
-    grb_list = GRBList(run_det_sel=False)
-    comm.Barrier()
-    if rank == 0:
-        size_per_rank = len(grb_list.grbs) // size
-        rest = len(grb_list.grbs) % size
+    if False:
+        grb_list = GRBList(run_det_sel=False)
+        comm.Barrier()
+        if rank == 0:
+            size_per_rank = len(grb_list.grbs) // size
+            rest = len(grb_list.grbs) % size
+        else:
+            size_per_rank = None
+            rest = None
+        size_per_rank = comm.bcast(size_per_rank, root=0)
+        start_rank = rank * size_per_rank
+        stop_rank = start_rank + size_per_rank
+        if rank == size - 1:
+            stop_rank = len(grb_list.grbs)
+        for grb in grb_list.grbs[start_rank:stop_rank]:
+            bl = BalrogLocalization(grb, result_df)
+            if bl.exists:
+                bl.add_row_df()
+        result_df = comm.gather(result_df, root=0)
     else:
-        size_per_rank = None
-        rest = None
-    size_per_rank = comm.bcast(size_per_rank, root=0)
-    start_rank = rank * size_per_rank
-    stop_rank = start_rank + size_per_rank
-    if rank == size - 1:
-        stop_rank = len(grb_list.grbs)
-    for grb in grb_list.grbs[start_rank:stop_rank]:
-        bl = BalrogLocalization(grb, result_df)
-        if bl.exists:
-            bl.add_row_df()
-    result_df = comm.gather(result_df, root=0)
-
+        result_df = None
     if rank == 0:
-        result_df = pd.concat(result_df)
-        save_df(result_df)
+        if result_df is None:
+            result_df = pd.read_csv(
+                "/home/tobi/data/GBMDATA/localizing/comparison/comparison.csv"
+            )
+        else:
+            result_df = pd.concat(result_df)
+            save_df(result_df)
 
         # plotting
-
-        fig, ax = plt.subplots(1)
-        bins = np.geomspace(1e-1, 360, 25)
-        ax.hist(
-            [
+        keys = ["balrog_1sigma", "balrog_2sigma"]
+        for key in keys:
+            plt.close("all")
+            fig, ax = plt.subplots(1)
+            bins = np.linspace(0, 21, 25)  # np.geomspace(1e-1, 360, 25)
+            ax.hist(
                 result_df["separation"],
-                result_df["balrog_1sigma"],
-                result_df["balrog_2sigma"],
-            ],
-            bins=bins,
-            alpha=0.4,
-            histtype="stepfilled",
-            label=[
-                "Separation to Swift/IPN position",
-                "BALROG 1 sigma",
-                "BALROG 2 sigma",
-            ],
-        )
-        # ax.hist(
-        #    result_df["balrog_1sigma"],
-        #    bins=bins,
-        #    density=True,
-        #    alpha=0.4,
-        #    label="BALROG 1 sigma",
-        # )
-        # ax.hist(
-        #    result_df["balrog_2sigma"],
-        #    bins=bins,
-        #    density=True,
-        #    alpha=0.4,
-        #    label="BALROG 2 sigma",
-        # )
-        ax.legend()
-        ax.set_xscale("log")
-        ax.set_title(f"Error Comparison for {len(result_df['balrog_1sigma'])} GRBs")
-        fig.tight_layout()
-        fig.savefig("/home/tobi/Schreibtisch/comparison.pdf")
+                bins=bins,
+                alpha=0.4,
+                histtype="stepfilled",
+                label="Separation to Swift/IPN position",
+            )
+            ax.hist(
+                result_df[key],
+                bins=bins,
+                alpha=0.4,
+                label=key,
+            )
+
+            ax.legend()
+            ax.set_xlim(0, 20)
+            ax.set_title(
+                f"Error Comparison for {key} using {len(result_df['balrog_1sigma'])} GRBs"
+            )
+            fig.tight_layout()
+            fig.savefig(f"/home/tobi/Schreibtisch/comparison_{key}.pdf")
 
         print("\nAnalysis:")
-        inside_1sig = len(result_df["balrog_1sigma"] <= result_df["separation"]) / len(
-            result_df["balrog_1sigma"]
-        )
-        inside_2sig = len(result_df["balrog_2sigma"] <= result_df["separation"]) / len(
-            result_df["balrog_2sigma"]
-        )
+        inside_1sig = np.sum(
+            result_df["balrog_1sigma"] >= result_df["separation"]
+        ) / np.sum(result_df["balrog_1sigma"] != np.nan)
+        inside_2sig = np.sum(
+            result_df["balrog_2sigma"] >= result_df["separation"]
+        ) / np.sum(result_df["balrog_2sigma"] != np.nan)
         print(inside_1sig, inside_2sig)
     MPI.Finalize()
