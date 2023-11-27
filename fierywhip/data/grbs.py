@@ -58,8 +58,9 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self, check_finished=True):
+    def __init__(self, check_finished=True, run_det_sel=True):
         self._check_finished = check_finished
+        self._run_det_sel = run_det_sel
         self._grbs = []
         namess, rass, decss = self._load_swift_bursts()
         namesi, rasi, decsi, typesi = self._load_ipn_bursts()
@@ -86,7 +87,12 @@ class GRBList:
         for index, row in self._table.iterrows():
             if not self._check_already_run(row["name"]):
                 try:
-                    grb = GRB(row["name"], row["ra"], row["dec"])
+                    grb = GRB(
+                        row["name"],
+                        row["ra"],
+                        row["dec"],
+                        run_det_sel=self._run_det_sel,
+                    )
                     self._grbs.append(grb)
                 except GRBInitError:
                     pass
