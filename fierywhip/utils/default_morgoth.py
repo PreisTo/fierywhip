@@ -245,8 +245,9 @@ class RunMorgoth:
             .deg,
         ]
         result_df.loc[len(result_df)] = row
-        os.rename(
-            result_csv,
-            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
-        )
+        if os.path.exists(result_csv):
+            os.rename(
+                result_csv,
+                os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
+            )
         result_df.to_csv(result_csv)
