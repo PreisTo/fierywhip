@@ -45,6 +45,14 @@ class RunMorgoth:
     def __init__(self, grb: GRB = None):
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
+        self.timeselection()
+        self.fit_background()
+        print("Starting Fit")
+        self.fit()
+        print("Starting Analyzing")
+        self.analyze()
+
+    def timeselection(self):
         ts_available = False
         if os.path.exists(
             os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
@@ -102,6 +110,8 @@ class RunMorgoth:
             pass
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
+
+    def fit_background(self):
         self._bkg_yaml = os.path.join(base_dir, self._grb.name, "bkg_fit.yml")
         self._bkg = BkgFittingTrigdat(
             grb_name=self._grb.name,
@@ -109,7 +119,7 @@ class RunMorgoth:
             trigdat_file=self._trigdat_path,
             time_selection_file_path=self._ts_yaml,
         )
-        print("DOne BkgFittingTrigdat")
+        print("Dne BkgFittingTrigdat")
         self._bkg.save_lightcurves(
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "lc")
         )
@@ -117,10 +127,6 @@ class RunMorgoth:
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "bkg_files")
         )
         self._bkg.save_yaml(self._bkg_yaml)
-        print("Starting Fit")
-        self.fit()
-        print("Starting Analyzing")
-        self.analyze()
 
     def fit(self):
         ncores = str(int(morgoth_config["multinest"]["n_cores"]))
