@@ -12,7 +12,7 @@ from fierywhip.config.configuration import fierywhip_config
 
 def create_df(result_path):
     if os.path.exists(result_path):
-        result_df = pd.read_csv(result_df)
+        result_df = pd.read_csv(result_df, index_col=None)
     else:
         cols = [
             "grb",
@@ -79,10 +79,16 @@ class BalrogLocalization:
         error = 360
         version = 0
         for v in range(len(version_dict)):
-            if error >= version_dict[v]["balrog_one_sig_err_circle"]:
-                if "tte" not in version_dict[v]["version"]:
-                    version = v
-                    error = version_dict[v]["balrog_one_sig_err_circle"]
+            if type(version_dict[v]["balrog_one_sig_err_circle"]) not in (
+                int,
+                float,
+            ):
+                print(f"Faulty error type on website - maybe does not exists at all")
+            else:
+                if error >= version_dict[v]["balrog_one_sig_err_circle"]:
+                    if "tte" not in version_dict[v]["version"]:
+                        version = v
+                        error = version_dict[v]["balrog_one_sig_err_circle"]
         print(
             f"Using {version_dict[version]['version']} out of {[version_dict[i]['version'] for i in range(len(version_dict))]}"
         )
@@ -135,4 +141,4 @@ class BalrogLocalization:
                 "balrog_1sigma": self.grb_dict["balrog_one_sig_err_circle"],
                 "balrog_2sgima": self.grb_dict["balrog_two_sig_err_circle"],
             }
-            self._result_df.append(row)
+            self._result_df.loc[len(self._result_df)] = row
