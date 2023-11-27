@@ -51,7 +51,8 @@ class RunMorgoth:
         self.timeselection()
         self.fit_background()
         print("Starting Fit")
-        # self.fit()
+        # TODO check if fit has already been run
+        self.fit()
         print("Starting Analyzing")
         self.analyze()
 
