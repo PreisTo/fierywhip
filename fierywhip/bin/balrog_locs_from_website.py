@@ -71,11 +71,39 @@ if __name__ == "__main__":
             fig.savefig(f"/home/tobi/Schreibtisch/comparison_{key}.pdf")
 
         print("\nAnalysis:")
-        inside_1sig = np.sum(
-            result_df["balrog_1sigma"] >= result_df["separation"]
-        ) / np.sum(result_df["balrog_1sigma"] != np.nan)
-        inside_2sig = np.sum(
-            result_df["balrog_2sigma"] >= result_df["separation"]
-        ) / np.sum(result_df["balrog_2sigma"] != np.nan)
-        print(inside_1sig, inside_2sig)
+
+        def calc_percentage(sys):
+            inside_1sig = np.sum(
+                result_df["balrog_1sigma"] + sys >= result_df["separation"]
+            ) / np.sum(result_df["balrog_1sigma"] != np.nan)
+            inside_2sig = np.sum(
+                result_df["balrog_2sigma"] + sys >= result_df["separation"]
+            ) / np.sum(result_df["balrog_2sigma"] != np.nan)
+            return inside_1sig, inside_2sig
+
+        fig, ax = plt.subplots(1)
+        steps = 100
+        upper_lim = 90
+        sys_errors = np.geomspace(1e-2, upper_lim, steps)
+        percentage = np.zeros((2, steps), dtype=float)
+        for i in range(steps):
+            res = calc_percentage(sys_errors[i])
+            percentage[0, i] = res[0]
+            percentage[1, i] = res[1]
+        for i in range(2):
+            ax.plot(
+                sys_errors, percentage[i], label=["1sigma + sys", "2sigma + sys"][i]
+            )
+        ax.set_xlabel("Sys Error [deg]")
+        ax.set_ylabel("Percentage")
+        ax.hlines(
+            0.68, 0, upper_lim, linestyles="dashed", label=r"$1\:\sigma$", color="black"
+        )
+        ax.hlines(
+            0.95, 0, upper_lim, linestyles="dotted", label=r"$2\:\sigma$", color="black"
+        )
+        ax.set_xscale("log")
+        ax.legend()
+        fig.tight_layout()
+        fig.savefig("/home/tobi/Schreibtisch/sys_error.pdf")
     MPI.Finalize()
