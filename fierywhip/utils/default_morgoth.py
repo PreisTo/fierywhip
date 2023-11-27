@@ -62,6 +62,8 @@ class RunMorgoth:
                 active_time=ts_dict[self._grb.name]["active_time"],
                 background_time_neg=ts_dict[self._grb.name]["bkg_neg"],
                 background_time_pos=ts_dict[self._grb.name]["bkg_pos"],
+                max_time=float(ts_dict[self._grb.name]["bkg_pos"].split("-")[-1]),
+                fine=True,
             )
         else:
             self._tsbb = TimeSelectionBB(
