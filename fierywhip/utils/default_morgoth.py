@@ -230,8 +230,10 @@ class RunMorgoth:
             result_df = pd.DataFrame(columns=template)
         row = [
             self._grb.name,
-            *result_reader.ra,
-            *result_reader.dec,
+            result_reader.ra[0],
+            result_reader.ra[1],
+            result_reader.dec[0],
+            result_reader.dec[1],
             result_reader._balrog_one_sig_err_circle,
             result_reader._balrog_two_sig_err_circle,
             self._grb.position.ra.deg,
