@@ -253,4 +253,4 @@ class RunMorgoth:
                 result_csv,
                 os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
             )
-        result_df.to_csv(result_csv, index_col=None)
+        result_df.to_csv(result_csv, index=False)
