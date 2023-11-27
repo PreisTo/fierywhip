@@ -119,7 +119,7 @@ class RunMorgoth:
             trigdat_file=self._trigdat_path,
             time_selection_file_path=self._ts_yaml,
         )
-        print("Dne BkgFittingTrigdat")
+        print("Done BkgFittingTrigdat")
         self._bkg.save_lightcurves(
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "lc")
         )
@@ -147,67 +147,46 @@ class RunMorgoth:
     def analyze(
         self,
     ):
+        version = "v00"
         result_file = (
             f"{base_dir}/{self._grb.name}/trigdat/v00/trigdat_v00_loc_results.fits",
         )
-        with fits.open(result_file) as f:
-            values = f["ANALYSIS_RESULTS"].data["VALUE"]
-            pos_error = f["ANALYSIS_RESULTS"].data["POSITIVE_ERROR"]
-            neg_error = f["ANALYSIS_RESULTS"].data["NEGATIVE_ERROR"]
 
-        self._ra = values[0]
-        self._ra_pos_err = pos_error[0]
-        self._ra_neg_err = neg_error[0]
-
-        if np.absolute(self._ra_pos_err) > np.absolute(self._ra_neg_err):
-            self._ra_err = np.absolute(self._ra_pos_err)
-        else:
-            self._ra_err = np.absolute(self._ra_neg_err)
-
-        self._dec = values[1]
-        self._dec_pos_err = pos_error[1]
-        self._dec_neg_err = neg_error[1]
-
-        if np.absolute(self._dec_pos_err) > np.absolute(self._dec_neg_err):
-            self._dec_err = np.absolute(self._dec_pos_err)
-        else:
-            self._dec_err = np.absolute(self._dec_neg_err)
-
-        if self.report_type == "trigdat":
-            self._K = values[2]
-            self._K_pos_err = pos_error[2]
-            self._K_neg_err = neg_error[2]
-
-            if np.absolute(self._K_pos_err) > np.absolute(self._K_neg_err):
-                self._K_err = np.absolute(self._K_pos_err)
-            else:
-                self._K_err = np.absolute(self._K_neg_err)
-
-            self._index = values[3]
-            self._index_pos_err = pos_error[3]
-            self._index_neg_err = neg_error[3]
-
-            if np.absolute(self._index_pos_err) > np.absolute(self._index_neg_err):
-                self._index_err = np.absolute(self._index_pos_err)
-            else:
-                self._index_err = np.absolute(self._index_neg_err)
-
-            try:
-                self._xc = values[4]
-                self._xc_pos_err = pos_error[4]
-                self._xc_neg_err = neg_error[4]
-                if np.absolute(self._xc_pos_err) > np.absolute(self._xc_neg_err):
-                    self._xc_err = np.absolute(self._xc_pos_err)
-                else:
-                    self._xc_err = np.absolute(self._xc_neg_err)
-                self._model = "cpl"
-            except:
-                self._model = "pl"
-        base_job = os.path.join(base_dir, self._grb.name, "trigdat", "v00")
+        base_job = os.path.join(base_dir, grb_name, "trigdat", version)
         post_equal_weights_path = os.path.join(
-            base_job, "chains", f"trigdat_v00_post_equal_weights.dat"
+            base_job, "chains", f"trigdat_{version}_post_equal_weights.dat"
         )
-        res = get_best_fit_with_errors(post_equal_weights_path, self._model)
+        trig_reader = TrigReader(self._trigdat_path)
+        # uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{grb_name[3:5]}/bn{grb_name[3:]}/current/glg_trigdat_all_bn{grb_name[3:]}_{version_base}.fit"
+
+        tf = GBMTriggerFile(
+            None,
+            GBMTime.from_MET(trig_reader._trigtime).utc.replace(" ", "T") + "Z",
+            self._grb.name,
+            None,
+            None,
+            None,
+            "empty",
+            None,
+            None,
+            None,
+        )
+        tf_path = os.path.join(base_dir, self._grb.name, "grb_parameters.yml")
+        tf.write(tf_path)
+        result_reader = ResultReader(
+            grb_name=self._grb.name,
+            report_type="trigdat",
+            version=version,
+            trigger_file=tf_path,
+            time_selection_file=self._ts_yaml,
+            background_file=self._bkg_yaml,
+            post_equal_weights_file=post_equal_weights_path,
+            result_file=result_file,
+            trigdat_file=self._trigdat_path,
+        )
+        #
+        result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
+        result_reader.save_result_yml(result_path)
         if os.path.exists(result_csv):
             result_df = pd.read_csv(result_csv)
         else:
@@ -226,7 +205,10 @@ class RunMorgoth:
             result_df = pd.DataFrame(columns=template)
         row = [
             self._grb.name,
-            *res,
+            *result_reader.ra,
+            *result_reader.dec,
+            result_reader._balrog_one_sig_err_circle,
+            result_reader._balrog_two_sig_err_circle,
             self._grb.position.ra.deg,
             self._grb.position.dec.deg,
             SkyCoord(ra=res[0], dec=res[2], unit=(u.deg, u.deg), frame="icrs")
