@@ -235,7 +235,12 @@ class RunMorgoth:
             result_reader._balrog_two_sig_err_circle,
             self._grb.position.ra.deg,
             self._grb.position.dec.deg,
-            SkyCoord(ra=res[0], dec=res[2], unit=(u.deg, u.deg), frame="icrs")
+            SkyCoord(
+                ra=result_reader.ra[0],
+                dec=result_reader.dec[0],
+                unit=(u.deg, u.deg),
+                frame="icrs",
+            )
             .separation(self._grb.position)
             .deg,
         ]
