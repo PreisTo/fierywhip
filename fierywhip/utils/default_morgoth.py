@@ -65,10 +65,12 @@ class RunMorgoth:
                 max_time=float(ts_dict[self._grb.name]["bkg_pos"].split("-")[-1]),
                 fine=True,
             )
+            print("Done TimeSelectionKnown")
         else:
             self._tsbb = TimeSelectionBB(
                 grb_name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
             )
+            print("Done TimeSelectionBB")
             if os.path.exists(
                 os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
             ):
@@ -106,6 +108,7 @@ class RunMorgoth:
             trigdat_file=self._trigdat_path,
             time_selection_file_path=self._ts_yaml,
         )
+        print("DOne BkgFittingTrigdat")
         self._bkg.save_lightcurves(
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "lc")
         )
@@ -113,7 +116,9 @@ class RunMorgoth:
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "bkg_files")
         )
         self._bkg.save_yaml(self._bkg_yaml)
+        print("Starting Fit")
         self.fit()
+        print("Starting Analyzing")
         self.analyze()
 
     def fit(self):
@@ -131,13 +136,6 @@ class RunMorgoth:
             env=env,
             stdin=subprocess.PIPE,
         )
-        # multinest_fit = MultinestFitTrigdat(
-        #    self._grb.name, "v00", self._trigdat_path, self._bkg_yaml, self._ts_yaml
-        # )
-        # multinest_fit.fit()
-        # mutlinest_fit.save_fit_result()
-        # multinest_fit.create_spectrum_plot()
-        # multinest_fit.move_chains_dir()
 
     def analyze(
         self,

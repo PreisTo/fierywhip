@@ -12,10 +12,11 @@ if __name__ == "__main__":
         )
     except FileNotFoundError:
         already_run = None
-    grb_list = GRBList(run_det_sel=False, testing=False)
+    grb_list = GRBList(run_det_sel=False, testing=True)
     for g in grb_list.grbs:
         if already_run is not None:
             if g.name in already_run["grb"]:
+                print(f"Starting Morgoth for {g.name}")
                 rm = RunMorgoth(g)
         else:
             rm = RunMorgoth(g)
