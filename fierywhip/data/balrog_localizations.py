@@ -8,11 +8,17 @@ import astropy.units as u
 import pandas as pd
 import os
 from fierywhip.config.configuration import fierywhip_config
+import numpy as np
 
 
-def create_df(result_path):
+def create_df(
+    result_path=os.path.join(
+        fierywhip_config.comparison.csv_path, fierywhip_config.comparison.csv_name
+    )
+):
+    result_df = None
     if os.path.exists(result_path):
-        result_df = pd.read_csv(result_df, index_col=None)
+        result_df = pd.read_csv(result_path, index_col=None)
     else:
         cols = [
             "grb",
@@ -131,14 +137,17 @@ class BalrogLocalization:
 
     def add_row_df(self):
         if self._result_df is not None:
-            row = {
-                "grb": self._grb.name,
-                "grb_ra": self._grb.position.ra.deg,
-                "grb_dec": self._grb.position.dec.deg,
-                "separation": self.separation,
-                "balrog_ra": self.balrog_position.ra.deg,
-                "balrog_dec": self.balrog_position.dec.deg,
-                "balrog_1sigma": self.grb_dict["balrog_one_sig_err_circle"],
-                "balrog_2sgima": self.grb_dict["balrog_two_sig_err_circle"],
-            }
+            row = [
+                self._grb.name,
+                self._grb.position.ra.deg,
+                self._grb.position.dec.deg,
+                self.balrog_position.ra.deg,
+                self.balrog_position.dec.deg,
+                self.separation.deg,
+                self._grb_dict["balrog_one_sig_err_circle"],
+                self._grb_dict["balrog_two_sig_err_circle"],
+            ]
+            for i, el in enumerate(row):
+                if el is None:
+                    row[i] = np.nan
             self._result_df.loc[len(self._result_df)] = row
