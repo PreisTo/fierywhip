@@ -126,7 +126,7 @@ class RunMorgoth:
         import subprocess
 
         p = subprocess.check_output(
-            f"/usr/bin/mpiexec -n {ncores} --bind-to core python {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
+            f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
             shell=True,
             env=env,
             stdin=subprocess.PIPE,
