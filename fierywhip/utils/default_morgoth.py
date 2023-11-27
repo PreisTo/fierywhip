@@ -152,7 +152,7 @@ class RunMorgoth:
             f"{base_dir}/{self._grb.name}/trigdat/v00/trigdat_v00_loc_results.fits",
         )
 
-        base_job = os.path.join(base_dir, grb_name, "trigdat", version)
+        base_job = os.path.join(base_dir, self._grb.name, "trigdat", version)
         post_equal_weights_path = os.path.join(
             base_job, "chains", f"trigdat_{version}_post_equal_weights.dat"
         )
