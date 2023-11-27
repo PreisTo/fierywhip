@@ -104,3 +104,21 @@ class BalrogLocalization:
     @property
     def balrog_exists(self):
         return self._exists
+
+    @property
+    def grb_dict(self):
+        return self._grb_dict
+
+    def add_row_df(self):
+        if self._result_df is not None:
+            row = {
+                "grb": self._grb.name,
+                "grb_ra": self._grb.position.ra.deg,
+                "grb_dec": self._grb.position.dec.deg,
+                "separation": self.separation,
+                "balrog_ra": self.balrog_position.ra.deg,
+                "balrog_dec": self.balrog_position.dec.deg,
+                "balrog_1sigma": self.grb_dict["balrog_one_sig_err_circle"],
+                "balrog_2sgima": self.grb_dict["balrog_two_sig_err_circle"],
+            }
+            self._result_df.append(row)
