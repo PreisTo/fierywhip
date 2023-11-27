@@ -91,13 +91,27 @@ class RunMorgoth:
         self.analyze()
 
     def fit(self):
-        multinest_fit = MultinestFitTrigdat(
-            self._grb.name, "v00", self._trigdat_path, self._bkg_yaml, self._ts_yaml
+        ncores = str(int(morgoth_config["multinest"]["n_cores"]))
+        path_to_python = morgoth_config["multinest"]["path_to_python"]
+
+        fit_script_path = f"{morgoth.__file__[:-12]}/auto_loc/fit_script.py"
+
+        env = os.environ
+        import subprocess
+
+        p = subprocess.check_output(
+            f"/home/balrog/general_sw/mpich/bin/mpiexec -n {ncores} --bind-to core python {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
+            shell=True,
+            env=env,
+            stdin=subprocess.PIPE,
         )
-        multinest_fit.fit()
-        mutlinest_fit.save_fit_result()
-        multinest_fit.create_spectrum_plot()
-        multinest_fit.move_chains_dir()
+        # multinest_fit = MultinestFitTrigdat(
+        #    self._grb.name, "v00", self._trigdat_path, self._bkg_yaml, self._ts_yaml
+        # )
+        # multinest_fit.fit()
+        # mutlinest_fit.save_fit_result()
+        # multinest_fit.create_spectrum_plot()
+        # multinest_fit.move_chains_dir()
 
     def analyze(
         self,
