@@ -6,4 +6,6 @@ from fierywhip.data.balrog_localizations import save_df, BalrogLocalization, res
 if __name__ == "__main__":
     grb_list = GRBList(run_det_sel=False)
     for grb in grb_list.grbs:
-        BalrogLocalization
+        bl = BalrogLocalization(grb, result_df)
+        bl.add_row_df()
+    save_df(result_df)
