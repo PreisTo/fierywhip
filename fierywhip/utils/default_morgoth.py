@@ -51,7 +51,7 @@ class RunMorgoth:
         self.timeselection()
         self.fit_background()
         print("Starting Fit")
-        self.fit()
+        # self.fit()
         print("Starting Analyzing")
         self.analyze()
 
@@ -151,8 +151,12 @@ class RunMorgoth:
         self,
     ):
         version = "v00"
-        result_file = (
-            f"{base_dir}/{self._grb.name}/trigdat/v00/trigdat_v00_loc_results.fits",
+        result_file = os.path.join(
+            base_dir,
+            self._grb.name,
+            "trigdat",
+            "v00",
+            "trigdat_v00_loc_results.fits",
         )
 
         base_job = os.path.join(base_dir, self._grb.name, "trigdat", version)
