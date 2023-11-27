@@ -31,6 +31,7 @@ from fierywhip.data.grbs import GRB
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+import astropy.io.fits as fits
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
