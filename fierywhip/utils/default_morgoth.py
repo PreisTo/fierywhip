@@ -213,7 +213,7 @@ class RunMorgoth:
             save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
         )
         if os.path.exists(result_csv):
-            result_df = pd.read_csv(result_csv)
+            result_df = pd.read_csv(result_csv, index_col=None)
         else:
             template = [
                 "grb",
@@ -253,4 +253,4 @@ class RunMorgoth:
                 result_csv,
                 os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
             )
-        result_df.to_csv(result_csv)
+        result_df.to_csv(result_csv, index_col=None)
