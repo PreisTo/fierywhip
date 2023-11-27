@@ -46,7 +46,7 @@ class RunMorgoth:
         self._trigdat_path = self._grb.trigdat
         ts_available = False
         if os.path.exists(
-            os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections,yml")
+            os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
         ):
             with open(
                 os.path.join(
