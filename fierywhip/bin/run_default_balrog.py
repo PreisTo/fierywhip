@@ -19,4 +19,5 @@ if __name__ == "__main__":
                 print(f"Starting Morgoth for {g.name}")
                 rm = RunMorgoth(g)
         else:
+            print(f"Starting Morgoth for {g.name}")
             rm = RunMorgoth(g)
