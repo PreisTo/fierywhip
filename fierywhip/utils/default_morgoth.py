@@ -32,6 +32,8 @@ from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 import astropy.io.fits as fits
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -157,7 +159,17 @@ class RunMorgoth:
             base_job, "chains", f"trigdat_{version}_post_equal_weights.dat"
         )
         trig_reader = TrigReader(self._trigdat_path)
-        # uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{grb_name[3:5]}/bn{grb_name[3:]}/current/glg_trigdat_all_bn{grb_name[3:]}_{version_base}.fit"
+        i = 0
+        flag = True
+        while flag:
+            v = f"v0{i}"
+            uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{self._grb.name[3:5]}/bn{self._grb.name[3:]}/current/glg_trigdat_all_bn{self._grb.name[3:]}_{v}.fit"
+            try:
+                res = urlopen(uri)
+                flag = False
+            except HTTPError:
+                i += 1
+                flag = True
 
         tf = GBMTriggerFile(
             None,
@@ -166,7 +178,8 @@ class RunMorgoth:
             None,
             None,
             None,
-            "empty",
+            uri,
+            None,
             None,
             None,
             None,
