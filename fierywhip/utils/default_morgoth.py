@@ -29,6 +29,8 @@ from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.data.grbs import GRB
 from mpi4py import MPI
+from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -77,6 +79,12 @@ class RunMorgoth:
             version="v00",
             trigdat_file=self._trigdat_path,
             time_selection_file_path=self._ts_yaml,
+        )
+        self._bkg.save_lightcurves(
+            os.path.join(base_dir, self._grb.name, "trigdat", "v00", "lc")
+        )
+        self._bkg.save_bkg_file(
+            os.path.join(base_dir, self._grb.name, "trigdat", "v00", "bkg_files")
         )
         self._bkg.save_yaml(self._bkg_yaml)
         self.fit()
@@ -159,12 +167,30 @@ class RunMorgoth:
             result_df = pd.read_csv(result_csv)
         else:
             template = [
+                "grb",
                 "ra",
                 "ra_err",
                 "dec",
                 "dec_err",
                 "balrog_1sigma",
                 "balrog_2sigma",
+                "grb_ra",
+                "grb_dec",
+                "separation",
             ]
             result_df = pd.DataFrame(columns=template)
-        result.loc[len(result_df)] = res
+        row = [
+            self._grb.name,
+            *res,
+            self._grb.position.ra.deg,
+            self._grb.position.dec.deg,
+            SkyCoord(ra=res[0], dec=res[2], unit=(u.deg, u.deg), frame="icrs")
+            .separation(self._grb.position)
+            .deg,
+        ]
+        result_df.loc[len(result_df)] = row
+        os.rename(
+            result_csv,
+            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
+        )
+        result_df.to_csv(result_csv)
