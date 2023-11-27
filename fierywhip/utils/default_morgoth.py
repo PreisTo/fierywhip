@@ -67,6 +67,30 @@ class RunMorgoth:
             self._tsbb = TimeSelectionBB(
                 grb_name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
             )
+            if os.path.exists(
+                os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
+            ):
+                with open(
+                    os.path.join(
+                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                    ),
+                    "r",
+                ) as f:
+                    temp = yaml.safe_load(f)
+            else:
+                temp = {}
+            temp[self._grb.name] = {}
+            temp[self._grb.name]["active_time"] = self._tsbb.active_time
+            temp[self._grb.name]["bkg_neg"] = self._tsbb.background_time_neg
+            temp[self._grb.name]["bkg_pos"] = self._tsbb.background_time_pos
+            with open(
+                os.path.join(
+                    os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                ),
+                "w+",
+            ) as f:
+                yaml.safe_dump(temp, f)
+
         try:
             os.makedirs(os.path.join(base_dir, self._grb.name))
         except FileExistsError:
