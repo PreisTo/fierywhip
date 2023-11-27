@@ -58,10 +58,11 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self, check_finished=True, run_det_sel=True):
+    def __init__(self, check_finished=True, run_det_sel=True, testing=False):
         self._check_finished = check_finished
         self._run_det_sel = run_det_sel
         self._grbs = []
+        self._testing = testing
         namess, rass, decss = self._load_swift_bursts()
         namesi, rasi, decsi, typesi = self._load_ipn_bursts()
         names_all = namesi
@@ -84,7 +85,12 @@ class GRBList:
         self._create_grb_objects()
 
     def _create_grb_objects(self):
-        for index, row in self._table.iterrows():
+        if self._testing:
+            stop = 20
+        else:
+            stop = len(self._table)
+
+        for index, row in self._table.iloc[0:stop].iterrows():
             if not self._check_already_run(row["name"]):
                 try:
                     grb = GRB(
@@ -220,8 +226,9 @@ class GRB:
         else:
             units = ra_dec_units
         self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
+
+        self._get_trigdat_path()
         if run_det_sel:
-            self._get_trigdat_path()
             try:
                 self._get_detector_selection()
             except DetectorSelectionError:
