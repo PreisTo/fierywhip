@@ -28,14 +28,21 @@ def create_df(result_path):
     return result_df
 
 
-def save_df(df, result_path=fierywhip_config.comparison.csv_path):
+def save_df(
+    df,
+    result_path=fierywhip_config.comparison.csv_path,
+    result_filename=fierywhip_config.comparison.csv_name,
+):
     if not os.path.exists(result_path):
         os.makedirs(result_path)
-        # TODO
-    df.to_csv(result_path)
+    df.to_csv(os.path.join(result_path, result_filename), index=False)
 
 
-result_df = create_df(fierywhip_config.comarison.csv_path)
+result_df = create_df(
+    os.path.join(
+        fierywhip_config.comparison.csv_path, fierywhip_config.comparison.csv_name
+    )
+)
 
 
 class BalrogLocalization:
@@ -49,7 +56,7 @@ class BalrogLocalization:
         ), "grb has to be an instance of fierywhip.data.grbs GRB"
         self._grb = grb
         self._result_df = result_df
-        self._exists = self.check_balrog_exists()
+        self.check_balrog_exists()
         if self._exists:
             self.load_json()
             self.balrog_separation()
@@ -61,8 +68,10 @@ class BalrogLocalization:
         response = urlopen(url)
         self._json_website = json.loads(response.read().decode("utf-8"))
         if len(self._json_website) > 0:
+            self._exists = True
             return True
         else:
+            self._exists = False
             return False
 
     def load_json(self):
@@ -85,9 +94,14 @@ class BalrogLocalization:
             unit=[u.deg, u.deg],
             frame="icrs",
         )
+        self.balrog_separation()
 
     def balrog_separation(self):
         self._separation = self._grb.position.separation(self._balrog_position)
+
+    @property
+    def exists(self):
+        return self._exists
 
     @property
     def grb_dict(self):

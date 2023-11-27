@@ -33,4 +33,5 @@ if not external_config:
     structure["default_plot_path"] = None
     structure["comparison"] = {}
     structure["comparison"]["csv_path"] = None
+    structure["comparison"]["csv_name"] = None
 fierywhip_config = OmegaConf.create(structure)
