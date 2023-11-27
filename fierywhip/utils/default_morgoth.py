@@ -34,6 +34,7 @@ import astropy.units as u
 import astropy.io.fits as fits
 from urllib.request import urlopen
 from urllib.error import HTTPError
+from morgoth.utils.plot_utils import create_corner_all_plot
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -200,6 +201,12 @@ class RunMorgoth:
         #
         result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
         result_reader.save_result_yml(result_path)
+
+        create_corner_all_plot(
+            post_equal_weights_path,
+            model="cpl",
+            save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
+        )
         if os.path.exists(result_csv):
             result_df = pd.read_csv(result_csv)
         else:
