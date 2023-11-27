@@ -220,8 +220,8 @@ class GRB:
         else:
             units = ra_dec_units
         self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
-        self._get_trigdat_path()
         if run_det_sel:
+            self._get_trigdat_path()
             try:
                 self._get_detector_selection()
             except DetectorSelectionError:
