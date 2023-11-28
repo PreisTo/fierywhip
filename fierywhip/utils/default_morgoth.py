@@ -154,7 +154,7 @@ class RunMorgoth:
                 self._grb.name,
                 "trigdat",
                 "v00",
-                "trigdat_v00_l0oc_results.fits",
+                "trigdat_v00_loc_results.fits",
             )
         ):
             run_fit = False
