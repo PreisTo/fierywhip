@@ -56,9 +56,12 @@ class RunMorgoth:
         print("Starting Fit")
         # TODO check if fit has already been run
         start_time = datetime.now()
-        self.fit()
+        run_fit = self.fit()
         stop_time = datetime.now()
-        self._runtime = (stop_time - start_time).total_seconds
+        if run_fit:
+            self._runtime = (stop_time - start_time).total_seconds
+        else:
+            self._runtime = np.nan
         print("Starting Analyzing")
         self.analyze()
 
@@ -145,12 +148,25 @@ class RunMorgoth:
         fit_script_path = f"{morgoth.__file__[:-12]}/auto_loc/fit_script.py"
 
         env = os.environ
-        p = subprocess.check_output(
-            f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
-            shell=True,
-            env=env,
-            stdin=subprocess.PIPE,
-        )
+        if os.path.exists(
+            os.path.join(
+                base_dir,
+                self._grb.name,
+                "trigdat",
+                "v00",
+                "ttrigdat_v00_l0oc_results.fits",
+            )
+        ):
+            run_fit = False
+        else:
+            run_fit = True
+            p = subprocess.check_output(
+                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
+                shell=True,
+                env=env,
+                stdin=subprocess.PIPE,
+            )
+        return run_fit
 
     def analyze(
         self,
