@@ -85,10 +85,14 @@ class GRBList:
         self._create_grb_objects()
 
     def _create_grb_objects(self):
-        if self._testing:
-            stop = 20
-        else:
-            stop = len(self._table)
+        if type(self._testing) == bool:
+            if self._testing:
+                stop = 20
+            else:
+                stop = len(self._table)
+
+        elif type(self._testing) == int:
+            stop = self._testing
 
         for index, row in self._table.iloc[0:stop].iterrows():
             if not self._check_already_run(row["name"]):
