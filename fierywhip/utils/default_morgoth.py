@@ -59,7 +59,7 @@ class RunMorgoth:
         run_fit = self.fit()
         stop_time = datetime.now()
         if run_fit:
-            self._runtime = float((stop_time - start_time).total_seconds)
+            self._runtime = float((stop_time - start_time).total_seconds())
         else:
             self._runtime = np.nan
         print("Starting Analyzing")
