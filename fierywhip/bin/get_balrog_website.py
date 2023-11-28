@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
-from fierywhip.data.grbs import GRBList, GRB
-from fierywhip.data.balrog_localizations import save_df, BalrogLocalization, result_df
+from fierywhip.frameworks.grbs import GRBList, GRB
+from fierywhip.frameworks.balrog_localizations import (
+    save_df,
+    BalrogLocalization,
+    result_df,
+)
 import matplotlib.pyplot as plt
 import numpy as np
 from mpi4py import MPI

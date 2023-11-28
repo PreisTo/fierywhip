@@ -27,7 +27,7 @@ from morgoth.auto_loc.time_selection import TimeSelectionBB, TimeSelectionKnown
 from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
-from fierywhip.data.grbs import GRB
+from fierywhip.frameworks.grbs import GRB
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u

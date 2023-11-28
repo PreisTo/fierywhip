@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from fierywhip.data.grbs import GRB, GRBList
+from fierywhip.frameworks.grbs import GRB, GRBList
 from fierywhip.model.model import GRBModel
 from fierywhip.io.export import Exporter
 from threeML.minimizer.minimization import FitFailed

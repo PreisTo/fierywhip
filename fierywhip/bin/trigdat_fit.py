@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.io.export import matrix_from_yaml
-from fierywhip.data.grbs import GRB, GRBList
+from fierywhip.frameworks.grbs import GRB, GRBList
 from fierywhip.model.trigdat import GRBModel
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 import os

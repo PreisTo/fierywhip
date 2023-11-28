@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 import yaml
-from fierywhip.utils.detectors import detector_list, nai_list, name_to_id
+from fierywhip.utils.detector_utils import detector_list, nai_list, name_to_id
 import math
 import os
 import matplotlib

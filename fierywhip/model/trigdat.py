@@ -12,7 +12,9 @@ from threeML.utils.data_builders.time_series_builder import TimeSeriesBuilder
 from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianAnalysis
-from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
+from threeML.io.plotting.post_process_data_plots import (
+    display_spectrum_model_counts,
+)
 from threeML.utils.time_interval import TimeIntervalSet
 from fierywhip.config.configuration import fierywhip_config
 import os

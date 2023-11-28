@@ -33,7 +33,7 @@ import numpy as np
 import yaml
 import matplotlib.pyplot as plt
 from fierywhip.utils.swift import check_swift
-from fierywhip.utils.detectors import calc_angular_incident
+from fierywhip.utils.detector_utils import calc_angular_incident
 from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file, download_gbm_file
 import pkg_resources
