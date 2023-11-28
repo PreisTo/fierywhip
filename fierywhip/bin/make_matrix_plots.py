@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from fierywhip.io.export import matrix_from_yaml
-from fierywhip.io.plot_dest_dist import DetDistPlot
+from fierywhip.io.plotting.plot_dest_dist import DetDistPlot
 from fierywhip.config.configuration import fierywhip_config
 import os
 
