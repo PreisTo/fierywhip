@@ -35,6 +35,8 @@ import astropy.io.fits as fits
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from morgoth.utils.plot_utils import create_corner_all_plot
+from datetime import datetime
+import subprocess
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -52,7 +54,10 @@ class RunMorgoth:
         self.fit_background()
         print("Starting Fit")
         # TODO check if fit has already been run
+        start_time = datetime.now()
         self.fit()
+        stop_time = datetime.now()
+        self._runtime = (stop_time - start_time).total_seconds
         print("Starting Analyzing")
         self.analyze()
 
@@ -139,8 +144,6 @@ class RunMorgoth:
         fit_script_path = f"{morgoth.__file__[:-12]}/auto_loc/fit_script.py"
 
         env = os.environ
-        import subprocess
-
         p = subprocess.check_output(
             f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat",
             shell=True,
@@ -214,6 +217,9 @@ class RunMorgoth:
         )
         if os.path.exists(result_csv):
             result_df = pd.read_csv(result_csv, index_col=None)
+            if "runtime_fit" not in result_df.columns:
+                vals = np.zeros(len(result_df)) + np.nan
+                result_df["runtime"] = vals
         else:
             template = [
                 "grb",
@@ -226,6 +232,7 @@ class RunMorgoth:
                 "grb_ra",
                 "grb_dec",
                 "separation",
+                "runtime_fit",
             ]
             result_df = pd.DataFrame(columns=template)
         row = [
@@ -246,6 +253,7 @@ class RunMorgoth:
             )
             .separation(self._grb.position)
             .deg,
+            self._runtime,
         ]
         result_df.loc[len(result_df)] = row
         if os.path.exists(result_csv):
