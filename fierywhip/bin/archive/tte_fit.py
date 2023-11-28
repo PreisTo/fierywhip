@@ -18,7 +18,7 @@ from threeML.utils.data_builders.fermi.gbm_data import GBMTTEFile
 from threeML.utils.data_builders.time_series_builder import TimeSeriesBuilder
 from threeML.utils.time_series.event_list import EventListWithDeadTime
 from threeML.utils.spectrum.binned_spectrum import BinnedSpectrumWithDispersion
-from threeML.io.plotting.plotting.post_process_data_plots import display_spectrum_model_counts
+from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 from astropy.stats import bayesian_blocks
 from threeML.plugins.OGIPLike import OGIPLike
 from threeML import *
