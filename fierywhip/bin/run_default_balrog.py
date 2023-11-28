@@ -8,7 +8,8 @@ import os
 if __name__ == "__main__":
     try:
         already_run = pd.read_csv(
-            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
+            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv"),
+            index_col=None,
         )
     except FileNotFoundError:
         already_run = None
