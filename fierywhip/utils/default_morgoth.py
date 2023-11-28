@@ -37,6 +37,7 @@ from urllib.error import HTTPError
 from morgoth.utils.plot_utils import create_corner_all_plot
 from datetime import datetime
 import subprocess
+import numpy as np
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
