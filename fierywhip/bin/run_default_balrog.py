@@ -12,7 +12,7 @@ if __name__ == "__main__":
         )
     except FileNotFoundError:
         already_run = None
-    grb_list = GRBList(run_det_sel=False, testing=50)
+    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=50)
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
