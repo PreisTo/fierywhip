@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from fierywhip.utils.default_morgoth import RunMorgoth
-from fierywhip.data.grbs import GRBList, GRB
+from fierywhip.frameworks.grbs import GRBList, GRB
 import pandas as pd
 import os
 

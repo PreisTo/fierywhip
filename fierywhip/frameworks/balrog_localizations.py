@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from fierywhip.data.grbs import GRB
+from fierywhip.frameworks.grbs import GRB
 import json
 from urllib.request import urlopen
 from astropy.coordinates import SkyCoord
@@ -59,7 +59,7 @@ class BalrogLocalization:
     def __init__(self, grb: GRB, result_df: pd.DataFrame = None):
         assert isinstance(
             grb, GRB
-        ), "grb has to be an instance of fierywhip.data.grbs GRB"
+        ), "grb has to be an instance of fierywhip.frameworks.grbs GRB"
         self._grb = grb
         self._result_df = result_df
         self.check_balrog_exists()
