@@ -298,7 +298,7 @@ class FitTTE:
                     free_position=free_position,
                 )
             if fix_correction is None:
-                if d not in ("b0", "b1",self._normalizing_det):
+                if d not in ("b0", "b1", self._normalizing_det):
                     bl.use_effective_area_correction(0.5, 1.5)
                 else:
                     bl.fix_effective_area_correction(1)
@@ -456,7 +456,7 @@ class FitTTE:
         sep = self.gbm.get_separation(self.grb_position)
         temp = 180
         normalizing_det = ""
-        for d,s in sep.items():
+        for d, s in sep.items():
             if s < temp:
                 temp = s
                 normalizing_det = d

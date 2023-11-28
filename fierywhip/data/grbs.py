@@ -59,6 +59,15 @@ class GRBList:
     """
 
     def __init__(self, check_finished=True, run_det_sel=True, testing=False):
+        """
+        :param check_finished:  looks up the localizing/results.yml if GRB is
+                                already in there
+        :param run_det_sel: pass through argument for GRB class - run detector
+                            selection
+        :param testing: run the whole dataset
+        :type testing:  bool or int: if bool then first 20 entries will be used
+                        if int this will define number of entries
+        """
         self._check_finished = check_finished
         self._run_det_sel = run_det_sel
         self._grbs = []

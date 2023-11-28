@@ -14,6 +14,5 @@ if __name__ == "__main__":
             exporter = Exporter(model)
             exporter.export_yaml()
             exporter.export_matrix()
-        except (FitFailed,TypeError,IndexError, RuntimeError, FileNotFoundError) as e:
+        except (FitFailed, TypeError, IndexError, RuntimeError, FileNotFoundError) as e:
             print(e)
-
