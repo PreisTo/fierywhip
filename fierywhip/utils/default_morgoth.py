@@ -217,7 +217,7 @@ class RunMorgoth:
         )
         if os.path.exists(result_csv):
             result_df = pd.read_csv(result_csv, index_col=None)
-            if "runtime" not in result_df.columns:
+            if "runtime_fit" not in result_df.columns:
                 vals = np.zeros(len(result_df)) + np.nan
                 result_df["runtime"] = vals
         else:
@@ -232,7 +232,7 @@ class RunMorgoth:
                 "grb_ra",
                 "grb_dec",
                 "separation",
-                "runtime",
+                "runtime_fit",
             ]
             result_df = pd.DataFrame(columns=template)
         row = [
