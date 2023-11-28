@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 from threeML import *
-from fierywhip.utils.detectors import name_to_id, detector_list
+from fierywhip.utils.detector_utils import name_to_id, detector_list
 from mpi4py import MPI
 import yaml
 
