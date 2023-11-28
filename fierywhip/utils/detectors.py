@@ -8,7 +8,8 @@ from astropy import units as u
 from gbmgeometry.position_interpolator import PositionInterpolator
 import numpy as np
 
-def calc_angular_incident(grb_position, gbm, gbm_time, interpolator,use_dets = None):
+
+def calc_angular_incident(grb_position, gbm, gbm_time, interpolator, use_dets=None):
     assert type(grb_position) is SkyCoord, "grb_position has to be SkyCoord"
     assert type(gbm) is GBM, "gbm_frame has to be GBM"
     assert type(gbm_time) is GBMTime, "gbm_time has to be GBMTime"
