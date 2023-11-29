@@ -4,7 +4,7 @@ from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
-from threeML.utils.data_list import DataList
+from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name_to_id, detector_list
 from fierywhip.frameworks.grbs import GRB
