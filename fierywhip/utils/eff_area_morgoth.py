@@ -6,7 +6,7 @@ from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
 from threeML.utils.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.utils.detector_utils import name_to_id
+from fierywhip.utils.detector_utils import name_to_id, detector_list
 from fierywhip.frameworks.grbs import GRB
 import yaml
 import os
@@ -106,11 +106,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         # trig_data = trig_reader.to_plugin(*self._use_dets)
         trig_data = []
         for d in self._use_dets:
-            # TODO check if det as string or int is needed
-            speclike = trig_reader._time_series[d].to_spectrumlike()
+            speclike = trig_reader.time_series[d].to_spectrumlike()
             time = 0.5 * (
-                trig_reader._time_series[det].tstart
-                + trig_reader._time_series[det].tstop
+                trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
             balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
             balrog_like.set_active_measurements("c1-c6")
