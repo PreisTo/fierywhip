@@ -8,6 +8,7 @@ from threeML.utils.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name_to_id
 from fierywhip.frameworks.grbs import GRB
+import yaml
 import os
 
 
@@ -29,6 +30,11 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         det_sel_mode: str = "default",
     ):
         self._grb = grb
+        self._version = version
+        self._bkg_fit_yaml_file = bkg_fit_yaml_file
+        self._time_selection_yaml_file = time_selection_yaml_file
+        self._trigdat_file = trigdat_file
+
         self._use_eff_area = use_eff_area
         if self._use_eff_area:
             self._grb._get_effective_area_correction(
@@ -36,18 +42,41 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
                 ).matrix
             )
+
+        super().__init__(
+            grb_name, version, trigdat_file, bkg_fit_yaml_file, time_selection_yaml_file
+        )
+
         if det_sel_mode != "default":
             if det_sel_mode == "max_sig":
                 self._grb._get_detector_selection(
                     max_number_nai=5, min_number_nai=5, mode=det_sel_mode
                 )
+                self._normalizing_det = self._grb.detector_selection.normalizing_det
+                self._use_dets = self._grb.detector_selection.good_dets
             else:
                 raise AssertionError("This detector selection mode is not supported")
-        # TODO detetector selection needs to happen here and and safe to bkg_fit_yaml
-        # set self._normalizing_det
-        super().__init__(
-            grb_name, version, trigdat_file, bkg_fit_yaml_file, time_selection_yaml_file
-        )
+            self.load_essenitals()
+        else:
+            if self._use_eff_area:
+                print(
+                    "Currently doing this is absolutely useless and will likely worsen the results"
+                )
+                super().load_essentials()
+                # just use the first one as normalizing det
+                self._normalizing_det = self._use_dets[0]
+
+    def load_essenitals(self):
+        with open(self._bkg_fit_yaml_file, "r") as f:
+            data = yaml.safe_load(f)
+            self._bkg_fit_yaml_file = data["bkg_fit_files"]
+
+        with open(self._time_selection_yaml_file, "r") as f:
+            data = yaml.safe_load()
+            self._active_time = (
+                f"{data['active_time']['start']}-{data['active_time']['stop']}"
+            )
+            self._fine = data["fine"]
 
     def _set_plugins(self):
         """
@@ -77,6 +106,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         # trig_data = trig_reader.to_plugin(*self._use_dets)
         trig_data = []
         for d in self._use_dets:
+            # TODO check if det as string or int is needed
             speclike = trig_reader._time_series[d].to_spectrumlike()
             time = 0.5 * (
                 trig_reader._time_series[det].tstart
