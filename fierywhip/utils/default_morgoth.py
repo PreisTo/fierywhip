@@ -51,17 +51,22 @@ class RunMorgoth:
     def __init__(self, grb: GRB = None):
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
-        self.timeselection()
+        start_ts = datetime.now()
+        run_ts = self.timeselection()
+        stop_ts = datetime.stop()
+        if not run_ts:
+            self._runtime_ts = float((stop_ts - start_ts).total_seconds())
+        else:
+            self._runtime_ts = np.nan
         self.fit_background()
         print("Starting Fit")
-        # TODO check if fit has already been run
-        start_time = datetime.now()
+        start_fit = datetime.now()
         run_fit = self.fit()
-        stop_time = datetime.now()
+        stop_fit = datetime.now()
         if run_fit:
-            self._runtime = float((stop_time - start_time).total_seconds())
+            self._runtime_fit = float((stop_fit - start_fit).total_seconds())
         else:
-            self._runtime = np.nan
+            self._runtime_fit = np.nan
         print("Starting Analyzing")
         self.analyze()
 
@@ -123,6 +128,7 @@ class RunMorgoth:
             pass
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
+        return ts_available
 
     def fit_background(self):
         self._bkg_yaml = os.path.join(base_dir, self._grb.name, "bkg_fit.yml")
@@ -233,11 +239,6 @@ class RunMorgoth:
             save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
         )
         if os.path.exists(result_csv):
-            result_df = pd.read_csv(result_csv, index_col=None)
-            if "runtime_fit" not in result_df.columns:
-                vals = np.zeros(len(result_df)) + np.nan
-                result_df["runtime"] = vals
-        else:
             template = [
                 "grb",
                 "ra",
@@ -251,6 +252,13 @@ class RunMorgoth:
                 "separation",
                 "runtime_fit",
             ]
+
+            result_df = pd.read_csv(result_csv, index_col=None)
+            for k in template:
+                if k not in result_df.columns:
+                    vals = np.zeros(len(result_df)) + np.nan
+                    result_df[k] = vals
+        else:
             result_df = pd.DataFrame(columns=template)
         row = [
             self._grb.name,
@@ -270,7 +278,8 @@ class RunMorgoth:
             )
             .separation(self._grb.position)
             .deg,
-            self._runtime,
+            self._runtime_fit,
+            self._runtime_ts,
         ]
         result_df.loc[len(result_df)] = row
         if os.path.exists(result_csv):
