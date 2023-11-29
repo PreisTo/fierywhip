@@ -13,18 +13,16 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 if __name__ == "__main__":
-    if rank == 0:
+    if use_eff_area:
         nm_object = NormalizationMatrix(
             result_yml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
         )
         norm_matrix = nm_object.matrix.copy()
-    else:
-        norm_matrix = np.empty((12, 12), dtype=np.float64)
-    comm.Bcast(norm_matrix, root=0)
     grb_list = GRBList(check_finished=False)
 
     for grb in grb_list.grbs:
-        grb._get_effective_area_correction(norm_matrix)
+        if use_eff_area:
+            grb._get_effective_area_correction(norm_matrix)
         grb_model = GRBModel(grb)
         grb_model.fit()
         grb_model.export_results()
