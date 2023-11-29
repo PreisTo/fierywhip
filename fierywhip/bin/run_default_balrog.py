@@ -14,7 +14,7 @@ if __name__ == "__main__":
         )
     else:
         already_run = None
-    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=100)
+    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
