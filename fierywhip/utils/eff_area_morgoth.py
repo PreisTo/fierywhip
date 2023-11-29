@@ -38,9 +38,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             )
         if det_sel_mode != "default":
             if det_sel_mode == "max_sig":
-                raise NotImplementedError
-            elif det_sel_mode == "min_sep":
-                raise NotImplementedError
+                self._grb._get_detector_selection(
+                    max_number_nai=5, min_number_nai=5, mode=det_sel_mode
+                )
             else:
                 raise AssertionError("This detector selection mode is not supported")
         # TODO detetector selection needs to happen here and and safe to bkg_fit_yaml
