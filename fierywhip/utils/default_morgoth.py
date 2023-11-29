@@ -53,7 +53,7 @@ class RunMorgoth:
         self._trigdat_path = self._grb.trigdat
         start_ts = datetime.now()
         run_ts = self.timeselection()
-        stop_ts = datetime.stop()
+        stop_ts = datetime.now()
         if not run_ts:
             self._runtime_ts = float((stop_ts - start_ts).total_seconds())
         else:
