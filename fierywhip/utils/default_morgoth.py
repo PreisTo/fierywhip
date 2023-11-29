@@ -251,6 +251,7 @@ class RunMorgoth:
                 "grb_dec",
                 "separation",
                 "runtime_fit",
+                "runtime_ts",
             ]
 
             result_df = pd.read_csv(result_csv, index_col=None)
