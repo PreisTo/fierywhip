@@ -5,14 +5,10 @@ from fierywhip.frameworks.grbs import GRB, GRBList
 from fierywhip.model.trigdat import GRBModel
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 import os
-from mpi4py import MPI
 import numpy as np
 
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-size = comm.Get_size()
-
 if __name__ == "__main__":
+    use_eff_area = False
     if use_eff_area:
         nm_object = NormalizationMatrix(
             result_yml=os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
