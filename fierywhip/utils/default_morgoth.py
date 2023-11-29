@@ -28,6 +28,7 @@ from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
+from fierywhip.utils.eff_area_morgoth import MultineestFitTrigdatEffArea
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -289,3 +290,26 @@ class RunMorgoth:
                 os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "backup.csv"),
             )
         result_df.to_csv(result_csv, index=False)
+
+
+class RunEffAreaMorgoth(RunMorgoth):
+    def __init__(self, grb: GRB = None, use_eff_area: bool = False):
+        assert isinstance(
+            grb, GRB
+        ), "grb needs to be of type fierywhip.frameworks.grbs.GRB"
+        self._use_eff_area = use_eff_area
+        super().__init__(grb)
+
+    def fit(self):
+        multinest_fit = MultineestFitTrigdatEffArea(
+            self._grb.name,
+            "v00",
+            self._grb.trigdat,
+            self._bkg_yaml,
+            self._ts_yaml,
+            self._use_eff_area,
+        )
+        multinest_fit.fit()
+        multinest_fit.save_fit_result()
+        multinest_fit.create_spectrum_plot()
+        multinest_fit.move_chains_dir()
