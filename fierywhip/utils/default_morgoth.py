@@ -34,7 +34,7 @@ from astropy.coordinates import SkyCoord
 import astropy.units as u
 import astropy.io.fits as fits
 from urllib.request import urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from morgoth.utils.plot_utils import create_corner_all_plot
 from datetime import datetime
 import subprocess
@@ -200,7 +200,7 @@ class RunMorgoth:
             try:
                 res = urlopen(uri)
                 flag = False
-            except HTTPError:
+            except (HTTPError, URLError):
                 i += 1
                 flag = True
 
