@@ -417,7 +417,6 @@ class GRB:
                     yaml.safe_dump(ts, f)
 
     def _get_effective_area_correction(self, nm):
-        print(type(nm))
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
         good_dets = self._detector_selection.good_dets
