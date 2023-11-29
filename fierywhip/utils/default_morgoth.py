@@ -238,22 +238,22 @@ class RunMorgoth:
             model="cpl",
             save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
         )
-        if os.path.exists(result_csv):
-            template = [
-                "grb",
-                "ra",
-                "ra_err",
-                "dec",
-                "dec_err",
-                "balrog_1sigma",
-                "balrog_2sigma",
-                "grb_ra",
-                "grb_dec",
-                "separation",
-                "runtime_fit",
-                "runtime_ts",
-            ]
+        template = [
+            "grb",
+            "ra",
+            "ra_err",
+            "dec",
+            "dec_err",
+            "balrog_1sigma",
+            "balrog_2sigma",
+            "grb_ra",
+            "grb_dec",
+            "separation",
+            "runtime_fit",
+            "runtime_ts",
+        ]
 
+        if os.path.exists(result_csv):
             result_df = pd.read_csv(result_csv, index_col=None)
             for k in template:
                 if k not in result_df.columns:
