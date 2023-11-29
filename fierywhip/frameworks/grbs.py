@@ -344,18 +344,12 @@ class GRB:
         else:
             raise GRBInitError
 
-    def _get_detector_selection(
-        self,
-        max_sep=fierywhip_config.max_sep,
-        max_sep_normalizing=fierywhip_config.max_sep_norm,
-    ):
+    def _get_detector_selection(self, **kwargs):
         """
         :param max_sep: max separation of center from det in deg
         :param max_sep_normalization: max sep of center for det used as normalization
         """
-        self._detector_selection = DetectorSelection(
-            self, max_sep=max_sep, max_sep_normalizing=max_sep_normalizing
-        )
+        self._detector_selection = DetectorSelection(self, **kwargs)
         print(self._detector_selection.good_dets)
 
     def run_timeselection(self):
