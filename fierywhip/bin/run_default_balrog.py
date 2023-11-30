@@ -22,9 +22,15 @@ if __name__ == "__main__":
         if already_run is not None:
             if g.name not in list(already_run["grb"]) and g.name not in excludes:
                 print(f"Starting Morgoth for {g.name}")
-                rm = RunMorgoth(g)
+                try:
+                    rm = RunMorgoth(g)
+                except RuntimeError:
+                    pass
             else:
                 print(f"Skipping Morgoth for {g.name}")
         else:
             print(f"Starting Morgoth for {g.name}")
-            rm = RunMorgoth(g)
+            try:
+                rm = RunMorgoth(g)
+            except RuntimeError:
+                pass
