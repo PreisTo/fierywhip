@@ -14,11 +14,12 @@ if __name__ == "__main__":
         )
     else:
         already_run = None
+    excludes = ["GRB110108977"]
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
-            if g.name not in list(already_run["grb"]):
+            if g.name not in list(already_run["grb"]) or g.name in exludes:
                 print(f"Starting Morgoth for {g.name}")
                 rm = RunMorgoth(g)
             else:
