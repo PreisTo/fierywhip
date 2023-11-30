@@ -85,6 +85,7 @@ class RunMorgoth:
                 ts_dict = yaml.safe_load(f)
             if self._grb.name in ts_dict.keys():
                 ts_available = True
+        ts_available = False
         if ts_available:
             self._tsbb = TimeSelectionKnown(
                 active_time=ts_dict[self._grb.name]["active_time"],

@@ -65,7 +65,6 @@ class GRBModel:
         self._to_plugin()
         self.fit()
 
-    # TODO BKG Fit and Timeseries
     def bkg_fitting(self):
         temp_timeseries = {}
         temp_responses = {}
