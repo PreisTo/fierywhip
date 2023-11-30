@@ -16,6 +16,7 @@ if __name__ == "__main__":
         already_run = None
     excludes = ["GRB110108977"]
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
+    print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
