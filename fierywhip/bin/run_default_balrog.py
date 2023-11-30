@@ -20,7 +20,7 @@ if __name__ == "__main__":
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
-            if g.name not in list(already_run["grb"]) or g.name not in excludes:
+            if g.name not in list(already_run["grb"]) and g.name not in excludes:
                 print(f"Starting Morgoth for {g.name}")
                 rm = RunMorgoth(g)
             else:
