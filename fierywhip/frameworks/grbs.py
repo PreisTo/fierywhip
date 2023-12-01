@@ -72,38 +72,52 @@ class GRBList:
         self._run_det_sel = run_det_sel
         self._grbs = []
         self._testing = testing
-        namess, rass, decss = self._load_swift_bursts()
-        namesi, rasi, decsi, typesi = self._load_ipn_bursts()
-        names_all = namesi
-        ras_all = rasi
-        decs_all = decsi
-        types_all = list(typesi)
-        for i, n in enumerate(namess):
-            if n not in names_all:
-                names_all.append(n)
-                ras_all.append(rass[i])
-                decs_all.append(decss[i])
-                types_all.append("swift")
-        self._table = pd.DataFrame(
-            {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
-            index=None,
-        )
-        self._table.sort_values(by="name", inplace=True)
-        self._table.reset_index(inplace=True)
-        print(self._table)
+        if rank == 0:
+            namess, rass, decss = self._load_swift_bursts()
+            namesi, rasi, decsi, typesi = self._load_ipn_bursts()
+            names_all = namesi
+            ras_all = rasi
+            decs_all = decsi
+            types_all = list(typesi)
+            for i, n in enumerate(namess):
+                if n not in names_all:
+                    names_all.append(n)
+                    ras_all.append(rass[i])
+                    decs_all.append(decss[i])
+                    types_all.append("swift")
+            self._table = pd.DataFrame(
+                {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
+                index=None,
+            )
+            self._table.sort_values(by="name", inplace=True)
+            self._table.reset_index(inplace=True)
+        else:
+            self._table = None
+            self._check_already_run = None
+
+        self._table = comm.bcast(self._table, root=0)
+        self._check_already_run = comm.bcast(self._check_already_run, root=0)
         self._create_grb_objects()
 
     def _create_grb_objects(self):
-        if type(self._testing) == bool:
-            if self._testing:
-                stop = 20
-            else:
-                stop = len(self._table)
+        grbs_temp = []
+        if rank == 0:
+            if type(self._testing) == bool:
+                if self._testing:
+                    stop_last = 20
+                else:
+                    stop_last = len(self._table)
 
-        elif type(self._testing) == int:
-            stop = self._testing
-
-        for index, row in self._table.iloc[0:stop].iterrows():
+            elif type(self._testing) == int:
+                stop_last = self._testing
+            size_per_rank = stop_last // size
+        size_per_rank = comm.bcast(size_per_rank, root=0)
+        stop_last = comm.bcast(stop_last, root=0)
+        start = size_per_rank * rank
+        stop = size_per_rank * (rank + 1)
+        if rank == size - 1:
+            stop = stop_last
+        for index, row in self._table.iloc[start:stop].iterrows():
             if not self._check_already_run(row["name"]):
                 try:
                     grb = GRB(
@@ -112,9 +126,17 @@ class GRBList:
                         row["dec"],
                         run_det_sel=self._run_det_sel,
                     )
-                    self._grbs.append(grb)
+                    grbs_temp.append(grb)
                 except GRBInitError:
                     pass
+        comm.Barrier()
+        grbs = comm.gather(grbs_temp, root=0)
+        if rank == 0:
+            for g in grbs:
+                self._grbs.append(*g)
+        else:
+            self._grbs = None
+        self._grbs = comm.bcast(self._grbs, root=0)
 
     def _load_swift_bursts(
         self,
