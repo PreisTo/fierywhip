@@ -111,6 +111,9 @@ class GRBList:
             elif type(self._testing) == int:
                 stop_last = self._testing
             size_per_rank = stop_last // size
+        else:
+            size_per_rank = None
+            stop_last = None
         size_per_rank = comm.bcast(size_per_rank, root=0)
         stop_last = comm.bcast(stop_last, root=0)
         start = size_per_rank * rank
