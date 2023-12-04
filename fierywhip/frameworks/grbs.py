@@ -178,7 +178,7 @@ class GRBList:
         ras = []
         decs = []
         types = []
-        if fierywhip_config.ipn:
+        if fierywhip_config.ipn.small:
             self._ipn_table = pd.read_csv(table_path, sep=" ", index_col=False)
             for i, b in self._ipn_table.iterrows():
                 names.append(f"GRB{str(b['name']).strip('bn')}")
@@ -194,6 +194,8 @@ class GRBList:
             "fierywhip", "data/ipn_all_data.csv"
         ),
     ):
+        if fierywhip_config.ipn.full:
+
         # TODO use more IPN locs
         raise NotImplementedError
 
