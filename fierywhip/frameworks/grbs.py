@@ -123,6 +123,7 @@ class GRBList:
         for index, row in self._table.iloc[start:stop].iterrows():
             if not self._check_already_run(row["name"]):
                 try:
+                    print(f"Creating Object for {row['name']}")
                     grb = GRB(
                         row["name"],
                         row["ra"],
@@ -136,7 +137,7 @@ class GRBList:
         grbs = comm.gather(grbs_temp, root=0)
         if rank == 0:
             for g in grbs:
-                self._grbs.append(*g)
+                self._grbs.extend(g)
         else:
             self._grbs = None
         self._grbs = comm.bcast(self._grbs, root=0)
