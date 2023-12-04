@@ -187,6 +187,15 @@ class GRBList:
             print("Done loading IPN list")
         return names, ras, decs, types
 
+    def _load_ipn_arcs(
+        self,
+        table_path=pkg_resources.resource_filename(
+            "fierywhip", "data/ipn_all_data.csv"
+        ),
+    ):
+        # TODO use more IPN locs
+        raise NotImplementedError
+
     def _check_already_run(
         self,
         name,
