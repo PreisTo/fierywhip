@@ -97,7 +97,8 @@ class GRBList:
 
         self._table = comm.bcast(self._table, root=0)
         self._check_already_run = comm.bcast(self._check_already_run, root=0)
-        self._create_grb_objects()
+        if fierywhip_config.grb_list.create_objects:
+            self._create_grb_objects()
 
     def _create_grb_objects(self):
         grbs_temp = []
@@ -195,9 +196,20 @@ class GRBList:
         ),
     ):
         if fierywhip_config.ipn.full:
-
+            table = pd.read_csv(table_path)
+            print(table.head())
+            names = []
+            total_seconds = 24 * 3600
+            year = table["YEAR"].astype(str)[2:]
+            month = np.array(
+                [month_lu[i.strip("'").strip(" ")] for i in table["MONTH"]]
+            )
+            day = table["DAY"].astype(str)
+            sod = table["SOD"].astype(int)
+            sod = sod / total_seconds
+            table["name"] = f"GRB{year}{month}{day}{str(sod).zfill(3)}"
         # TODO use more IPN locs
-        raise NotImplementedError
+        return table
 
     def _check_already_run(
         self,
