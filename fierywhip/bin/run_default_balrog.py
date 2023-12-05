@@ -2,6 +2,7 @@
 
 from fierywhip.utils.default_morgoth import RunMorgoth
 from fierywhip.frameworks.grbs import GRBList, GRB
+from threeML.minimizer.minimization import FitFailed
 import pandas as pd
 import os
 
@@ -14,7 +15,7 @@ if __name__ == "__main__":
         )
     else:
         already_run = None
-    excludes = ["GRB091208410","GRB110108977"]
+    excludes = ["GRB091208410", "GRB110108977"]
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
     print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
     for g in grb_list.grbs:
@@ -24,7 +25,7 @@ if __name__ == "__main__":
                 print(f"Starting Morgoth for {g.name}")
                 try:
                     rm = RunMorgoth(g)
-                except RuntimeError:
+                except (RuntimeError, FitFailed):
                     pass
             else:
                 print(f"Skipping Morgoth for {g.name}")
@@ -32,5 +33,5 @@ if __name__ == "__main__":
             print(f"Starting Morgoth for {g.name}")
             try:
                 rm = RunMorgoth(g)
-            except RuntimeError:
+            except (RuntimeError, FitFailed):
                 pass
