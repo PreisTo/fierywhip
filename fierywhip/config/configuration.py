@@ -26,7 +26,7 @@ if not external_config:
     structure["min_number_det"] = 3
     structure["ipn"] = {}
     structure["ipn"]["small"] = True
-    strucutre["ipn"]["full"] = True
+    structure["ipn"]["full"] = True
     structure["swift"] = True
     structure["det_sel"] = {}
     structure["det_sel"]["mode"] = "max_sig"
@@ -36,4 +36,5 @@ if not external_config:
     structure["comparison"] = {}
     structure["comparison"]["csv_path"] = None
     structure["comparison"]["csv_name"] = None
+    structure["grb_list"] = {"create_objects": True}
 fierywhip_config = OmegaConf.create(structure)
