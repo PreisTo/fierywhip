@@ -10,7 +10,8 @@ from gbmgeometry.utils.gbm_time import GBMTime
 import os
 from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file
-from urllib.error import URLError
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
@@ -195,20 +196,68 @@ class GRBList:
             "fierywhip", "data/ipn_all_data.csv"
         ),
     ):
-        if fierywhip_config.ipn.full:
-            table = pd.read_csv(table_path)
-            print(table.head())
-            names = []
-            total_seconds = 24 * 3600
-            year = table["YEAR"].astype(str)[2:]
-            month = np.array(
-                [month_lu[i.strip("'").strip(" ")] for i in table["MONTH"]]
+        table = pd.read_csv(table_path)
+        print(table.head())
+        names = []
+        total_seconds = 24 * 3600
+        year = table["YEAR"].astype(str)
+        month = np.array([month_lu[i.strip(" ")[1:-1]] for i in table["MONTH"]])
+        day = table["DAY"].astype(str)
+        sod = table["SOD"].astype(int)
+        sod = round(sod / total_seconds * 1000, 0)
+        sod = sod.astype(int)
+        for y, m, d, s in zip(year, month, day, sod):
+            names.append(
+                f"GRB{y[2:]}{str(m).zfill(2)}{str(d).zfill(2)}{str(s).zfill(3)}"
             )
-            day = table["DAY"].astype(str)
-            sod = table["SOD"].astype(int)
-            sod = sod / total_seconds
-            table["name"] = f"GRB{year}{month}{day}{str(sod).zfill(3)}"
-        # TODO use more IPN locs
+        table["name"] = np.array(names)
+        base_url = "https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/"
+        folder_trigdat = "/current/glg_trigdat_all_bn"
+        non_exist = []
+        if rank == 0:
+            check_per_rank = len(table) // size
+
+        else:
+            check_per_rank = None
+        check_per_rank = comm.bcast(check_per_rank, root=0)
+        start = rank * check_per_rank
+        stop = (rank + 1) * check_per_rank
+        if rank == size - 1:
+            stop = len(table)
+        comm.Barrier()
+        for i in range(start, stop, 1):
+            name = table.iloc[i]["name"]
+            year = table.iloc[i]["YEAR"]
+            url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
+            exists = False
+            for v in range(3):
+                url_version = f"{url}{v}.fit"
+                try:
+                    print(f"Checking {url_version}")
+                    response = urlopen(url_version)
+                    exists = True
+                    break
+                except HTTPError:
+                    pass
+            if not exists:
+                non_exist.append(i)
+        if rank == 0:
+            drop_list = []
+            res = comm.gather(non_exist)
+            for r in res:
+                drop_list.extend(r)
+
+        else:
+            drop_list = None
+        drop_list = comm.bcast(drop_list, root=0)
+        if rank == 0:
+            print(f"Before removing: {len(table)}")
+            table.drop(non_exist, inplace=True)
+            print(f"After removing: {len(table)}")
+        else:
+            table = None
+        table = comm.bcast(table, root=0)
+
         return table
 
     def _check_already_run(
