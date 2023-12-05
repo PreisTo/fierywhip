@@ -19,6 +19,7 @@ from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
+from threeML.utils.progress_bar import trange
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -197,7 +198,6 @@ class GRBList:
         ),
     ):
         table = pd.read_csv(table_path)
-        print(table.head())
         names = []
         total_seconds = 24 * 3600
         year = table["YEAR"].astype(str)
@@ -225,22 +225,40 @@ class GRBList:
         if rank == size - 1:
             stop = len(table)
         comm.Barrier()
-        for i in range(start, stop, 1):
-            name = table.iloc[i]["name"]
-            year = table.iloc[i]["YEAR"]
-            url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
-            exists = False
-            for v in range(3):
-                url_version = f"{url}{v}.fit"
-                try:
-                    print(f"Checking {url_version}")
-                    response = urlopen(url_version)
-                    exists = True
-                    break
-                except HTTPError:
-                    pass
-            if not exists:
-                non_exist.append(i)
+        versions_to_check = 3
+        if rank == 0:
+            print(f"This shows the progress for rank 0:\n")
+            for i in trange(start, stop, 1):
+                name = table.iloc[i]["name"]
+                year = table.iloc[i]["YEAR"]
+                url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
+                exists = False
+                for v in range(versions_to_check):
+                    url_version = f"{url}{v}.fit"
+                    try:
+                        response = urlopen(url_version)
+                        exists = True
+                        break
+                    except HTTPError:
+                        pass
+                if not exists:
+                    non_exist.append(i)
+        else:
+            for i in range(start, stop, 1):
+                name = table.iloc[i]["name"]
+                year = table.iloc[i]["YEAR"]
+                url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
+                exists = False
+                for v in range(versions_to_check):
+                    url_version = f"{url}{v}.fit"
+                    try:
+                        response = urlopen(url_version)
+                        exists = True
+                        break
+                    except HTTPError:
+                        pass
+                if not exists:
+                    non_exist.append(i)
         if rank == 0:
             drop_list = []
             res = comm.gather(non_exist)
