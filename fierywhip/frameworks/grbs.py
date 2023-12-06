@@ -224,44 +224,26 @@ class GRBList:
         stop = (rank + 1) * check_per_rank
         if rank == size - 1:
             stop = len(table)
-        comm.Barrier()
         versions_to_check = 3
-        if rank == 0:
-            print(f"This shows the progress for rank 0:\n")
-            for i in trange(start, stop, 1):
-                name = table.iloc[i]["name"]
-                year = table.iloc[i]["YEAR"]
-                url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
-                exists = False
-                for v in range(versions_to_check):
-                    url_version = f"{url}{v}.fit"
-                    try:
-                        response = urlopen(url_version)
-                        exists = True
-                        break
-                    except HTTPError:
-                        pass
-                if not exists:
-                    non_exist.append(i)
-        else:
-            for i in range(start, stop, 1):
-                name = table.iloc[i]["name"]
-                year = table.iloc[i]["YEAR"]
-                url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
-                exists = False
-                for v in range(versions_to_check):
-                    url_version = f"{url}{v}.fit"
-                    try:
-                        response = urlopen(url_version)
-                        exists = True
-                        break
-                    except HTTPError:
-                        pass
-                if not exists:
-                    non_exist.append(i)
+        for i in trange(start, stop, 1):
+            name = table.iloc[i]["name"]
+            year = table.iloc[i]["YEAR"]
+            url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
+            exists = False
+            for v in range(versions_to_check):
+                url_version = f"{url}{v}.fit"
+                try:
+                    response = urlopen(url_version)
+                    exists = True
+                    break
+                except HTTPError:
+                    pass
+            if not exists:
+                non_exist.append(i)
+        print(f"Rank {rank} finished")
+        res = comm.gather(non_exist, root=0)
         if rank == 0:
             drop_list = []
-            res = comm.gather(non_exist)
             for r in res:
                 drop_list.extend(r)
 
@@ -275,8 +257,25 @@ class GRBList:
         else:
             table = None
         table = comm.bcast(table, root=0)
+        for el in table.iterrows():
+            # get the relevant numbers
 
-        return table
+            ra1 = el["IPN RA1"]
+            ra2 = el["IPN RA2"]
+
+            dec1 = el["IPN DEC1"]
+            dec2 = el["IPN DEC2"]
+
+            r1 = el["IPN R1"]
+            r2 = el["IPN R2"]
+
+            dr1 = el["IPN DR1"]
+            dr2 = el["IPN DR2"]
+
+        names = []
+        ras = []
+        decs = []
+        return names, ras, decs
 
     def _check_already_run(
         self,
