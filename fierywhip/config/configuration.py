@@ -25,8 +25,8 @@ if not external_config:
     structure["max_number_det"] = 3
     structure["min_number_det"] = 3
     structure["ipn"] = {}
-    structure["ipn"]["small"] = True
-    structure["ipn"]["full"] = True
+    structure["ipn"]["small"] = False
+    structure["ipn"]["full"] = False
     structure["swift"] = True
     structure["det_sel"] = {}
     structure["det_sel"]["mode"] = "max_sig"
