@@ -25,7 +25,7 @@ if __name__ == "__main__":
                 print(f"Starting Morgoth for {g.name}")
                 try:
                     rm = RunMorgoth(g)
-                except (RuntimeError, FitFailed):
+                except (RuntimeError, FitFailed, IndexError):
                     pass
             else:
                 print(f"Skipping Morgoth for {g.name}")
@@ -33,5 +33,5 @@ if __name__ == "__main__":
             print(f"Starting Morgoth for {g.name}")
             try:
                 rm = RunMorgoth(g)
-            except (RuntimeError, FitFailed):
+            except (RuntimeError, FitFailed, IndexError):
                 pass
