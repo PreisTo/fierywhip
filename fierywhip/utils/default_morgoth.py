@@ -253,9 +253,6 @@ class RunMorgoth:
             "separation",
             "runtime_fit",
             "runtime_ts",
-            "active_time",
-            "bkg_neg",
-            "bkg_pos",
         ]
 
         if os.path.exists(result_csv):
@@ -286,9 +283,6 @@ class RunMorgoth:
             .deg,
             self._runtime_fit,
             self._runtime_ts,
-            self._grb.active_time,
-            self._grb.bkg_time[0],
-            self._grb.bkg_time[1],
         ]
         result_df.loc[len(result_df)] = row
         if os.path.exists(result_csv):
