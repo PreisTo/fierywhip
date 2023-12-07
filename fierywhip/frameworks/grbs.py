@@ -76,17 +76,17 @@ class GRBList:
         self._testing = testing
         if rank == 0:
             namess, rass, decss = self._load_swift_bursts()
-            namesi, rasi, decsi, typesi = self._load_ipn_bursts()
-            names_all = namesi
-            ras_all = rasi
-            decs_all = decsi
-            types_all = list(typesi)
-            for i, n in enumerate(namess):
-                if n not in names_all:
-                    names_all.append(n)
-                    ras_all.append(rass[i])
-                    decs_all.append(decss[i])
-                    types_all.append("swift")
+            #namesi, rasi, decsi, typesi = self._load_ipn_bursts()
+            names_all = namess
+            ras_all = rass
+            decs_all = decss
+            types_all =["swift"]*len(decs_all)
+            #for i, n in enumerate(namess):
+            #    if n not in names_all:
+            #        names_all.append(n)
+            #        ras_all.append(rass[i])
+            #        decs_all.append(decss[i])
+            #        types_all.append("swift")
             self._table = pd.DataFrame(
                 {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
                 index=None,
