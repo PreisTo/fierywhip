@@ -152,7 +152,7 @@ class GRBList:
         """
         Loads Fermi-Swift burst provided in package resources
         """
-
+        # TODO check if position correct
         names, ras, decs = [], [], []
         if fierywhip_config.swift:
             self._swift_table = pd.read_csv(
