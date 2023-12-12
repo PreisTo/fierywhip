@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from fierywhip.utils.default_morgoth import RunMorgoth
+from fierywhip.utils.default_morgoth import RunMorgoth,RunEffAreaMorgoth
 from fierywhip.frameworks.grbs import GRBList, GRB
 from threeML.minimizer.minimization import FitFailed
 import pandas as pd
