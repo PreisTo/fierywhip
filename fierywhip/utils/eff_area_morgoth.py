@@ -55,7 +55,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
             else:
-                raise AssertionError("This detector selection mode is not supported")
+                raise NotImplementedError("det_sel_mode not supported (yet)")
             self.load_essenitals()
         else:
             if self._use_eff_area:
