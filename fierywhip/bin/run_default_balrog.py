@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from fierywhip.utils.default_morgoth import RunMorgoth,RunEffAreaMorgoth
+from fierywhip.utils.default_morgoth import RunMorgoth, RunEffAreaMorgoth
 from fierywhip.frameworks.grbs import GRBList, GRB
 from threeML.minimizer.minimization import FitFailed
 import pandas as pd
@@ -15,7 +15,23 @@ if __name__ == "__main__":
         )
     else:
         already_run = None
-    excludes = ["GRB091208410", "GRB110108977","GRB110709642","GRB160325291","GRB110102788","GRB121128212","GRB130306991","GRB130610133","GRB150309958","GRB150430015","GRB161004964","GRB180314030","GRB180404091","GRB200227306","GRB201216963"]
+    excludes = [
+        "GRB091208410",
+        "GRB110108977",
+        "GRB110709642",
+        "GRB160325291",
+        "GRB110102788",
+        "GRB121128212",
+        "GRB130306991",
+        "GRB130610133",
+        "GRB150309958",
+        "GRB150430015",
+        "GRB161004964",
+        "GRB180314030",
+        "GRB180404091",
+        "GRB200227306",
+        "GRB201216963",
+    ]
 
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
     print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
@@ -26,6 +42,9 @@ if __name__ == "__main__":
                 print(f"Starting Morgoth for {g.name}")
                 try:
                     rm = RunMorgoth(g)
+                    # rm = RunEffAreaMorgoth(
+                    #     g, use_eff_area=False, det_sel_mode="max_sig"
+                    # )
                 except (RuntimeError, FitFailed, IndexError):
                     pass
             else:
@@ -34,5 +53,7 @@ if __name__ == "__main__":
             print(f"Starting Morgoth for {g.name}")
             try:
                 rm = RunMorgoth(g)
+                # rm = RunEffAreaMorgoth(g, use_eff_area=False, det_sel_mode="max_sig")
+
             except (RuntimeError, FitFailed, IndexError):
                 pass
