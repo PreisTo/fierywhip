@@ -10,7 +10,8 @@ from fierywhip.utils.detector_utils import name_to_id, detector_list
 from fierywhip.frameworks.grbs import GRB
 import yaml
 import os
-import time
+from time import time
+from morgoth.utils.trig_reader import TrigReader
 
 
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
