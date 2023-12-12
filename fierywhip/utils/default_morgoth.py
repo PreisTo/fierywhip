@@ -309,6 +309,7 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def fit(self):
         multinest_fit = MultinestFitTrigdatEffArea(
+            self._grb,
             self._grb.name,
             "v00",
             self._grb.trigdat,
