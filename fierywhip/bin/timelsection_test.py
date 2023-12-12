@@ -9,7 +9,7 @@ if __name__ == "__main__":
     yaml_path = os.path.join(os.environ.get("HOME"), "ts.yml")
     grblist = GRBList(run_det_sel=False, check_finished=False)
     for g in grblist.grbs:
-        g.run_timeselection()
+        g.run_timeselection(kwargs={"mean_factor": 1.05})
         active_time = g.active_time
         bkg_time = g.bkg_time
         res = {}

@@ -467,7 +467,7 @@ class GRB:
         self._detector_selection = DetectorSelection(self, **kwargs)
         print(self._detector_selection.good_dets)
 
-    def run_timeselection(self):
+    def run_timeselection(self, **kwargs):
         """
         Timeselection for GRB using morogth auto_loc timeselection
         """
@@ -496,7 +496,9 @@ class GRB:
                     ]
                 else:
                     try:
-                        tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
+                        tsbb = TimeSelectionBB(
+                            self._name, self._trigdat, fine=True, **kwargs
+                        )
                         self._active_time = tsbb.active_time
                         self._bkg_time = [
                             tsbb.background_time_neg,
@@ -540,7 +542,7 @@ class GRB:
                         }
                         yaml.safe_dump(ts, f)
         else:
-            tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True)
+            tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True, **kwargs)
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
