@@ -5,15 +5,15 @@ import pkg_resources
 import os
 
 external_config = False
-if pkg_resources.resource_filename("fierywhip", "config/config.yml") is not None:
-    with open(
-        pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
-    ) as f:
-        structure = yaml.safe_load(f)
-        external_config = True
+# if pkg_resources.resource_filename("fierywhip", "config/config.yml") is not None:
+#     with open(
+#         pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
+#     ) as f:
+#         structure = yaml.safe_load(f)
+#         external_config = True
 
-else:
-    pass
+# else:
+#     pass
 if not external_config:
     structure = {}
     structure["eff_corr_lim_low"] = 0.8
