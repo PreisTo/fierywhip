@@ -2,16 +2,17 @@
 from omegaconf import OmegaConf
 import yaml
 import pkg_resources
+import os
 
 external_config = False
-try:
+if os.path.exists(pkg_resources.resource_filename("fierywhip", "config/config.yml")):
     with open(
         pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
     ) as f:
         structure = yaml.safe_load(f)
         external_config = True
 
-except FileNotFoundError:
+else:
     pass
 if not external_config:
     structure = {}
