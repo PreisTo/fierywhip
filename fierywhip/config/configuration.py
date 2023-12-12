@@ -32,6 +32,7 @@ if not external_config:
     structure["det_sel"]["mode"] = "max_sig"
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = True
+    strucutre["timselection"]["store_and_reload"] = True
     structure["default_plot_path"] = None
     structure["comparison"] = {}
     structure["comparison"]["csv_path"] = None
