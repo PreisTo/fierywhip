@@ -5,7 +5,7 @@ import pkg_resources
 import os
 
 external_config = False
-if os.path.exists(pkg_resources.resource_filename("fierywhip", "config/config.yml")):
+if pkg_resources.resource_filename("fierywhip", "config/config.yml") is not None:
     with open(
         pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
     ) as f:
