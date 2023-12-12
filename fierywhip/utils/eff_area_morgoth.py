@@ -74,7 +74,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             self._bkg_fit_yaml_file = data["bkg_fit_files"]
 
         with open(self._time_selection_yaml_file, "r") as f:
-            data = yaml.safe_load()
+            data = yaml.safe_load(f)
             self._active_time = (
                 f"{data['active_time']['start']}-{data['active_time']['stop']}"
             )
