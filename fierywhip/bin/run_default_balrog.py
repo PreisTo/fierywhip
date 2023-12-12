@@ -31,6 +31,7 @@ if __name__ == "__main__":
         "GRB180404091",
         "GRB200227306",
         "GRB201216963",
+        "GRB220107615",
     ]
 
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
