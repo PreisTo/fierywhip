@@ -294,11 +294,17 @@ class RunMorgoth:
 
 
 class RunEffAreaMorgoth(RunMorgoth):
-    def __init__(self, grb: GRB = None, use_eff_area: bool = False):
+    def __init__(
+        self,
+        grb: GRB = None,
+        use_eff_area: bool = False,
+        det_sel_mode: str = "default",
+    ):
         assert isinstance(
             grb, GRB
         ), "grb needs to be of type fierywhip.frameworks.grbs.GRB"
         self._use_eff_area = use_eff_area
+        self._det_sel_mode = det_sel_mode
         super().__init__(grb)
 
     def fit(self):
@@ -309,6 +315,7 @@ class RunEffAreaMorgoth(RunMorgoth):
             self._bkg_yaml,
             self._ts_yaml,
             self._use_eff_area,
+            self._det_sel_mode,
         )
         multinest_fit.fit()
         multinest_fit.save_fit_result()
