@@ -10,6 +10,7 @@ from fierywhip.utils.detector_utils import name_to_id, detector_list
 from fierywhip.frameworks.grbs import GRB
 import yaml
 import os
+import time
 
 
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
@@ -95,7 +96,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 success_restore = True
                 i = 0
-            except:
+            except Exception as e:
+                print(e)
+                time.sleep(1)
                 pass
             i += 1
             if i == 50:
