@@ -350,7 +350,7 @@ class GRB:
         ra_dec_units = kwargs.get("ra_dec_units", (u.deg, u.deg))
 
         self._position = SkyCoord(
-            ra=self._ra_icrs, dec=self._dec_icrs, unit=units, frame="icrs"
+            ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
         )
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
