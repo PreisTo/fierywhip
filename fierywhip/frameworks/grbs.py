@@ -569,17 +569,17 @@ class GRB:
         export_dict = {}
         export_dict["name"] = self._name
         export_dict["position"] = {}
-        export_dict["position"]["ra"] = self._position.ra.deg
-        export_dict["position"]["dec"] = self._position.dec.deg
+        export_dict["position"]["ra"] = float(self._position.ra.deg)
+        export_dict["position"]["dec"] = float(self._position.dec.deg)
 
         if self._active_time is not None:
             export_dict["time_selection"] = {}
-            export_dict["time_selection"]["active_time"] = self._active_time
+            export_dict["time_selection"]["active_time"] = str(self._active_time)
         if self._bkg_time is not None:
             if "time_selection" not in export_dict.keys():
                 export_dict["time_selection"] = {}
             export_dict["time_selection"]["background"] = self._bkg_time
-        export_dict["trigdat"] = self._trigdat
+        export_dict["trigdat"] = str(self._trigdat)
         export_dict["time"] = self._time.strftime("%y%m%d%-%H:%M:%S.%f")
 
         with open(path, "w+") as f:
