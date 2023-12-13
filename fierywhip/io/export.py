@@ -165,7 +165,9 @@ def matrix_from_yaml(path, exclude=[], type="significance"):
                 data[norm_id, norm_id, 0].append(1)
                 data[norm_id, norm_id, 1].append(0)
                 data[norm_id, norm_id, 2].append(0)
-
+    else:
+        data = None
+    comm.Bcast(data, root=0)
     return data
 
 
