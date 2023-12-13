@@ -50,7 +50,7 @@ class DetectorSelection:
             self._seps = self.gbm.get_separation(self.grb.position)
             self._set_good_dets()
             self._set_normalizing_det()
-        elif self._mode == "max_sig":
+        elif self._mode == "max_sig" or self._mode == "max_sig_and_lowest":
             print("Using maximum significance mode")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance()
