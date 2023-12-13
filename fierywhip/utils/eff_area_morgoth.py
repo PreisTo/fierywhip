@@ -30,8 +30,14 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         time_selection_yaml_file: str,
         use_eff_area: bool = False,
         det_sel_mode: str = "default",
+        grb_file: str = None,
     ):
-        self._grb = grb
+        if grb is not None:
+            self._grb = grb
+        elif grb_file is not None:
+            self._grb = GRB.grb_from_file(grb_file)
+        else:
+            raise ValueError("need to provide either grb object or file to recreate")
         self._version = version
         self._bkg_fit_yaml_file = bkg_fit_yaml_file
         self._time_selection_yaml_file = time_selection_yaml_file

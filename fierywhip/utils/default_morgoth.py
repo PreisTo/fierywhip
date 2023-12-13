@@ -15,6 +15,7 @@ from datetime import datetime
 import yaml
 import pandas as pd
 import morgoth
+import pkg_resources
 from morgoth.configuration import morgoth_config
 from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
 from morgoth.utils.env import get_env_value
@@ -308,17 +309,37 @@ class RunEffAreaMorgoth(RunMorgoth):
         super().__init__(grb)
 
     def fit(self):
-        multinest_fit = MultinestFitTrigdatEffArea(
-            self._grb,
-            self._grb.name,
-            "v00",
-            self._grb.trigdat,
-            self._bkg_yaml,
-            self._ts_yaml,
-            self._use_eff_area,
-            self._det_sel_mode,
+        ncores = str(int(morgoth_config["multinest"]["n_cores"]))
+        path_to_python = morgoth_config["multinest"]["path_to_python"]
+
+        fit_script_path = pkg_resources.resource_filename(
+            "fierywhip", "utils/fit_morgoth_eff_area.py"
         )
-        multinest_fit.fit()
-        multinest_fit.save_fit_result()
-        multinest_fit.create_spectrum_plot()
-        multinest_fit.move_chains_dir()
+        grb_obj_path = os.path.join(
+            base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"
+        )
+        self._grb.save_grb(grb_obj_path)
+
+        env = os.environ
+        if os.path.exists(
+            os.path.join(
+                base_dir,
+                self._grb.name,
+                "trigdat",
+                "v00",
+                "trigdat_v00_loc_results.fits",
+            )
+        ):
+            run_fit = False
+        else:
+            run_fit = True
+            p = subprocess.check_output(
+                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} trigdat {grb_obj_path}",
+                shell=True,
+                env=env,
+                stdin=subprocess.PIPE,
+            )
+        return run_fit
+
+
+# TODO fix Multinest Core Issue

@@ -565,6 +565,45 @@ class GRB:
     def effective_area_correction(self, det):
         return self._effective_area_dict[det]
 
+    def save_grb(self, path):
+        export_dict = {}
+        export_dict["name"] = self._name
+        export_dict["position"] = {}
+        export_dict["position"]["ra"] = self._position.ra.deg
+        export_dict["position"]["dec"] = self._position.dec.deg
+
+        if self._active_time is not None:
+            export_dict["time_selection"] = {}
+            export_dict["time_selection"]["active_time"] = self._active_time
+        if self._bkg_time is not None:
+            if "time_selection" not in export_dict.keys():
+                export_dict["time_selection"] = {}
+            export_dict["time_selection"]["background"] = self._bkg_time
+        export_dict["trigdat"] = self._trigdat
+        export_dict["time"] = self._time.strftime("%y%m%d%-%H:%M:%S.%f")
+
+        with open(path, "w+") as f:
+            yaml.safe_dump(export_dict, f)
+
+    @classmethod
+    def grb_from_file(cls, path):
+        with open(path, "r") as f:
+            restored = yaml.safe_load(f)
+        name = restored["name"]
+        grb_time = datetime.strptime(restored[time], "%y%m%d-%H:%M:S.%f")
+        ra = restored["position"]["ra"]
+        dec = restored["position"]["dec"]
+        ra_dec_units = (u.deg, u.deg)
+        # TODO timeselection
+        return cls(
+            name=name,
+            ra=ra,
+            dec=dec,
+            ra_dec_units=ra_dec_units,
+            grb_time=grb_time,
+            run_det_sel=False,
+        )
+
 
 class GRBInitError(Exception):
     """
