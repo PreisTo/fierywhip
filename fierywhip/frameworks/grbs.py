@@ -580,7 +580,7 @@ class GRB:
                 export_dict["time_selection"] = {}
             export_dict["time_selection"]["background"] = self._bkg_time
         export_dict["trigdat"] = str(self._trigdat)
-        export_dict["time"] = self._time.strftime("%y%m%d%/%H:%M:%S.%f")
+        export_dict["time"] = self._time.strftime("%y%m%d-%H:%M:%S.%f")
 
         with open(path, "w+") as f:
             yaml.safe_dump(export_dict, f)
@@ -590,7 +590,7 @@ class GRB:
         with open(path, "r") as f:
             restored = yaml.safe_load(f)
         name = restored["name"]
-        grb_time = datetime.strptime(restored["time"], "%y%m%d/%H:%M:S.%f")
+        grb_time = datetime.strptime(restored["time"], "%y%m%d-%H:%M:S.%f")
         ra = restored["position"]["ra"]
         dec = restored["position"]["dec"]
         ra_dec_units = (u.deg, u.deg)
