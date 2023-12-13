@@ -349,8 +349,9 @@ class GRB:
             )
         ra_dec_units = kwargs.get("ra_dec_units", (u.deg, u.deg))
 
-        self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
-
+        self._position = SkyCoord(ra=self._ra, dec=self._dec, unit=units, frame="icrs")
+        self._ra = float(self._position.ra.deg)
+        self._dec = float(self._position.dec.deg)
         self._get_trigdat_path()
         run_det_sel = kwargs.get("run_det_sel", True)
         if run_det_sel:
