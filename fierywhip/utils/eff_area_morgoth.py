@@ -6,7 +6,7 @@ from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
 from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.utils.detector_utils import name_to_id, detector_list
+from fierywhip.utils.detector_utils import name_to_id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
 import yaml
 import os
@@ -68,6 +68,38 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 with open(bkg_fit_yaml_file, "w") as f:
                     data["use_dets"] = list(map(name_to_id, self._use_dets))
                     yaml.safe_dump(data, f)
+            elif det_sel_mode == "max_sig_and_lowest":
+                use_dets = []
+                number_nais_high = 5
+                number_nais_low = 1
+
+                i = 0
+                while number_nais_high > 0:
+                    det = self._grb.detector_selection.sorted_significances[i][0]
+                    if det in nai_list:
+                        use_dets.append(det)
+                        number_nais_high -= 1
+
+                while number_nais_low > 0:
+                    det = self._grb.detector_selection.sorted_significances[i][0]
+                    if det in nai_list:
+                        use_dets.append(det)
+                        number_nais_low -= 1
+                if (
+                    self._grb.detector_selection.significances["b0"]
+                    >= self._grb.detector_selection.significances["b1"]
+                ):
+                    use_dets.append("b0")
+                else:
+                    use_dets.append("b1")
+                self._use_dets = self._grb.detector_selection.good_dets
+                print(f"\n\n USING DETS {self._use_dets}\n\n")
+                with open(bkg_fit_yaml_file, "r") as f:
+                    data = yaml.safe_load(f)
+                with open(bkg_fit_yaml_file, "w") as f:
+                    data["use_dets"] = list(map(name_to_id, self._use_dets))
+                    yaml.safe_dump(data, f)
+
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
             self.load_essenitals()

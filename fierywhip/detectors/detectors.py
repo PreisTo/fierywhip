@@ -63,8 +63,28 @@ class DetectorSelection:
         tr.set_active_time_interval(self.grb.active_time)
         tr.set_background_selections(*self.grb.bkg_time)
         self._significances = {}
+        # TODO set the significance outside the trigger area zero
+        tstart, tstop = tr.tstart_tstop()
+        split = self.grb.active_time.split("-")
+        if len(split) == 2:
+            trigger_start, trigger_stop = split
+        elif len(split) == 3:
+            trigger_start, trigger_stop = -split[0], splot[1]
+        elif len(split) == 4:
+            trigger_start, trigger_stop = -split
+        else:
+            raise ValueError
+        print(
+            f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
+        )
+        lower_id = np.argwhere(tstart >= trigger_start)[0, 0]
+        upper_id = np.argwhere(tstart > trigger_stop)[0, 0]
+
         for d in lu:
-            self._significances[d] = np.max(tr.time_series[d].significance_per_interval)
+            signs = tr.time_series[d].significance_per_interval
+            signs[:lowerid] = 0
+            signs[upperid:] = 0
+            self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
         good_dets = []
@@ -82,6 +102,7 @@ class DetectorSelection:
             good_dets.append("b1")
         self._good_dets = good_dets
         self._normalizing_det = good_dets[0]
+        self._sorted_significances = sorted_sig
 
     def _set_good_dets(self):
         temp = self._gbm.get_good_detectors(self.grb.position, self._max_sep)
@@ -170,6 +191,14 @@ class DetectorSelection:
     @property
     def good_dets(self):
         return self._good_dets
+
+    @property
+    def sorted_significances(self):
+        return self._sorted_significances
+
+    @property
+    def significances(self):
+        return self._significances
 
     def _create_output_dict(self):
         return_dict = {}
