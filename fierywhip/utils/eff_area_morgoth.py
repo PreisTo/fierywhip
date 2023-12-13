@@ -82,13 +82,13 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 i = 0
                 while number_nais_high > 0:
                     det = self._grb.detector_selection.sorted_significances[i][0]
-                    if det in nai_list:
+                    if det in nai_list():
                         use_dets.append(det)
                         number_nais_high -= 1
 
                 while number_nais_low > 0:
                     det = self._grb.detector_selection.sorted_significances[i][0]
-                    if det in nai_list:
+                    if det in nai_list():
                         use_dets.append(det)
                         number_nais_low -= 1
                 if (
