@@ -26,8 +26,9 @@ version = sys.argv[2]
 trigdat_file = sys.argv[3]
 bkg_fit_yaml_file = sys.argv[4]
 time_selection_yaml_file = sys.argv[5]
-data_type = sys.argv[6]
-grb_file = sys.argv[7]
+det_sel_mode = sys.argv[6]
+use_eff_area = sys.argv[7]
+grb_file = sys.argv[8]
 # get fit object
 
 multinest_fit = MultinestFitTrigdatEffArea(
@@ -38,6 +39,8 @@ multinest_fit = MultinestFitTrigdatEffArea(
     bkg_fit_yaml_file=bkg_fit_yaml_file,
     time_selection_yaml_file=time_selection_yaml_file,
     grb_file=grb_file,
+    det_sel_mode=det_sel_mode,
+    use_eff_area=use_eff_area,
 )
 multinest_fit.fit()
 multinest_fit.save_fit_result()
