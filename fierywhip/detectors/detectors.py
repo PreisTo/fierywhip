@@ -77,8 +77,8 @@ class DetectorSelection:
         print(
             f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
         )
-        lower_id = np.argwhere(tstart >= trigger_start)[0, 0]
-        upper_id = np.argwhere(tstart > trigger_stop)[0, 0]
+        lowerid = np.argwhere(tstart >= trigger_start)[0, 0]
+        upperid = np.argwhere(tstart > trigger_stop)[0, 0]
 
         for d in lu:
             signs = tr.time_series[d].significance_per_interval
