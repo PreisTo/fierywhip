@@ -85,5 +85,7 @@ def name_to_id(det):
         "n9": 9,
         "na": 10,
         "nb": 11,
+        "b0": 12,
+        "b1": 13,
     }
     return lu[det]
