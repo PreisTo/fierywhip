@@ -128,9 +128,9 @@ class GRBList:
                 try:
                     print(f"Creating Object for {row['name']}")
                     grb = GRB(
-                        row["name"],
-                        row["ra"],
-                        row["dec"],
+                        name=row["name"],
+                        ra=row["ra"],
+                        dec=row["dec"],
                         run_det_sel=self._run_det_sel,
                     )
                     grbs_temp.append(grb)
