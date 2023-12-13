@@ -69,9 +69,9 @@ class DetectorSelection:
         if len(split) == 2:
             trigger_start, trigger_stop = list(map(float, split))
         elif len(split) == 3:
-            trigger_start, trigger_stop = -float(split[0]), float(splot[1])
+            trigger_start, trigger_stop = -float(split[1]), float(split[1])
         elif len(split) == 4:
-            trigger_start, trigger_stop = -list(map(float, split))
+            trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
         else:
             raise ValueError
         print(
