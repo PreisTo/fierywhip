@@ -590,7 +590,7 @@ class GRB:
         with open(path, "r") as f:
             restored = yaml.safe_load(f)
         name = restored["name"]
-        grb_time = datetime.strptime(restored[time], "%y%m%d-%H:%M:S.%f")
+        grb_time = datetime.strptime(restored["time"], "%y%m%d-%H:%M:S.%f")
         ra = restored["position"]["ra"]
         dec = restored["position"]["dec"]
         ra_dec_units = (u.deg, u.deg)
