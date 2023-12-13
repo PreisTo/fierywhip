@@ -44,7 +44,9 @@ if __name__ == "__main__":
                 try:
                     # rm = RunMorgoth(g)
                     rm = RunEffAreaMorgoth(
-                        g, use_eff_area=False, det_sel_mode="max_sig"
+                        g,
+                        use_eff_area=False,
+                        det_sel_mode="max_sig",
                     )
                 except (RuntimeError, FitFailed, IndexError):
                     pass
