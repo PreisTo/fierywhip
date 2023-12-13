@@ -318,22 +318,20 @@ class GRBList:
 
 
 class GRB:
-    def __init__(
-        self, name, ra, dec, ra_dec_units=None, grb_time=None, run_det_sel=True
-    ):
+    def __init__(self, **kwargs):
         """
         :param name: name of grb - needs to be like GRB231223001
         :param ra: ra of grb
         :param dec: dec of grb
         :param ra_dec_units: units of ra and dec as list like - astropy.units
         :param grb_time: optional datetime object of grb_time
-        :param normalizing_matrix: normalizing matrix used to setting the effective area corrections
         """
-        self._name = name
-        self._active_time = None
-        self._bkg_time = None
-        self._ra_icrs = ra
-        self._dec_icrs = dec
+        self._name = kwargs.get("name")
+        self._active_time = kwargs.get("active_time", None)
+        self._bkg_time = kwargs.get("bkg_time", None)
+        self._ra_icrs = kwargs.get("ra")
+        self._dec_icrs = kwargs.get("dec")
+        grb_time = kwargs.get("grb_time", None)
         if grb_time is not None:
             assert (
                 type(grb_time) is datetime
@@ -349,13 +347,12 @@ class GRB:
             self._time = datetime(int(year), int(month), int(day)) + timedelta(
                 seconds=tot_seconds * int(frac)
             )
-        if ra_dec_units is None:
-            units = (u.deg, u.deg)
-        else:
-            units = ra_dec_units
+        ra_dec_units = kwargs.get("ra_dec_units", (u.deg, u.deg))
+
         self._position = SkyCoord(ra=ra, dec=dec, unit=units, frame="icrs")
 
         self._get_trigdat_path()
+        run_det_sel = kwargs.get("run_det_sel", True)
         if run_det_sel:
             try:
                 self._get_detector_selection()
@@ -594,7 +591,6 @@ class GRB:
         ra = restored["position"]["ra"]
         dec = restored["position"]["dec"]
         ra_dec_units = (u.deg, u.deg)
-        # TODO timeselection
         return cls(
             name=name,
             ra=ra,
