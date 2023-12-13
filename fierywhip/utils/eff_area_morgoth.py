@@ -62,6 +62,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
+                with open(bkg_fit_yaml_file, "rw") as f:
+                    data = yaml.safe_load(f)
+                    data["use_dets"] = list(map(name_to_id, self._use_dets))
+                    yaml.safe_dump(data, f)
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
             self.load_essenitals()
