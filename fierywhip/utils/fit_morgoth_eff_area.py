@@ -40,7 +40,7 @@ multinest_fit = MultinestFitTrigdatEffArea(
     time_selection_yaml_file=time_selection_yaml_file,
     grb_file=grb_file,
     det_sel_mode=det_sel_mode,
-    use_eff_area=use_eff_area,
+    use_eff_area=False,
 )
 multinest_fit.fit()
 multinest_fit.save_fit_result()
