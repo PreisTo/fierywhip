@@ -69,6 +69,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     data["use_dets"] = list(map(name_to_id, self._use_dets))
                     yaml.safe_dump(data, f)
             elif det_sel_mode == "max_sig_and_lowest":
+                self._grb._get_detector_selection(
+                    max_number_nai=5, min_number_nai=5, mode=det_sel_mode
+                )
+                self._normalizing_det = (
+                    self._grb.detector_selection.sorted_significances[0][0]
+                )
                 use_dets = []
                 number_nais_high = 5
                 number_nais_low = 1
