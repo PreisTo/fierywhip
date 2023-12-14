@@ -41,12 +41,12 @@ if __name__ == "__main__":
             if g.name not in list(already_run["grb"]) and g.name not in excludes:
                 print(f"Starting Morgoth for {g.name}")
                 try:
-                    # rm = RunMorgoth(g)
-                    rm = RunEffAreaMorgoth(
-                        g,
-                        use_eff_area=False,
-                        det_sel_mode="max_sig",
-                    )
+                    rm = RunMorgoth(g)
+                    # rm = RunEffAreaMorgoth(
+                    #     g,
+                    #     use_eff_area=False,
+                    #     det_sel_mode="max_sig",
+                    # )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
                     pass
@@ -55,8 +55,8 @@ if __name__ == "__main__":
         else:
             print(f"Starting Morgoth for {g.name}")
             try:
-                # rm = RunMorgoth(g)
-                rm = RunEffAreaMorgoth(g, use_eff_area=False, det_sel_mode="max_sig")
+                rm = RunMorgoth(g)
+                # rm = RunEffAreaMorgoth(g, use_eff_area=False, det_sel_mode="max_sig")
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
                 pass
