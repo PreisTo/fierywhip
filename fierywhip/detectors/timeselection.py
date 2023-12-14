@@ -150,18 +150,18 @@ class TimeSelectionNew(TimeSelection):
             else:
                 bkg_pos.append(index)
                 start_flag = True
-        self._bkg_neg_start = self._bb_times[np.min(bkg_neg)]
-        self._bkg_neg_stop = self._bb_times[np.max(bkg_neg) + 1]
-        self._bkg_pos_start = self._bb_times[np.min(bkg_pos)]
-        self._bkg_pos_stop = self._bb_times[np.max(bkg_pos) + 1]
+        self._bkg_neg_start = float(self._bb_times[np.min(bkg_neg)])
+        self._bkg_neg_stop = float(self._bb_times[np.max(bkg_neg) + 1])
+        self._bkg_pos_start = float(self._bb_times[np.min(bkg_pos)])
+        self._bkg_pos_stop = float(self._bb_times[np.max(bkg_pos) + 1])
         self._background_time_neg = f"{self._bkg_neg_start}-{self._bkg_neg_stop}"
         self._background_time_pos = f"{self._bkg_pos_start}-{self._bkg_pos_stop}"
-        self._max_time = self._bkg_pos_stop
+        self._max_time = float(self._bkg_pos_stop)
         if self._bkg_pos_start < self._trigger_zone_active_stop:
             self._trigger_zone_active_stop = self._bkg_pos_start
         if self._bkg_neg_stop > self._trigger_zone_active_start:
             self._trigger_zone_active_start = self._bkg_neg_stop
-        self._poly_order = -1
+        self._poly_order = float(-1)
 
     def _select_active_time(self):
         avgs = {}
@@ -195,8 +195,8 @@ class TimeSelectionNew(TimeSelection):
             sig, obs_significance
         )
         print(f"Active Time eneded because of {reason}")
-        self._active_time_start = at_start
-        self._active_time_stop = at_stop
+        self._active_time_start = float(at_start)
+        self._active_time_stop = float(at_stop)
         self._active_time = f"{self._active_time_start}-{self._active_time_stop}"
 
     def _select_active_time_algorithm(
