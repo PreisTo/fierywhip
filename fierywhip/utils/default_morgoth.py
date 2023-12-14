@@ -30,6 +30,7 @@ from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
 from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatEffArea
+from fierywhip.utils.detector_utils import name_to_id
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -318,7 +319,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         )
         with open(self._bkg_yaml, "r") as f:
             data = yaml.safe_load(f)
-        data["use_dets"] = self._grb.detector_selection.good_dets
+        data["use_dets"] = list(map(name_to_id, self._grb.detector_selection.good_dets))
         with open(self._bkg_yaml, "w") as f:
             yaml.safe_dump(data, f)
 
