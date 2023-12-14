@@ -108,17 +108,19 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
 
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
-            self.load_essenitals()
+            self.setup_essentials()
         else:
             if self._use_eff_area:
                 print(
                     "Currently doing this is absolutely useless and will likely worsen the results"
                 )
-                super().load_essentials()
+                super().setup_essentials()
                 # just use the first one as normalizing det
                 self._normalizing_det = self._use_dets[0]
+            else:
+                super().setup_essentials()
 
-    def load_essenitals(self):
+    def setup_essentials(self):
         with open(self._bkg_fit_yaml_file, "r") as f:
             data = yaml.safe_load(f)
             self._bkg_fit_yaml_file = data["bkg_fit_files"]
