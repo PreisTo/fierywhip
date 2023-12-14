@@ -16,6 +16,7 @@ import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
+from fierywhip.detectors.timeselection import TimeSelectionNew
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
@@ -542,7 +543,9 @@ class GRB:
                         }
                         yaml.safe_dump(ts, f)
         else:
-            tsbb = TimeSelectionBB(self._name, self._trigdat, fine=True, **kwargs)
+            tsbb = TimeSelectionNew(
+                name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
+            )
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
