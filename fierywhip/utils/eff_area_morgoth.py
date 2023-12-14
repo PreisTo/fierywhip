@@ -56,7 +56,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         )
 
         if det_sel_mode != "default":
-            if det_sel_mode == "max_sig":
+            if det_sel_mode == "max_sig_old":
                 self._grb._get_detector_selection(
                     max_number_nai=5, min_number_nai=5, mode=det_sel_mode
                 )
@@ -68,7 +68,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 with open(bkg_fit_yaml_file, "w") as f:
                     data["use_dets"] = list(map(name_to_id, self._use_dets))
                     yaml.safe_dump(data, f)
-            elif det_sel_mode == "max_sig_and_lowest":
+            elif det_sel_mode == "max_sig_and_lowest_old":
                 self._grb._get_detector_selection(
                     max_number_nai=5, min_number_nai=5, mode=det_sel_mode
                 )
@@ -105,6 +105,8 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 with open(bkg_fit_yaml_file, "w") as f:
                     data["use_dets"] = list(map(name_to_id, self._use_dets))
                     yaml.safe_dump(data, f)
+            elif det_sel_mode == "max_sig":
+                print("Using pre-set detectors from bkg yaml file")
 
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")

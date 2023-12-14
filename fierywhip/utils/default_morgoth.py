@@ -304,9 +304,21 @@ class RunEffAreaMorgoth(RunMorgoth):
         assert isinstance(
             grb, GRB
         ), "grb needs to be of type fierywhip.frameworks.grbs.GRB"
+        self._grb = grb
         self._use_eff_area = use_eff_area
         self._det_sel_mode = det_sel_mode
+        self.setup_use_dets()
         super().__init__(grb)
+
+    def setup_use_dets(self):
+        self._grb._get_detector_selection(
+            min_number_nai=5, max_number_nai=5, mode="max_sig"
+        )
+        with open(self._bkg_yaml, "r") as f:
+            data = yaml.safe_load(f)
+        data["use_dets"] = self._grb.detector_selection.good_dets
+        with open(self._bkg_yaml, "w") as f:
+            yaml.safe_dump(data, f)
 
     def fit(self):
         ncores = str(int(morgoth_config["multinest"]["n_cores"]))
