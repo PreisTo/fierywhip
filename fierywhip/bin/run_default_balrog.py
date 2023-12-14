@@ -45,7 +45,7 @@ if __name__ == "__main__":
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="max_sig_and_lowest",
+                        det_sel_mode="max_sig",
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -56,9 +56,7 @@ if __name__ == "__main__":
             print(f"Starting Morgoth for {g.name}")
             try:
                 # rm = RunMorgoth(g)
-                rm = RunEffAreaMorgoth(
-                    g, use_eff_area=False, det_sel_mode="max_sig_and_lowest"
-                )
+                rm = RunEffAreaMorgoth(g, use_eff_area=False, det_sel_mode="max_sig")
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
                 pass
