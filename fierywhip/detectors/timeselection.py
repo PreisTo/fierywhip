@@ -161,6 +161,7 @@ class TimeSelectionNew(TimeSelection):
             self._trigger_zone_active_stop = self._bkg_pos_start
         if self._bkg_neg_stop > self._trigger_zone_active_start:
             self._trigger_zone_active_start = self._bkg_neg_stop
+        self._poly_order = -1
 
     def _select_active_time(self):
         avgs = {}
