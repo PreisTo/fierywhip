@@ -31,6 +31,7 @@ from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
 from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatEffArea
 from fierywhip.utils.detector_utils import name_to_id
+from fierywhip.detectors.timeselection import TimeSelectionNew
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -100,10 +101,10 @@ class RunMorgoth:
             )
             print("Done TimeSelectionKnown")
         else:
-            self._tsbb = TimeSelectionBB(
-                grb_name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
+            self._tsbb = TimeSelectionNew(
+                name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
             )
-            print("Done TimeSelectionBB")
+            print("Done TimeSelectionNew")
             if os.path.exists(
                 os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
             ):
