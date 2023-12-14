@@ -33,7 +33,6 @@ if __name__ == "__main__":
         "GRB201216963",
         "GRB220107615",
     ]
-    excludes = ["GRB081101491","GRB081109293"]
     grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
     print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
     for g in grb_list.grbs:
@@ -48,6 +47,7 @@ if __name__ == "__main__":
                         use_eff_area=False,
                         det_sel_mode="max_sig_and_lowest",
                     )
+                    rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
                     pass
             else:
@@ -59,6 +59,6 @@ if __name__ == "__main__":
                 rm = RunEffAreaMorgoth(
                     g, use_eff_area=False, det_sel_mode="max_sig_and_lowest"
                 )
-
+                rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
                 pass

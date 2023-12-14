@@ -61,6 +61,8 @@ class RunMorgoth:
         else:
             self._runtime_ts = np.nan
         self.fit_background()
+
+    def run_fit(self):
         print("Starting Fit")
         start_fit = datetime.now()
         run_fit = self.fit()
@@ -307,8 +309,8 @@ class RunEffAreaMorgoth(RunMorgoth):
         self._grb = grb
         self._use_eff_area = use_eff_area
         self._det_sel_mode = det_sel_mode
-        self.setup_use_dets()
         super().__init__(grb)
+        self.setup_use_dets()
 
     def setup_use_dets(self):
         self._grb._get_detector_selection(
