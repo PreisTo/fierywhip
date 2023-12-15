@@ -185,7 +185,7 @@ class TimeSelectionNew(TimeSelection):
             self._trigger_zone_active_stop = self._bkg_pos_start
         if self._bkg_neg_stop > self._trigger_zone_active_start:
             self._trigger_zone_active_start = self._bkg_neg_stop
-        self._poly_order = float(-1)
+        self._poly_order = int(-1)
         self._tr.set_background_selections(
             f"{self._bkg_neg_start}-{self._bkg_neg_stop}",
             f"{self._bkg_pos_start}-{self._bkg_pos_stop}",
