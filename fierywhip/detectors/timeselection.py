@@ -8,6 +8,7 @@ from threeML.utils.statistics.stats_tools import Significance
 from fierywhip.utils.detector_utils import name_to_id
 from gbm_drm_gen import DRMGenTrig
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
+from gbm_drm_gen.io.balrog_like import BALROGLike
 from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 from threeML.utils.spectrum.binned_spectrum import BinnedSpectrumWithDispersion
 from threeML.utils.spectrum.binned_spectrum_set import BinnedSpectrumSet
@@ -128,7 +129,6 @@ class TimeSelectionNew(TimeSelection):
         for index in np.flip(self._bb_indices_self[mask][self._neg_bins]):
             if start_flag:
                 if self._bb_cps[index] / bkg_neg[-1] > self._max_factor:
-                    print("Too large of a jump")
                     if (
                         self._bb_times[np.max(bkg_neg)]
                         + self._bb_width[np.max(bkg_neg)]
@@ -140,22 +140,18 @@ class TimeSelectionNew(TimeSelection):
                         )
                         break
                     else:
-                        print("not yet fulfilling min bkg time so adding anyways")
                         bkg_neg.append(index)
                 else:
                     bkg_neg.append(index)
             else:
                 bkg_neg.append(index)
                 start_flag = True
-        print("\n")
         # pos_bkg
         bkg_pos = []
         start_flag = False
         for index in self._bb_indices_self[mask][self._pos_bins]:
-            print(self._bb_times[index])
             if start_flag:
                 if self._bb_cps[index] / bkg_pos[-1] > self._max_factor:
-                    print("Too large of a jump")
                     if (
                         self._bb_times[np.max(bkg_pos)]
                         + self._bb_width[np.max(bkg_pos)]
@@ -213,14 +209,13 @@ class TimeSelectionNew(TimeSelection):
             obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                 len(self._tstart), 8
             )
-        rates, bkg = self._create_additional_timeseries(obs_significance)
+        rates, bkg, sig = self._create_additional_timeseries(obs_significance)
 
         obs_significance = rates
         bkg_significance = bkg
-        significance_object = Significance(obs_significance, bkg_significance)
-        sig = significance_object.li_and_ma()
-        plt.plot(sig)
-        plt.show()
+        # TODO use correct significance here (property of BALROGLike)
+        # significance_object = Significance(obs_significance, bkg_significance)
+        # sig = significance_object.li_and_ma()
         sig[self._tstart < self._trigger_zone_active_start] = 0
         sig[self._tstart > self._trigger_zone_active_stop] = 0
         obs_significance[self._tstart < self._trigger_zone_active_start] = 0
@@ -245,7 +240,6 @@ class TimeSelectionNew(TimeSelection):
                 at_stop = at_stop_new
                 min_sig = min_sig_new
                 reason = reason_new
-                print(f"Actually worked")
             else:
                 reason = "no_improvement"
 
@@ -267,7 +261,6 @@ class TimeSelectionNew(TimeSelection):
         flag = True
         ts_start = np.argmax(obs)
         ts_stop = np.argmax(obs)
-        print(f"Centering around {self._tstart[ts_start]}")
         duration = tstop[ts_stop] - tstart[ts_start]
         reasons = ["max_duration", "min_significance"]
         while duration <= max_trigger_duration:
@@ -357,7 +350,6 @@ class TimeSelectionNew(TimeSelection):
         # extract the counts
 
         counts = cps * (self._tstop - self._tstart).reshape(len(self._tstart), 1)
-        print(counts.shape)
         # now create a binned spectrum for each interval
 
         binned_spectrum_list = []
@@ -387,8 +379,8 @@ class TimeSelectionNew(TimeSelection):
         # create a time series builder which can produce plugins
 
         tsb = TimeSeriesBuilder(
-            "max_sig_combined",
-            bss2,
+            name="max_sig_combined",
+            time_series=bss2,
             response=tmp_drm,
             verbose=False,
             poly_order=-1,
@@ -400,7 +392,8 @@ class TimeSelectionNew(TimeSelection):
         self._max_sig_tsb.set_background_interval(
             self._background_time_neg, self._background_time_pos
         )
-
+        # dummy active time interval - needed for correct significance
+        self._max_sig_tsb.set_active_time_interval(f"0-10.24")
         start = -1000
         stop = 1000
         counts = []
@@ -429,7 +422,12 @@ class TimeSelectionNew(TimeSelection):
 
         rates_observed = np.array(rates_observed)
         bkg = np.array(bkg)
-        return rates_observed, bkg
+        speclike = self._max_sig_tsb.to_spectrumlike()
+        balrog_like = BALROGLike.from_spectrumlike(speclike, time=0)
+        balrog_like.set_active_measurements("c1-c6")
+        sig = balrog_like.significance
+        print(f"This is the significance {sig}")
+        return rates_observed, bkg, sig
 
     @property
     def trigreader(self):
