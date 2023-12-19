@@ -393,7 +393,6 @@ class TimeSelectionNew(TimeSelection):
             self._background_time_neg, self._background_time_pos
         )
         # dummy active time interval - needed for correct significance
-        self._max_sig_tsb.set_active_time_interval(f"0-10.24")
         start = -1000
         stop = 1000
         counts = []
@@ -422,10 +421,8 @@ class TimeSelectionNew(TimeSelection):
 
         rates_observed = np.array(rates_observed)
         bkg = np.array(bkg)
-        speclike = self._max_sig_tsb.to_spectrumlike()
-        balrog_like = BALROGLike.from_spectrumlike(speclike, time=0)
-        balrog_like.set_active_measurements("c1-c6")
-        sig = balrog_like.significance
+
+        sig = self._max_sig_tsb.significance_per_interval.copy()
         print(f"This is the significance {sig}")
         return rates_observed, bkg, sig
 
