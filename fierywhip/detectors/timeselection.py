@@ -118,11 +118,20 @@ class TimeSelectionNew(TimeSelection):
         self._bb_indices_self = np.arange(0, len(self._bb_width), 1)
 
     def _select_background(self):
-        mask = self._bb_width > self._min_bb_block_bkg_duration
-        self._neg_bins = self._bb_times[:-1][mask] < self._trigger_zone_background_start
-        # TODO make sure the neg background does not range into the trigger zone
-        self._pos_bins = self._bb_times[:-1][mask] > self._trigger_zone_background_stop
-
+        flag = True
+        while flag:
+            mask = self._bb_width > self._min_bb_block_bkg_duration
+            self._neg_bins = (
+                self._bb_times[:-1][mask] < self._trigger_zone_background_start
+            )
+            # TODO make sure the neg background does not range into the trigger zone
+            self._pos_bins = (
+                self._bb_times[:-1][mask] > self._trigger_zone_background_stop
+            )
+            if len(self._neg_bins) > 0 and len(self._pos_bins) > 0:
+                flag = False
+            else:
+                self._min_bb_block_bkg_duration -= 0.5
         # neg_bkg
         bkg_neg = []
         start_flag = False
@@ -252,7 +261,7 @@ class TimeSelectionNew(TimeSelection):
         self._tr.set_active_time_interval(self._active_time)
 
     def _select_active_time_algorithm(
-        self, sig, obs, max_trigger_duration=10.5, min_sig=None
+        self, sig, obs, max_trigger_duration=11, min_sig=None
     ):
         if min_sig is None:
             maxs = np.max(sig)
