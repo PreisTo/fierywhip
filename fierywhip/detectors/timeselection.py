@@ -170,6 +170,8 @@ class TimeSelectionNew(TimeSelection):
             else:
                 bkg_pos.append(index)
                 start_flag = True
+        assert len(bkg_neg) > 0, "no neg background selected"
+        assert len(bkg_pos) > 0, "no pos background selected"
         self._bkg_neg_start = float(self._bb_times[np.min(bkg_neg)])
         self._bkg_neg_stop = float(self._bb_times[np.max(bkg_neg) + 1])
         self._bkg_pos_start = float(self._bb_times[np.min(bkg_pos)])
