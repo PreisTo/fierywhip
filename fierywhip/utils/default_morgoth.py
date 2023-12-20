@@ -102,7 +102,10 @@ class RunMorgoth:
             print("Done TimeSelectionKnown")
         else:
             self._tsbb = TimeSelectionNew(
-                name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
+                name=self._grb.name,
+                trigdat_file=self._trigdat_path,
+                fine=True,
+                min_trigger_duration=0.128,
             )
             print("Done TimeSelectionNew")
             if os.path.exists(

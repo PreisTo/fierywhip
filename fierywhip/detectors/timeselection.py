@@ -56,6 +56,7 @@ class TimeSelectionNew(TimeSelection):
         self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop", 60)
         self._max_factor = kwargs.get("max_factor", 1.2)
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
+        self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
 
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
@@ -255,6 +256,12 @@ class TimeSelectionNew(TimeSelection):
                 reason = "no_improvement"
 
         print(f"Active Time eneded because of {reason}")
+        while at_stop - at_start < self._min_trigger_duration:
+            print(
+                f"Min trigger duration is not met - we will add another bin to the trigger end to fulfill it"
+            )
+            stopping_index = np.argwhere(self._tstop == at_stop)[0, 0]
+            at_stop = self._tstop[stopping_index + 1]
         self._active_time_start = float(at_start)
         self._active_time_stop = float(at_stop)
         self._active_time = f"{self._active_time_start}-{self._active_time_stop}"
