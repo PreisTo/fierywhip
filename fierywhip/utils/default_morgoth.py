@@ -320,7 +320,7 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def setup_use_dets(self):
         self._grb._get_detector_selection(
-            min_number_nai=6, max_number_nai=6, mode="max_sig_triplets"
+            min_number_nai=6, max_number_nai=6, mode="max_sig_and_lowest"
         )
         with open(self._bkg_yaml, "r") as f:
             data = yaml.safe_load(f)

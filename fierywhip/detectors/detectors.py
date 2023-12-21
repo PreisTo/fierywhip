@@ -157,13 +157,15 @@ class DetectorSelection:
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
         good_dets = []
         counter = 0
-        i = 0
+        i = -1
         while counter < self._min_number_nai or counter <= self._max_number_nai:
             det = sorted_sig[i][0]
             if det in lu_nai:
                 good_dets.append(det)
-                counter += 1
+                counter -= 1
             i += 1
+        if self._mode == "max_sig_and_lowest":
+            good_dets[-1] = sorted_sig[0][0]
         if self._significances["b0"] >= self._significances["b1"]:
             good_dets.append("b0")
         else:
