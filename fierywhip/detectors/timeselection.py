@@ -216,9 +216,19 @@ class TimeSelectionNew(TimeSelection):
         avgs_sorted = sorted(avgs.items(), key=lambda x: x[1])
         obs_significance = np.zeros((len(self._tstart), 8))
         obs_full, bkg_full = self._tr.observed_and_background()
+        n5_skipped = False
         for k, v in avgs_sorted[-3:]:
-            print(f"Using {k}")
-            obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+            if k != "n5":
+                print(f"Using {k}")
+                obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+                    len(self._tstart), 8
+                )
+            else:
+                print("skipping n5")
+                n5_skipped = True
+        if n5_skipped:
+            k, v = avgs_sorted[-4]
+            obs_significance += self._tr._rates[:, name_to_id(), :].reshape(
                 len(self._tstart), 8
             )
         rates, bkg, sig = self._create_additional_timeseries(obs_significance)
