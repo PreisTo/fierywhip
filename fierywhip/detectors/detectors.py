@@ -165,7 +165,7 @@ class DetectorSelection:
             if det not in good_dets and det in lu_nai:
                 print(f"adding {det}")
                 good_dets.append(det)
-                iterator -= 1
+            iterator -= 1
             if (
                 len(good_dets) >= self._min_number_nai
                 and len(good_dets) <= self._max_number_nai
