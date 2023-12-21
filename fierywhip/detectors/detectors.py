@@ -169,7 +169,7 @@ class DetectorSelection:
             i -= 1
         if self._mode == "max_sig_and_lowest":
             print(f"Replacing")
-            good_dets[-1] = sorted_sig[0][0]
+            good_dets[len(good_dets) - 1] = sorted_sig[0][0]
         if self._significances["b0"] >= self._significances["b1"]:
             good_dets.append("b0")
         else:
