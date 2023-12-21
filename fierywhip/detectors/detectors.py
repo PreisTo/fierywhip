@@ -158,15 +158,18 @@ class DetectorSelection:
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
         print(sorted_sig)
         good_dets = []
-        counter = 0
-        i = -1
-        while counter < self._min_number_nai or counter <= self._max_number_nai:
-            det = sorted_sig[i][0]
-            if det in lu_nai:
-                print(f"Adding {det} with max_sig {sorted_sig[i][1]}")
-                good_dets.append(det)
-                counter += 1
-            i -= 1
+        flag = True
+        iterator = -1
+        while flag:
+            if sorted_sig.keys()[iterator] not in good_dets:
+                print(f"adding {sorted_sig.keys()[iterator]}")
+                good_dets.append(sorted_sig.keys()[iterator])
+                iterator -= 1
+            if (
+                len(good_dets) >= self._min_number_nai
+                and len(good_dets) <= self._max_number_nai
+            ):
+                flag = False
         if self._mode == "max_sig_and_lowest":
             print(f"Replacing")
             good_dets[len(good_dets) - 1] = sorted_sig[0][0]
