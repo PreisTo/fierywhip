@@ -228,7 +228,7 @@ class TimeSelectionNew(TimeSelection):
                 n5_skipped = True
         if n5_skipped:
             k, v = avgs_sorted[-4]
-            obs_significance += self._tr._rates[:, name_to_id(), :].reshape(
+            obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                 len(self._tstart), 8
             )
         rates, bkg, sig = self._create_additional_timeseries(obs_significance)
