@@ -104,6 +104,7 @@ class DetectorSelection:
             self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
+        print(sorted_sig)
         good_dets = []
         flag = True
         iterator = -1
@@ -155,6 +156,7 @@ class DetectorSelection:
             self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
+        print(sorted_sig)
         good_dets = []
         counter = 0
         i = -1
@@ -163,9 +165,10 @@ class DetectorSelection:
             if det in lu_nai:
                 print(f"Adding {det} with max_sig {sorted_sig[i][1]}")
                 good_dets.append(det)
-                counter -= 1
-            i += 1
+                counter += 1
+            i -= 1
         if self._mode == "max_sig_and_lowest":
+            print(f"Replacing")
             good_dets[-1] = sorted_sig[0][0]
         if self._significances["b0"] >= self._significances["b1"]:
             good_dets.append("b0")
