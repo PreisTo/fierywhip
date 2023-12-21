@@ -228,6 +228,7 @@ class TimeSelectionNew(TimeSelection):
                 n5_skipped = True
         if n5_skipped:
             k, v = avgs_sorted[-4]
+            print(f"Using {k} instead of n5")
             obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                 len(self._tstart), 8
             )

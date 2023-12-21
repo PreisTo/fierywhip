@@ -24,6 +24,20 @@ lu = [
     "b0",
     "b1",
 ]
+triplets = {
+    "n0": ["n0", "n1", "n2"],
+    "n1": ["n0", "n1", "n2"],
+    "n2": ["n0", "n1", "n2"],
+    "n3": ["n3", "n4", "n5"],
+    "n4": ["n3", "n4", "n5"],
+    "n5": ["n3", "n4", "n5"],
+    "n6": ["n6", "n7", "n8"],
+    "n7": ["n6", "n7", "n8"],
+    "n8": ["n6", "n7", "n8"],
+    "n9": ["n9", "na", "nb"],
+    "na": ["n9", "na", "nb"],
+    "nb": ["n9", "na", "nb"],
+}
 
 
 class DetectorSelection:
@@ -54,8 +68,59 @@ class DetectorSelection:
             print("Using maximum significance mode")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance()
+        elif self._mode == "max_sig_triplets":
+            self._trigdat_path = self.grb.trigdat
+            self._set_good_dets_significance_triplets()
         else:
             raise NotImplementedError("Mode not implemented")
+
+    def _set_good_dets_significance_triplets(self):
+        tr = TrigReader(self._trigdat_path, fine=True, verbose=False)
+        self.grb.run_timeselection()
+        tr.set_active_time_interval(self.grb.active_time)
+        tr.set_background_selections(*self.grb.bkg_time)
+        self._significances = {}
+        tstart, tstop = tr.tstart_tstop()
+        split = self.grb.active_time.split("-")
+        if len(split) == 2:
+            trigger_start, trigger_stop = list(map(float, split))
+        elif len(split) == 3:
+            trigger_start, trigger_stop = -float(split[1]), float(split[1])
+        elif len(split) == 4:
+            trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
+        else:
+            raise ValueError
+        print(
+            f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
+        )
+        lowerid = np.argwhere(tstart >= trigger_start)[0, 0]
+        upperid = np.argwhere(tstart > trigger_stop)[0, 0]
+
+        for d in lu:
+            signs = tr.time_series[d].significance_per_interval
+            signs[:lowerid] = 0
+            signs[upperid:] = 0
+            self._significances[d] = np.max(signs)
+        lu_nai = lu[:-2]
+        sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
+        good_dets = []
+        flag = True
+        iterator = -1
+        while flag:
+            if sorted_sig.keys()[iterator] not in good_dets:
+                good_dets.extend(triplets[sorted_sig.keys()[iterator]])
+            if (
+                len(good_dets) >= self._min_number_nai
+                and len(good_dets) <= self._max_number_nai
+            ):
+                flag = False
+        if self._significances["b0"] >= self._significances["b1"]:
+            good_dets.append("b0")
+        else:
+            good_dets.append("b1")
+        self._good_dets = good_dets
+        self._normalizing_det = sorted_sig.keys()[-1]
+        self._sorted_significances = sorted_sig
 
     def _set_good_dets_significance(self):
         tr = TrigReader(self._trigdat_path, fine=True, verbose=False)
