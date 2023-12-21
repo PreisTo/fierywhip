@@ -161,9 +161,9 @@ class DetectorSelection:
         flag = True
         iterator = -1
         while flag:
-            if sorted_sig.keys()[iterator] not in good_dets:
-                print(f"adding {sorted_sig.keys()[iterator]}")
-                good_dets.append(sorted_sig.keys()[iterator])
+            if sorted_sig[iterator][0] not in good_dets:
+                print(f"adding {sorted_sig[iterator][0]}")
+                good_dets.append(sorted_sig[iterator][0])
                 iterator -= 1
             if (
                 len(good_dets) >= self._min_number_nai
