@@ -106,6 +106,7 @@ class RunMorgoth:
                 trigdat_file=self._trigdat_path,
                 fine=True,
                 min_trigger_duration=0.128,
+                min_bkg_time=45,
             )
             print("Done TimeSelectionNew")
             if os.path.exists(
