@@ -173,7 +173,12 @@ class DetectorSelection:
                 flag = False
         if self._mode == "max_sig_and_lowest":
             print(f"Replacing")
-            good_dets[len(good_dets) - 1] = sorted_sig[0][0]
+            i = 0
+            det = sorted_sig[i][0]
+            while det not in lu_nai and det not in good_dets:
+                i += 1
+                det = sorted_sig[i][0]
+            good_dets[len(good_dets) - 1] = det
         if self._significances["b0"] >= self._significances["b1"]:
             good_dets.append("b0")
         else:
