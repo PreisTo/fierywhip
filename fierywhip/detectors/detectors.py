@@ -109,6 +109,7 @@ class DetectorSelection:
         while flag:
             if sorted_sig.keys()[iterator] not in good_dets:
                 good_dets.extend(triplets[sorted_sig.keys()[iterator]])
+                iterator -= 1
             if (
                 len(good_dets) >= self._min_number_nai
                 and len(good_dets) <= self._max_number_nai
