@@ -69,6 +69,7 @@ class DetectorSelection:
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance()
         elif self._mode == "max_sig_triplets":
+            print(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance_triplets()
         else:
@@ -108,6 +109,7 @@ class DetectorSelection:
         iterator = -1
         while flag:
             if sorted_sig.keys()[iterator] not in good_dets:
+                print(f"adding corner of {sorted_sig.keys()[iterator]}")
                 good_dets.extend(triplets[sorted_sig.keys()[iterator]])
                 iterator -= 1
             if (
