@@ -161,6 +161,7 @@ class DetectorSelection:
         while counter < self._min_number_nai or counter <= self._max_number_nai:
             det = sorted_sig[i][0]
             if det in lu_nai:
+                print(f"Adding {det} with max_sig {sorted_sig[i][1]}")
                 good_dets.append(det)
                 counter -= 1
             i += 1
