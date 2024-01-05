@@ -204,15 +204,16 @@ class RunMorgoth:
         trig_reader = TrigReader(self._trigdat_path)
         i = 0
         flag = True
-        while flag:
+        while flag and i <10:
             v = f"v0{i}"
             uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{self._grb.name[3:5]}/bn{self._grb.name[3:]}/current/glg_trigdat_all_bn{self._grb.name[3:]}_{v}.fit"
             try:
-                res = urlopen(uri)
+                res = urlopen(uri,timeout = 10)
                 flag = False
             except (HTTPError, URLError):
                 i += 1
                 flag = True
+        
 
         tf = GBMTriggerFile(
             None,
