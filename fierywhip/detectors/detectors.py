@@ -111,9 +111,10 @@ class DetectorSelection:
         flag = True
         iterator = -1
         while flag:
-            if sorted_sig[iterator][0] not in good_dets:
-                print(f"adding corner of {sorted_sig[iterator][0]}")
-                good_dets.extend(triplets[sorted_sig[iterator][0]])
+            d = sorted_sig[iterator][0]
+            if d not in good_dets and d in lu_nai:
+                print(f"adding corner of {d}")
+                good_dets.extend(triplets[d])
                 iterator -= 1
             if (
                 len(good_dets) >= self._min_number_nai
