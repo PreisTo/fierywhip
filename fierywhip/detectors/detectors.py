@@ -115,7 +115,7 @@ class DetectorSelection:
             if d not in good_dets and d in lu_nai:
                 print(f"adding corner of {d}")
                 good_dets.extend(triplets[d])
-                iterator -= 1
+            iterator -= 1
             if (
                 len(good_dets) >= self._min_number_nai
                 and len(good_dets) <= self._max_number_nai
