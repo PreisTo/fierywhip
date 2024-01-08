@@ -46,7 +46,7 @@ if __name__ == "__main__":
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="max_sig_and_lowest",
+                        det_sel_mode="max_sig_triplets",
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             try:
                 # rm = RunMorgoth(g)
                 rm = RunEffAreaMorgoth(
-                    g, use_eff_area=False, det_sel_mode="max_sig_and_lowest"
+                    g, use_eff_area=False, det_sel_mode="max_sig_triplets"
                 )
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
