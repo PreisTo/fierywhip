@@ -12,6 +12,11 @@ import yaml
 import os
 from time import time
 from morgoth.utils.trig_reader import TrigReader
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
 
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
@@ -63,11 +68,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
                 print(f"\n\n USING DETS {self._use_dets}")
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data = yaml.safe_load(f)
-                with open(bkg_fit_yaml_file, "w") as f:
-                    data["use_dets"] = list(map(name_to_id, self._use_dets))
-                    yaml.safe_dump(data, f)
+                if rank == 0:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data = yaml.safe_load(f)
+                    with open(bkg_fit_yaml_file, "w") as f:
+                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        yaml.safe_dump(data, f)
             elif det_sel_mode == "max_sig_and_lowest_old":
                 self._grb._get_detector_selection(
                     max_number_nai=5, min_number_nai=5, mode=det_sel_mode
@@ -100,11 +106,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     use_dets.append("b1")
                 self._use_dets = self._grb.detector_selection.good_dets
                 print(f"\n\n USING DETS {self._use_dets}\n\n")
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data = yaml.safe_load(f)
-                with open(bkg_fit_yaml_file, "w") as f:
-                    data["use_dets"] = list(map(name_to_id, self._use_dets))
-                    yaml.safe_dump(data, f)
+                if rank == 0:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data = yaml.safe_load(f)
+                    with open(bkg_fit_yaml_file, "w") as f:
+                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        yaml.safe_dump(data, f)
 
             elif det_sel_mode == "max_sig_triplets":
                 self._grb._get_detector_selection(
@@ -113,11 +120,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
                 print(f"\n\n USING DETS {self._use_dets}")
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data = yaml.safe_load(f)
-                with open(bkg_fit_yaml_file, "w") as f:
-                    data["use_dets"] = list(map(name_to_id, self._use_dets))
-                    yaml.safe_dump(data, f)
+                if rank == 0:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data = yaml.safe_load(f)
+                    with open(bkg_fit_yaml_file, "w") as f:
+                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        yaml.safe_dump(data, f)
 
             elif (
                 det_sel_mode == "max_sig"
