@@ -113,6 +113,8 @@ class DetectorSelection:
         while flag:
             d = sorted_sig[iterator][0]
             if d not in good_dets and d in lu_nai:
+                if len(good_dets) == 0:
+                    self._normalizing_det = d
                 print(f"adding corner of {d}")
                 good_dets.extend(triplets[d])
             iterator -= 1
