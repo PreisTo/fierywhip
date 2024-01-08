@@ -204,16 +204,15 @@ class RunMorgoth:
         trig_reader = TrigReader(self._trigdat_path)
         i = 0
         flag = True
-        while flag and i <10:
+        while flag and i < 10:
             v = f"v0{i}"
             uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{self._grb.name[3:5]}/bn{self._grb.name[3:]}/current/glg_trigdat_all_bn{self._grb.name[3:]}_{v}.fit"
             try:
-                res = urlopen(uri,timeout = 10)
+                res = urlopen(uri, timeout=10)
                 flag = False
             except (HTTPError, URLError):
                 i += 1
                 flag = True
-        
 
         tf = GBMTriggerFile(
             None,
@@ -321,7 +320,7 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def setup_use_dets(self):
         self._grb._get_detector_selection(
-            min_number_nai=6, max_number_nai=6, mode="max_sig_and_lowest"
+            min_number_nai=6, max_number_nai=6, mode=self._det_sel_mode
         )
         with open(self._bkg_yaml, "r") as f:
             data = yaml.safe_load(f)
