@@ -31,7 +31,7 @@ if not external_config:
     structure["swift"] = True
     structure["det_sel"] = {}
     structure["det_sel"]["mode"] = "max_sig"
-    structure["det_sel"]["exclude_blocked_dets"] = False
+    structure["det_sel"]["exclude_blocked_dets"] = True
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = True
     structure["timeselection"]["store_and_reload"] = True

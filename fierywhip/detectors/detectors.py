@@ -7,6 +7,8 @@ import numpy as np
 from fierywhip.config.configuration import fierywhip_config
 from morgoth.utils.trig_reader import TrigReader
 import numpy as np
+import pandas as pd
+import pkg_resources
 
 lu = [
     "n0",
@@ -164,9 +166,16 @@ class DetectorSelection:
         good_dets = []
         flag = True
         iterator = -1
+        if self._exclude_blocked_dets:
+            blocked_dets_table = pd.read_csv(
+                pkg_resources.resource_filename("fierywhip", "data/blocked_dets.csv")
+            )
+            blocked_dets = list(blocked_dets_table[self.grb.name])
+        else:
+            blocked_dets = []
         while flag:
             det = sorted_sig[iterator][0]
-            if det not in good_dets and det in lu_nai:
+            if det not in good_dets and det in lu_nai and det not in blocked_dets:
                 print(f"adding {det}")
                 good_dets.append(det)
             iterator -= 1
