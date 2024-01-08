@@ -76,37 +76,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         yaml.safe_dump(data, f)
             elif det_sel_mode == "max_sig_and_lowest_old":
                 self._grb._get_detector_selection(
-                    max_number_nai=5, min_number_nai=5, mode=det_sel_mode
+                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode
                 )
-                self._normalizing_det = (
-                    self._grb.detector_selection.sorted_significances[0][0]
-                )
-                use_dets = []
-                number_nais_high = 5
-                number_nais_low = 1
-
-                i = 0
-                while number_nais_high > 0:
-                    det = self._grb.detector_selection.sorted_significances[i][0]
-                    if det in nai_list():
-                        use_dets.append(det)
-                        number_nais_high -= 1
-
-                while number_nais_low > 0:
-                    det = self._grb.detector_selection.sorted_significances[i][0]
-                    if det in nai_list():
-                        use_dets.append(det)
-                        number_nais_low -= 1
-                if (
-                    self._grb.detector_selection.significances["b0"]
-                    >= self._grb.detector_selection.significances["b1"]
-                ):
-                    use_dets.append("b0")
-                else:
-                    use_dets.append("b1")
+                self._normalizing_det = self._grb_.detector_selection.good_dets[0]
                 self._use_dets = self._grb.detector_selection.good_dets
                 print(f"\n\n USING DETS {self._use_dets}\n\n")
-                if rank == 0:
+                if rank == 0:d
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
                     with open(bkg_fit_yaml_file, "w") as f:
