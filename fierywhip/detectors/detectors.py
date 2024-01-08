@@ -170,7 +170,10 @@ class DetectorSelection:
             blocked_dets_table = pd.read_csv(
                 pkg_resources.resource_filename("fierywhip", "data/blocked_dets.csv")
             )
-            blocked_dets = list(blocked_dets_table["grb" == self.grb.name]["blocked"])
+            # blocked_dets = list(blocked_dets_table["grb" == self.grb.name]["blocked"])
+            blocked_dets = blocked_dets_table[
+                blocked_dets_table["grb"] == self.grb.name
+            ]["blocked"]
         else:
             blocked_dets = []
         while flag:
