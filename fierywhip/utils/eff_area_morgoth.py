@@ -119,7 +119,11 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     data["use_dets"] = list(map(name_to_id, self._use_dets))
                     yaml.safe_dump(data, f)
 
-            elif det_sel_mode == "max_sig" or det_sel_mode == "max_sig_and_lowest":
+            elif (
+                det_sel_mode == "max_sig"
+                or det_sel_mode == "max_sig_and_lowest"
+                or det_sel_mode == "max_sig_triplets"
+            ):
                 print("Using pre-set detectors from bkg yaml file")
 
             else:
