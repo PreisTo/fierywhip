@@ -81,7 +81,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 self._normalizing_det = self._grb_.detector_selection.good_dets[0]
                 self._use_dets = self._grb.detector_selection.good_dets
                 print(f"\n\n USING DETS {self._use_dets}\n\n")
-                if rank == 0:d
+                if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
                     with open(bkg_fit_yaml_file, "w") as f:
