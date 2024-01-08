@@ -8,6 +8,7 @@ from threeML.utils.statistics.stats_tools import Significance
 from fierywhip.utils.detector_utils import name_to_id
 from gbm_drm_gen import DRMGenTrig
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
+from gbm_drm_gen.io.balrog_like import BALROGLike
 from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 from threeML.utils.spectrum.binned_spectrum import BinnedSpectrumWithDispersion
 from threeML.utils.spectrum.binned_spectrum_set import BinnedSpectrumSet
@@ -55,6 +56,7 @@ class TimeSelectionNew(TimeSelection):
         self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop", 60)
         self._max_factor = kwargs.get("max_factor", 1.2)
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
+        self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
 
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
@@ -117,18 +119,26 @@ class TimeSelectionNew(TimeSelection):
         self._bb_indices_self = np.arange(0, len(self._bb_width), 1)
 
     def _select_background(self):
-        mask = self._bb_width > self._min_bb_block_bkg_duration
-        self._neg_bins = self._bb_times[:-1][mask] < self._trigger_zone_background_start
-        # TODO make sure the neg background does not range into the trigger zone
-        self._pos_bins = self._bb_times[:-1][mask] > self._trigger_zone_background_stop
-
+        flag = True
+        while flag:
+            mask = self._bb_width > self._min_bb_block_bkg_duration
+            self._neg_bins = (
+                self._bb_times[:-1][mask] < self._trigger_zone_background_start
+            )
+            # TODO make sure the neg background does not range into the trigger zone
+            self._pos_bins = (
+                self._bb_times[:-1][mask] > self._trigger_zone_background_stop
+            )
+            if len(self._neg_bins) > 0 and len(self._pos_bins) > 0:
+                flag = False
+            else:
+                self._min_bb_block_bkg_duration -= 0.5
         # neg_bkg
         bkg_neg = []
         start_flag = False
         for index in np.flip(self._bb_indices_self[mask][self._neg_bins]):
             if start_flag:
                 if self._bb_cps[index] / bkg_neg[-1] > self._max_factor:
-                    print("Too large of a jump")
                     if (
                         self._bb_times[np.max(bkg_neg)]
                         + self._bb_width[np.max(bkg_neg)]
@@ -140,22 +150,18 @@ class TimeSelectionNew(TimeSelection):
                         )
                         break
                     else:
-                        print("not yet fulfilling min bkg time so adding anyways")
                         bkg_neg.append(index)
                 else:
                     bkg_neg.append(index)
             else:
                 bkg_neg.append(index)
                 start_flag = True
-        print("\n")
         # pos_bkg
         bkg_pos = []
         start_flag = False
         for index in self._bb_indices_self[mask][self._pos_bins]:
-            print(self._bb_times[index])
             if start_flag:
                 if self._bb_cps[index] / bkg_pos[-1] > self._max_factor:
-                    print("Too large of a jump")
                     if (
                         self._bb_times[np.max(bkg_pos)]
                         + self._bb_width[np.max(bkg_pos)]
@@ -174,6 +180,8 @@ class TimeSelectionNew(TimeSelection):
             else:
                 bkg_pos.append(index)
                 start_flag = True
+        assert len(bkg_neg) > 0, "no neg background selected"
+        assert len(bkg_pos) > 0, "no pos background selected"
         self._bkg_neg_start = float(self._bb_times[np.min(bkg_neg)])
         self._bkg_neg_stop = float(self._bb_times[np.max(bkg_neg) + 1])
         self._bkg_pos_start = float(self._bb_times[np.min(bkg_pos)])
@@ -208,19 +216,29 @@ class TimeSelectionNew(TimeSelection):
         avgs_sorted = sorted(avgs.items(), key=lambda x: x[1])
         obs_significance = np.zeros((len(self._tstart), 8))
         obs_full, bkg_full = self._tr.observed_and_background()
+        n5_skipped = False
         for k, v in avgs_sorted[-3:]:
-            print(f"Using {k}")
+            if k != "n5":
+                print(f"Using {k}")
+                obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+                    len(self._tstart), 8
+                )
+            else:
+                print("skipping n5")
+                n5_skipped = True
+        if n5_skipped:
+            k, v = avgs_sorted[-4]
+            print(f"Using {k} instead of n5")
             obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                 len(self._tstart), 8
             )
-        rates, bkg = self._create_additional_timeseries(obs_significance)
+        rates, bkg, sig = self._create_additional_timeseries(obs_significance)
 
         obs_significance = rates
         bkg_significance = bkg
-        significance_object = Significance(obs_significance, bkg_significance)
-        sig = significance_object.li_and_ma()
-        plt.plot(sig)
-        plt.show()
+        # TODO use correct significance here (property of BALROGLike)
+        # significance_object = Significance(obs_significance, bkg_significance)
+        # sig = significance_object.li_and_ma()
         sig[self._tstart < self._trigger_zone_active_start] = 0
         sig[self._tstart > self._trigger_zone_active_stop] = 0
         obs_significance[self._tstart < self._trigger_zone_active_start] = 0
@@ -245,18 +263,23 @@ class TimeSelectionNew(TimeSelection):
                 at_stop = at_stop_new
                 min_sig = min_sig_new
                 reason = reason_new
-                print(f"Actually worked")
             else:
                 reason = "no_improvement"
 
         print(f"Active Time eneded because of {reason}")
+        while at_stop - at_start < self._min_trigger_duration:
+            print(
+                f"Min trigger duration is not met - we will add another bin to the trigger end to fulfill it"
+            )
+            stopping_index = np.argwhere(self._tstop == at_stop)[0, 0]
+            at_stop = self._tstop[stopping_index + 1]
         self._active_time_start = float(at_start)
         self._active_time_stop = float(at_stop)
         self._active_time = f"{self._active_time_start}-{self._active_time_stop}"
         self._tr.set_active_time_interval(self._active_time)
 
     def _select_active_time_algorithm(
-        self, sig, obs, max_trigger_duration=10.5, min_sig=None
+        self, sig, obs, max_trigger_duration=11, min_sig=None
     ):
         if min_sig is None:
             maxs = np.max(sig)
@@ -267,7 +290,6 @@ class TimeSelectionNew(TimeSelection):
         flag = True
         ts_start = np.argmax(obs)
         ts_stop = np.argmax(obs)
-        print(f"Centering around {self._tstart[ts_start]}")
         duration = tstop[ts_stop] - tstart[ts_start]
         reasons = ["max_duration", "min_significance"]
         while duration <= max_trigger_duration:
@@ -357,7 +379,6 @@ class TimeSelectionNew(TimeSelection):
         # extract the counts
 
         counts = cps * (self._tstop - self._tstart).reshape(len(self._tstart), 1)
-        print(counts.shape)
         # now create a binned spectrum for each interval
 
         binned_spectrum_list = []
@@ -387,8 +408,8 @@ class TimeSelectionNew(TimeSelection):
         # create a time series builder which can produce plugins
 
         tsb = TimeSeriesBuilder(
-            "max_sig_combined",
-            bss2,
+            name="max_sig_combined",
+            time_series=bss2,
             response=tmp_drm,
             verbose=False,
             poly_order=-1,
@@ -400,7 +421,7 @@ class TimeSelectionNew(TimeSelection):
         self._max_sig_tsb.set_background_interval(
             self._background_time_neg, self._background_time_pos
         )
-
+        # dummy active time interval - needed for correct significance
         start = -1000
         stop = 1000
         counts = []
@@ -429,7 +450,10 @@ class TimeSelectionNew(TimeSelection):
 
         rates_observed = np.array(rates_observed)
         bkg = np.array(bkg)
-        return rates_observed, bkg
+
+        sig = self._max_sig_tsb.significance_per_interval.copy()
+        print(f"This is the significance {sig}")
+        return rates_observed, bkg, sig
 
     @property
     def trigreader(self):

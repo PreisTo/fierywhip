@@ -102,7 +102,11 @@ class RunMorgoth:
             print("Done TimeSelectionKnown")
         else:
             self._tsbb = TimeSelectionNew(
-                name=self._grb.name, trigdat_file=self._trigdat_path, fine=True
+                name=self._grb.name,
+                trigdat_file=self._trigdat_path,
+                fine=True,
+                min_trigger_duration=0.128,
+                min_bkg_time=45,
             )
             print("Done TimeSelectionNew")
             if os.path.exists(
@@ -200,15 +204,16 @@ class RunMorgoth:
         trig_reader = TrigReader(self._trigdat_path)
         i = 0
         flag = True
-        while flag:
+        while flag and i <10:
             v = f"v0{i}"
             uri = f"https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/20{self._grb.name[3:5]}/bn{self._grb.name[3:]}/current/glg_trigdat_all_bn{self._grb.name[3:]}_{v}.fit"
             try:
-                res = urlopen(uri)
+                res = urlopen(uri,timeout = 10)
                 flag = False
             except (HTTPError, URLError):
                 i += 1
                 flag = True
+        
 
         tf = GBMTriggerFile(
             None,
@@ -316,7 +321,7 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def setup_use_dets(self):
         self._grb._get_detector_selection(
-            min_number_nai=5, max_number_nai=5, mode="max_sig"
+            min_number_nai=6, max_number_nai=6, mode="max_sig_and_lowest"
         )
         with open(self._bkg_yaml, "r") as f:
             data = yaml.safe_load(f)
