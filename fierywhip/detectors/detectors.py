@@ -128,7 +128,6 @@ class DetectorSelection:
         else:
             good_dets.append("b1")
         self._good_dets = good_dets
-        self._normalizing_det = sorted_sig.keys()[-1]
         self._sorted_significances = sorted_sig
 
     def _set_good_dets_significance(self):
