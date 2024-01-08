@@ -49,6 +49,7 @@ class DetectorSelection:
         min_number_nai=fierywhip_config.min_number_det,
         max_number_nai=fierywhip_config.max_number_det,
         mode=fierywhip_config.det_sel.mode,
+        exclude_blocked_dets=fierywhip_config.det_sel.exclude_blocked_dets,
     ):
         self.grb = grb
         self._max_sep = max_sep
@@ -56,6 +57,7 @@ class DetectorSelection:
         self._max_number_nai = max_number_nai
         self._min_number_nai = min_number_nai
         self._mode = mode
+        self._exclude_blocked_dets = exclude_blocked_dets
         self._set_position_interpolator()
         self._set_gbm()
         self._set_gbm_frame()
