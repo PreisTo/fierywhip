@@ -61,7 +61,9 @@ class GRBList:
     Class to load GRB positions and times from all different sources
     """
 
-    def __init__(self, check_finished=True, run_det_sel=True, testing=False):
+    def __init__(
+        self, check_finished=True, run_det_sel=True, testing=False, reverse=False
+    ):
         """
         :param check_finished:  looks up the localizing/results.yml if GRB is
                                 already in there
@@ -92,7 +94,10 @@ class GRBList:
                 {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
                 index=None,
             )
+
             self._table.sort_values(by="name", inplace=True)
+            if reverse:
+                self._table.sort_values(by="name", ascending=False, inplace=True)
             self._table.reset_index(inplace=True)
         else:
             self._table = None
