@@ -69,7 +69,14 @@ def detector_list():
 def nai_list():
     lu = detector_list()[:-2]
     return lu
-
+def id2name(id):
+    if type(id) in [list,np.array]:
+        ret = []
+        for i in id:
+            ret.append(detector_list()[int(id)])
+        return ret
+    else:
+        return detector_list()[int(id)]
 
 def name_to_id(det):
     lu = {
