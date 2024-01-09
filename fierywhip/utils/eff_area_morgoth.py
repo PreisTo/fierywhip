@@ -75,6 +75,11 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
+                else:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data1 = yaml.safe_load(f)
+                        self._bkg_fit_files = data1["bkg_fit_files"]
+
             elif det_sel_mode == "max_sig_and_lowest_old":
                 self._grb._get_detector_selection(
                     max_number_nai=6, min_number_nai=6, mode=det_sel_mode
@@ -89,6 +94,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
+                else:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data1 = yaml.safe_load(f)
+                        self._bkg_fit_files = data1["bkg_fit_files"]
 
             elif det_sel_mode == "max_sig_triplets":
                 self._grb._get_detector_selection(
@@ -100,10 +109,14 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
-                        self._bkg_fit_files = data["bkg_fit_files"] 
+                        self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
+                else:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data1 = yaml.safe_load(f)
+                        self._bkg_fit_files = data1["bkg_fit_files"]
 
             elif (
                 det_sel_mode == "max_sig"
@@ -139,6 +152,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             self._fine = data["fine"]
         self._define_model(self._spectrum_model)
         self._setup_plugins()
+
     def _setup_plugins(self):
         """
         Set the plugins using the saved background hdf5 files
@@ -159,12 +173,15 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 i = 0
             except Exception as e:
                 import time
+
                 time.sleep(1)
                 print(e)
                 pass
             i += 1
             if i == 50:
-                raise AssertionError(f"Can not restore background fit...\n{self._bkg_fit_files}")
+                raise AssertionError(
+                    f"Can not restore background fit...\n{self._bkg_fit_files}"
+                )
 
         trig_reader.set_active_time_interval(self._active_time)
 
