@@ -10,7 +10,6 @@ from fierywhip.utils.detector_utils import name_to_id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
 import yaml
 import os
-from time import time
 from morgoth.utils.trig_reader import TrigReader
 from mpi4py import MPI
 
@@ -36,6 +35,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         use_eff_area: bool = False,
         det_sel_mode: str = "default",
         grb_file: str = None,
+        **kwargs,
     ):
         if grb is not None:
             self._grb = grb
@@ -55,7 +55,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
                 ).matrix
             )
-
+        self._spectrum_model = kwargs.get("spectrum", "cpl")
         super().__init__(
             grb_name, version, trigdat_file, bkg_fit_yaml_file, time_selection_yaml_file
         )
@@ -71,6 +71,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
+                        self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
@@ -84,6 +85,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
+                        self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
@@ -98,6 +100,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
+                        self._bkg_fit_files = data["bkg_fit_files"] 
                     with open(bkg_fit_yaml_file, "w") as f:
                         data["use_dets"] = list(map(name_to_id, self._use_dets))
                         yaml.safe_dump(data, f)
@@ -134,8 +137,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 f"{data['active_time']['start']}-{data['active_time']['stop']}"
             )
             self._fine = data["fine"]
-
-    def _set_plugins(self):
+        self._define_model(self._spectrum_model)
+        self._setup_plugins()
+    def _setup_plugins(self):
         """
         Set the plugins using the saved background hdf5 files
         :return:
@@ -144,6 +148,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         i = 0
         while not success_restore:
             try:
+                print(self._bkg_fit_files)
                 trig_reader = TrigReader(
                     self._trigdat_file,
                     fine=self._fine,
@@ -153,12 +158,13 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 success_restore = True
                 i = 0
             except Exception as e:
-                print(e)
+                import time
                 time.sleep(1)
+                print(e)
                 pass
             i += 1
             if i == 50:
-                raise AssertionError("Can not restore background fit...")
+                raise AssertionError(f"Can not restore background fit...\n{self._bkg_fit_files}")
 
         trig_reader.set_active_time_interval(self._active_time)
 
