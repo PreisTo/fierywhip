@@ -5,6 +5,7 @@ from gbmgeometry.gbm_frame import GBMFrame
 import astropy.units as u
 import numpy as np
 from fierywhip.config.configuration import fierywhip_config
+from fierywhip.utils.detector_utils import id2name
 from morgoth.utils.trig_reader import TrigReader
 import numpy as np
 import pandas as pd
@@ -171,11 +172,22 @@ class DetectorSelection:
                 pkg_resources.resource_filename("fierywhip", "data/blocked_dets.csv")
             )
             # blocked_dets = list(blocked_dets_table["grb" == self.grb.name]["blocked"])
-            blocked_dets = blocked_dets_table[
+            temp = blocked_dets_table[
                 blocked_dets_table["grb"] == self.grb.name
-            ]["blocked"]
+            ]["blocked"].to_list()[0]
+            
+            temp = temp.strip(" ").strip("[").strip("]")
+            if len(temp) == 0:
+                blocked_dets = []
+            else:
+                temp = temp.split(",")
+                if len(temp)>0:
+                    blocked_dets = list(map(id2name,temp))
+                else:
+                    blocked_dets = []
         else:
             blocked_dets = []
+        print(blocked_dets)
         while flag:
             det = sorted_sig[iterator][0]
             if det not in good_dets and det in lu_nai and det not in blocked_dets:
