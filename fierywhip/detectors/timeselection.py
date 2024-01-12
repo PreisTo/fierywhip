@@ -167,7 +167,7 @@ class TimeSelectionNew(TimeSelection):
                         + self._bb_width[np.max(bkg_pos)]
                         - self._bb_times[np.min(bkg_pos)]
                         >= self._min_bkg_time
-                    ):
+                    ) and len(bkg_pos) > 0:
                         print(
                             f"Breaking with a duration of {self._bb_times[np.max(bkg_pos)]+self._bb_width[np.max(bkg_pos)] - self._bb_times[np.min(bkg_pos)]}"
                         )
