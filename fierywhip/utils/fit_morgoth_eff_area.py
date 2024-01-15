@@ -29,6 +29,7 @@ time_selection_yaml_file = sys.argv[5]
 det_sel_mode = sys.argv[6]
 use_eff_area = sys.argv[7]
 grb_file = sys.argv[8]
+spectrum = sys.argv[9]
 # get fit object
 
 multinest_fit = MultinestFitTrigdatEffArea(
@@ -41,6 +42,7 @@ multinest_fit = MultinestFitTrigdatEffArea(
     grb_file=grb_file,
     det_sel_mode=det_sel_mode,
     use_eff_area=False,
+    spectrum=spectrum,
 )
 multinest_fit.fit()
 multinest_fit.save_fit_result()
