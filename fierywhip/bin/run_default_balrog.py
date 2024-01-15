@@ -33,13 +33,21 @@ if __name__ == "__main__":
         "GRB201216963",
         "GRB220107615",
     ]
-    excludes = ["GRB100924165"]
-    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False,reverse = True)
+    #    excludes = ["GRB100924165"]
+    grb_list = GRBList(
+        run_det_sel=False, check_finished=False, testing=False, reverse=False
+    )
     print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
-            if g.name not in list(already_run["grb"]) and g.name not in excludes and not os.path.exists(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),g.name)):
+            if (
+                g.name not in list(already_run["grb"])
+                and g.name not in excludes
+                and not os.path.exists(
+                    os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), g.name)
+                )
+            ):
                 print(f"Starting Morgoth for {g.name}")
                 try:
                     # rm = RunMorgoth(g)
@@ -47,6 +55,7 @@ if __name__ == "__main__":
                         g,
                         use_eff_area=False,
                         det_sel_mode="max_sig_triplets",
+                        spectrum="pl",
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -58,7 +67,10 @@ if __name__ == "__main__":
             try:
                 # rm = RunMorgoth(g)
                 rm = RunEffAreaMorgoth(
-                    g, use_eff_area=False, det_sel_mode="max_sig_triplets"
+                    g,
+                    use_eff_area=False,
+                    det_sel_mode="max_sig_triplets",
+                    spectrum="pl",
                 )
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):

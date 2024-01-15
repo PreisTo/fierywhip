@@ -52,9 +52,10 @@ result_csv = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_resul
 
 
 class RunMorgoth:
-    def __init__(self, grb: GRB = None):
+    def __init__(self, grb: GRB = None, **kwargs):
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
+        self._spectrum = kwargs.get("spectrum", "cpl")
         start_ts = datetime.now()
         run_ts = self.timeselection()
         stop_ts = datetime.now()
@@ -309,6 +310,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         grb: GRB = None,
         use_eff_area: bool = False,
         det_sel_mode: str = "default",
+        **kwargs,
     ):
         assert isinstance(
             grb, GRB
@@ -316,7 +318,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         self._grb = grb
         self._use_eff_area = use_eff_area
         self._det_sel_mode = det_sel_mode
-        super().__init__(grb)
+        super().__init__(grb, **kwargs)
         self.setup_use_dets()
 
     def setup_use_dets(self):
@@ -355,7 +357,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         else:
             run_fit = True
             p = subprocess.check_output(
-                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path}",
+                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum}",
                 shell=True,
                 env=env,
                 stdin=subprocess.PIPE,
