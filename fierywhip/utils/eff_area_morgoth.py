@@ -57,7 +57,12 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             )
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         super().__init__(
-            grb_name, version, trigdat_file, bkg_fit_yaml_file, time_selection_yaml_file
+            grb_name,
+            version,
+            trigdat_file,
+            bkg_fit_yaml_file,
+            time_selection_yaml_file,
+            spectrum=self._spectrum_model,
         )
 
         if det_sel_mode != "default":
