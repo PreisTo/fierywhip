@@ -34,12 +34,12 @@ if __name__ == "__main__":
         "GRB220107615",
     ]
     excludes = ["GRB100924165"]
-    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False)
+    grb_list = GRBList(run_det_sel=False, check_finished=False, testing=False,reverse = True)
     print(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
     for g in grb_list.grbs:
         print(f"Checking {g.name}")
         if already_run is not None:
-            if g.name not in list(already_run["grb"]) and g.name not in excludes:
+            if g.name not in list(already_run["grb"]) and g.name not in excludes and not os.path.exists(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),g.name)):
                 print(f"Starting Morgoth for {g.name}")
                 try:
                     # rm = RunMorgoth(g)
