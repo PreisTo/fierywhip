@@ -77,7 +77,7 @@ class TimeSelectionNew(TimeSelection):
 
         while self._bkg_pos_start - self._active_time_stop < 20:
             print(f"Background pos start too close to trigger time, rerunning")
-            self._trigger_zone_background_stop = self._active_time_stop + 10
+            self._trigger_zone_background_stop = self._active_time_stop + 20
             self._select_background()
             self._select_active_time()
 
