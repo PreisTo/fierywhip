@@ -32,6 +32,8 @@ grb_file = sys.argv[8]
 spectrum = sys.argv[9]
 # get fit object
 
+
+print(f"Using spectrum {spectrum}")
 multinest_fit = MultinestFitTrigdatEffArea(
     grb=None,
     grb_name=grb_name,
