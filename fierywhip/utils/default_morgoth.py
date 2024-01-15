@@ -56,6 +56,7 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
+        print(f"Using spectrum {self._spectrum}!")
         start_ts = datetime.now()
         run_ts = self.timeselection()
         stop_ts = datetime.now()
@@ -322,14 +323,17 @@ class RunEffAreaMorgoth(RunMorgoth):
         self.setup_use_dets()
 
     def setup_use_dets(self):
-        self._grb._get_detector_selection(
-            min_number_nai=6, max_number_nai=6, mode=self._det_sel_mode
-        )
-        with open(self._bkg_yaml, "r") as f:
-            data = yaml.safe_load(f)
-        data["use_dets"] = list(map(name_to_id, self._grb.detector_selection.good_dets))
-        with open(self._bkg_yaml, "w") as f:
-            yaml.safe_dump(data, f)
+        if self._det_sel_mode != "default":
+            self._grb._get_detector_selection(
+                min_number_nai=6, max_number_nai=6, mode=self._det_sel_mode
+            )
+            with open(self._bkg_yaml, "r") as f:
+                data = yaml.safe_load(f)
+                data["use_dets"] = list(
+                    map(name_to_id, self._grb.detector_selection.good_dets)
+                )
+            with open(self._bkg_yaml, "w") as f:
+                yaml.safe_dump(data, f)
 
     def fit(self):
         ncores = str(int(morgoth_config["multinest"]["n_cores"]))
