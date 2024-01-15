@@ -50,7 +50,7 @@ class TimeSelectionNew(TimeSelection):
             "trigger_zone_background_start", -5
         )
         self._trigger_zone_background_stop = kwargs.get(
-            "trigger_zone_background_stop", 5
+            "trigger_zone_background_stop", 10
         )
         self._trigger_zone_active_start = kwargs.get("trigger_zone_active_start", -10)
         self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop", 60)
