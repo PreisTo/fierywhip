@@ -129,7 +129,10 @@ class TimeSelectionNew(TimeSelection):
             self._pos_bins = (
                 self._bb_times[:-1][mask] > self._trigger_zone_background_stop
             )
-            if len(self._neg_bins) > 0 and len(self._pos_bins) > 0:
+            if (
+                len(self._bb_indices_self[mask][self._pos_bins]) > 0
+                and len(self._bb_indices_self[mask][self._neg_bins]) > 0
+            ):
                 flag = False
             else:
                 self._min_bb_block_bkg_duration -= 0.5
@@ -159,7 +162,9 @@ class TimeSelectionNew(TimeSelection):
         # pos_bkg
         bkg_pos = []
         start_flag = False
-        assert len(self._bb_indices_self[mask][self._pos_bins])>0, "yeah well that sucks"
+        assert (
+            len(self._bb_indices_self[mask][self._pos_bins]) > 0
+        ), "yeah well that sucks"
         for index in self._bb_indices_self[mask][self._pos_bins]:
             if start_flag:
                 if self._bb_cps[index] / bkg_pos[-1] > self._max_factor:
