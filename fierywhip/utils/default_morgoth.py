@@ -248,7 +248,7 @@ class RunMorgoth:
 
         create_corner_all_plot(
             post_equal_weights_path,
-            model="cpl",
+            model=self._spectrum,
             save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
         )
         template = [
