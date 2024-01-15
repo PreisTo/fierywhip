@@ -159,6 +159,7 @@ class TimeSelectionNew(TimeSelection):
         # pos_bkg
         bkg_pos = []
         start_flag = False
+        assert len(self._bb_indices_self[mask][self._pos_bins])>0, "yeah well that sucks"
         for index in self._bb_indices_self[mask][self._pos_bins]:
             if start_flag:
                 if self._bb_cps[index] / bkg_pos[-1] > self._max_factor:
