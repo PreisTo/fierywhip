@@ -1,5 +1,11 @@
 #!/usr/bin/python
-from astromodels.functions import Cutoff_powerlaw_Ep, Log_uniform_prior, Uniform_prior
+from astromodels.functions import (
+    Cutoff_powerlaw_Ep,
+    Log_uniform_prior,
+    Uniform_prior,
+    Cutoff_powerlaw,
+    Powerlaw,
+)
 from astromodels.core.model import Model
 from astromodels.sources.point_source import PointSource
 from morgoth.utils.trig_reader import TrigReader
@@ -29,10 +35,12 @@ lu = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "na", "nb"]
 
 
 class GRBModel:
-    def __init__(self, grb):
+    def __init__(self, grb, **kwargs):
         self._base_dir = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"))
         self.grb = grb
         self._grb_name = self.grb.name
+        self._spectral_shape = kwargs.get("spectrum", "cpl")
+
         self.grb.run_timeselection()
         self.trigreader = TrigReader(self.grb.trigdat, fine=True)
         self.trigreader.set_active_time_interval(self.grb.active_time)
@@ -41,22 +49,23 @@ class GRBModel:
         self._to_plugin()
 
     def _setup_model(self):
-        cpl = Cutoff_powerlaw_Ep()
-        cpl.index.value = -1.1
-        cpl.K.value = 1
-        cpl.xp.value = 200
-        cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
-        cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
-        cpl.xp.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
-
-        self._model = Model(
-            PointSource(
-                "GRB",
-                self.grb.position.ra.deg,
-                self.grb.position.dec.deg,
-                spectral_shape=cpl,
+        if self._spectral_shape == "cpl":
+            raise NotImplementedError(
+                "Please check first if this is the correct CPL model"
             )
-        )
+            cpl = Cutoff_powerlaw()
+            cpl.K.max_value = 10**4
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+            cpl.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+            cpl.index.set_uninformative_prior(Uniform_prior)
+            # we define a point source model using the spectrum we just specified
+            self._model = Model(PointSource("grb", 0.0, 0.0, spectral_shape=cpl))
+        if self._spectral_shape == "pl":
+            pl = Powerlaw()
+            pl.K.max_value = 10**4
+            pl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+            pl.index.set_uninformative_prior(Uniform_prior)
+            self._model = Model(PointSource("grb", 0.0, 0.0, spectral_shape=pl))
 
     def _to_plugin(self):
         """
