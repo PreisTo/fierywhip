@@ -214,3 +214,34 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
             trig_data.append(balrog_like)
         self._data_list = DataList(*trig_data)
+
+    def fit(self):
+        """
+        Fit the model to data using ultranest
+        :return:
+        """
+
+        # define bayes object with model and data_list
+        self._bayes = BayesianAnalysis(self._model, self._data_list)
+        # wrap for ra angle
+        wrap = [0] * len(self._model.free_parameters)
+        wrap[0] = 1
+
+        # define temp chain save path
+        self._temp_chains_dir = os.path.join(
+            base_dir, self._grb_name, f"c_trig_{self._version}"
+        )
+        chain_path = os.path.join(self._temp_chains_dir, f"trigdat_{self._version}_")
+
+        # Make temp chains folder if it does not exists already
+        if not os.path.exists(self._temp_chains_dir):
+            os.mkdir(os.path.join(self._temp_chains_dir))
+
+        # use multinest to sample the posterior
+        # set main_path+trigger to whatever you want to use
+
+        self._bayes.set_sampler("ultranest", share_spectrum=True)
+        self._bayes.sampler.setup(
+            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
+        )
+        self._bayes.sample()
