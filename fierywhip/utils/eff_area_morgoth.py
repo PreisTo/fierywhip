@@ -72,7 +72,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
-                print(f"\n\n USING DETS {self._use_dets}")
+                logging.debug(f"\n\n USING DETS {self._use_dets}")
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
@@ -91,7 +91,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 self._normalizing_det = self._grb_.detector_selection.good_dets[0]
                 self._use_dets = self._grb.detector_selection.good_dets
-                print(f"\n\n USING DETS {self._use_dets}\n\n")
+                logging.debug(f"\n\n USING DETS {self._use_dets}\n\n")
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
@@ -110,7 +110,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
-                print(f"\n\n USING DETS {self._use_dets}")
+                logging.debug(f"\n\n USING DETS {self._use_dets}")
                 if rank == 0:
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
@@ -129,7 +129,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 or det_sel_mode == "max_sig_triplets"
                 or det_sel_mode == "bgo_sides_no_bgo"
             ):
-                print("Using pre-set detectors from bkg yaml file")
+                logging.debug("Using pre-set detectors from bkg yaml file")
                 with open(bkg_fit_yaml_file, "r") as f:
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
@@ -139,7 +139,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             self.setup_essentials()
         else:
             if self._use_eff_area:
-                print(
+                logging.error(
                     "Currently doing this is absolutely useless and will likely worsen the results"
                 )
                 super().setup_essentials()
@@ -174,7 +174,6 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         i = 0
         while not success_restore:
             try:
-                print(self._bkg_fit_files)
                 trig_reader = TrigReader(
                     self._trigdat_file,
                     fine=self._fine,
@@ -187,7 +186,6 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 import time
 
                 time.sleep(1)
-                print(e)
                 pass
             i += 1
             if i == 50:

@@ -21,6 +21,7 @@ from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
 from threeML.utils.progress_bar import trange
+import logging
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -132,7 +133,7 @@ class GRBList:
         for index, row in self._table.iloc[start:stop].iterrows():
             if not self._check_already_run(row["name"]):
                 try:
-                    print(f"Creating Object for {row['name']}")
+                    logging.debug(f"Creating Object for {row['name']}")
                     grb = GRB(
                         name=row["name"],
                         ra=row["ra"],
@@ -158,7 +159,6 @@ class GRBList:
         """
         Loads Fermi-Swift burst provided in package resources
         """
-        # TODO check if position correct
         names, ras, decs = [], [], []
         if fierywhip_config.swift:
             self._swift_table = pd.read_csv(
@@ -177,7 +177,7 @@ class GRBList:
                 coord = SkyCoord(ra=ra, dec=dec, unit=ra_dec_units)
                 ras.append(round(coord.ra.deg, 3))
                 decs.append(round(coord.dec.deg, 3))
-            print("Done loading Swift List")
+            logging.info("Done loading Swift List")
         return names, ras, decs
 
     def _load_ipn_bursts(
@@ -194,7 +194,7 @@ class GRBList:
                 ras.append(float(b["ra"]))
                 decs.append(float(b["dec"]))
                 types.append("ipn")
-            print("Done loading IPN list")
+            logging.info("Done loading IPN list")
         return names, ras, decs, types
 
     def _load_ipn_arcs(
@@ -246,7 +246,7 @@ class GRBList:
                     pass
             if not exists:
                 non_exist.append(i)
-        print(f"Rank {rank} finished")
+        logging.debug(f"Rank {rank} finished")
         res = comm.gather(non_exist, root=0)
         if rank == 0:
             drop_list = []
@@ -257,9 +257,9 @@ class GRBList:
             drop_list = None
         drop_list = comm.bcast(drop_list, root=0)
         if rank == 0:
-            print(f"Before removing: {len(table)}")
+            logging.debug(f"Before removing: {len(table)}")
             table.drop(non_exist, inplace=True)
-            print(f"After removing: {len(table)}")
+            logging.debug(f"After removing: {len(table)}")
         else:
             table = None
         table = comm.bcast(table, root=0)
@@ -438,7 +438,7 @@ class GRB:
         """
         Downloading TTE and CSPEC files from FTP
         """
-        print("Downloading TTE and CSPEC files")
+        logging.info("Downloading TTE and CSPEC files")
         self.tte_files = {}
         self.cspec_files = {}
         for d in self.detector_selection.good_dets:
@@ -471,7 +471,7 @@ class GRB:
         :param max_sep_normalization: max sep of center for det used as normalization
         """
         self._detector_selection = DetectorSelection(self, **kwargs)
-        print(self._detector_selection.good_dets)
+        logging.debug(self._detector_selection.good_dets)
 
     def run_timeselection(self, **kwargs):
         """
@@ -511,8 +511,7 @@ class GRB:
                             tsbb.background_time_pos,
                         ]
                     except Exception as e:
-                        print(e)
-                        raise GRBInitError
+                        raise GRBInitError(str(e))
                 if fierywhip_config.timeselection.save and flag is not True:
                     if os.path.exists(
                         os.path.join(

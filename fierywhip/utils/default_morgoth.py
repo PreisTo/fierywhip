@@ -42,6 +42,7 @@ from morgoth.utils.plot_utils import create_corner_all_plot
 from datetime import datetime
 import subprocess
 import numpy as np
+import logging
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -56,7 +57,7 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
-        print(f"Using spectrum {self._spectrum}!")
+        logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         run_ts = self.timeselection()
         stop_ts = datetime.now()
@@ -67,7 +68,7 @@ class RunMorgoth:
         self.fit_background()
 
     def run_fit(self):
-        print("Starting Fit")
+        logging.info("Starting Fit")
         start_fit = datetime.now()
         run_fit = self.fit()
         stop_fit = datetime.now()
@@ -75,7 +76,7 @@ class RunMorgoth:
             self._runtime_fit = float((stop_fit - start_fit).total_seconds())
         else:
             self._runtime_fit = np.nan
-        print("Starting Analyzing")
+        logging.info("Starting Analyzing")
         self.analyze()
 
     def timeselection(self):
@@ -101,7 +102,7 @@ class RunMorgoth:
                 max_time=float(ts_dict[self._grb.name]["bkg_pos"].split("-")[-1]),
                 fine=True,
             )
-            print("Done TimeSelectionKnown")
+            logging.info("Done TimeSelectionKnown")
         else:
             self._tsbb = TimeSelectionNew(
                 name=self._grb.name,
@@ -110,7 +111,7 @@ class RunMorgoth:
                 min_trigger_duration=0.128,
                 min_bkg_time=45,
             )
-            print("Done TimeSelectionNew")
+            logging.info("Done TimeSelectionNew")
             if os.path.exists(
                 os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
             ):
@@ -152,7 +153,7 @@ class RunMorgoth:
             trigdat_file=self._trigdat_path,
             time_selection_file_path=self._ts_yaml,
         )
-        print("Done BkgFittingTrigdat")
+        logging.info("Done BkgFittingTrigdat")
         self._bkg.save_lightcurves(
             os.path.join(base_dir, self._grb.name, "trigdat", "v00", "lc")
         )
@@ -324,13 +325,12 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def setup_use_dets(self):
         if self._det_sel_mode != "default":
-            if self._det_sel_mode == "bgo_sides_no_bgo":
-                self._grb._get_detector_selection(
-                    min_number_nai=6,
-                    max_number_nai=6,
-                    mode=self._det_sel_mode,
-                    bkg_yaml=self._bkg_yaml,
-                )
+            self._grb._get_detector_selection(
+                min_number_nai=6,
+                max_number_nai=6,
+                mode=self._det_sel_mode,
+                bkg_yaml=self._bkg_yaml,
+            )
             with open(self._bkg_yaml, "r") as f:
                 data = yaml.safe_load(f)
                 data["use_dets"] = list(
