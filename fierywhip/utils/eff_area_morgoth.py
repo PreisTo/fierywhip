@@ -20,6 +20,7 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+base_dir = os.environ.get("GBM_TRIGGER_DATA_DIR")
 
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
     """
@@ -242,12 +243,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         # use multinest to sample the posterior
         # set main_path+trigger to whatever you want to use
 
-        self._bayes.set_sampler("ultranest", share_spectrum=True)
-        self._bayes.sampler.setup(
-            n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
-        )
+        self._bayes.set_sampler("ultranest",share_spectrum = True)
+        self._bayes.sampler.setup( chain_name=chain_path, wrapped_params=wrap)
 
         self._bayes.sample()
-
-        fig = self._bayes.results.corner_plot()
-        fig.savefig(os.path.join(base_dir, self._grb_name))
+        if rank == 0:
+            fig = self._bayes.results.corner_plot()
+            fig.savefig(os.path.join(base_dir, self._grb_name,"ultranest_corners.pdf"))

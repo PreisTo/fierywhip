@@ -203,8 +203,15 @@ class RunMorgoth:
 
         base_job = os.path.join(base_dir, self._grb.name, "trigdat", version)
         post_equal_weights_path = os.path.join(
-            base_job, "chains", f"trigdat_{version}_post_equal_weights.dat"
+            base_job, "chains", f"trigdat_{version}_","chains","equal_weighted_post.txt"
         )
+        """
+        if rank == 0:
+            with open(post_equal_weights_path,"r") as f:
+                original = f.read().splitlines(True)
+            with open(post_equal_weights_path,"w") as f:
+                f.writelines(original[1:])
+        """
         trig_reader = TrigReader(self._trigdat_path)
         i = 0
         flag = True
