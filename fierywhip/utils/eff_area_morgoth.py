@@ -142,6 +142,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 # just use the first one as normalizing det
                 self._normalizing_det = self._use_dets[0]
             else:
+                with open(bkg_fit_yaml_file, "r") as f:
+                    data = yaml.safe_load(f)
+                    self._bkg_fit_files = data["bkg_fit_files"]
                 super().setup_essentials()
 
     def setup_essentials(self):
