@@ -367,20 +367,20 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             cpl1.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
             cpl1.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
-            ps1 = PointSource("first", ra = 0.0, dec = 0.0, spectral_shape=cpl1)
+            ps1 = PointSource("first", ra=0.0, dec=0.0, spectral_shape=cpl1)
             cpl2 = Cutoff_powerlaw()
             cpl2.K.max_value = 10**4
             cpl2.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
             cpl2.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
             cpl2.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
-            ps2 = PointSource("second", ra = 0.0, dec = 0.0, spectral_shape=cpl2)
+            ps2 = PointSource("second", ra=0.0, dec=0.0, spectral_shape=cpl2)
             self._model = Model(ps1, ps2)
             self._model.link(
                 self._model.first.position.ra, self._model.second.position.ra
             )
             self._model.link(
-                self._model.first.positon.dec, self._model.second.position.dec
+                self._model.first.position.dec, self._model.second.position.dec
             )
         # elif spectrum == "band":
         #     band = Band()
