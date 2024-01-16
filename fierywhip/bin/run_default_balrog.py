@@ -6,9 +6,14 @@ from threeML.minimizer.minimization import FitFailed
 import pandas as pd
 import os
 import logging
+import sys
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
+    if len(sys.argv) > 1:
+        grb_selection = sys.argv[1].split(",")
+    else:
+        grb_selection = None
     if os.path.exists(
         os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
     ):
@@ -17,6 +22,25 @@ if __name__ == "__main__":
         )
     else:
         already_run = None
+    if grb_selection is None:
+        default(already_run)
+    else:
+        for g in grb_selection:
+            grb = GRB(name=g)
+            try:
+                rm = RunEffAreaMorgoth(
+                    grb,
+                    use_eff_area=False,
+                    det_sel_mode="triplets",
+                    spectrum="cpl",
+                    max_trigger_duration=22,
+                )
+                rm.run_fit()
+            except (RuntimeError, FitFailed, IndexError):
+                pass
+
+
+def default(already_run):
     excludes = []
     grb_list = GRBList(
         run_det_sel=False, check_finished=False, testing=False, reverse=False
@@ -39,8 +63,8 @@ if __name__ == "__main__":
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="bgo_sides_no_bgo",
-                        spectrum="pl",
+                        det_sel_mode="triplets",
+                        spectrum="cpl",
                         max_trigger_duration=22,
                     )
                     rm.run_fit()
@@ -55,8 +79,8 @@ if __name__ == "__main__":
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
-                    det_sel_mode="bgo_sides_no_bgo",
-                    spectrum="pl",
+                    det_sel_mode="triplets",
+                    spectrum="cpl",
                     max_trigger_duration=22,
                 )
                 rm.run_fit()
