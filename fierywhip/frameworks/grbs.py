@@ -335,8 +335,8 @@ class GRB:
         self._name = kwargs.get("name")
         self._active_time = kwargs.get("active_time", None)
         self._bkg_time = kwargs.get("bkg_time", None)
-        self._ra_icrs = kwargs.get("ra")
-        self._dec_icrs = kwargs.get("dec")
+        self._ra_icrs = kwargs.get("ra", None)
+        self._dec_icrs = kwargs.get("dec", None)
         grb_time = kwargs.get("grb_time", None)
         if grb_time is not None:
             assert (
@@ -354,6 +354,21 @@ class GRB:
                 seconds=tot_seconds * int(frac)
             )
         ra_dec_units = kwargs.get("ra_dec_units", (u.deg, u.deg))
+
+        if self._ra_icrs is None and self._dec_icrs is None:
+            swift = pd.read_csv(
+                pkg_resources.resource_filename("fierywhip", "data/Fermi_Swift.lis"),
+                sep=" ",
+                index_col=False,
+                header=None,
+            )
+            for j, i in swift.iterrows():
+                name = str(i.loc[0])
+                if name == self._name.strip("GRB"):
+                    self._ra = str(i.loc[5])
+                    self._dec = str(i.loc[6])
+                    ra_dec_units = (u.hourangle, u.deg)
+                    break
 
         self._position = SkyCoord(
             ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
