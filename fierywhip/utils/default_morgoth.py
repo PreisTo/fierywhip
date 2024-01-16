@@ -324,9 +324,13 @@ class RunEffAreaMorgoth(RunMorgoth):
 
     def setup_use_dets(self):
         if self._det_sel_mode != "default":
-            self._grb._get_detector_selection(
-                min_number_nai=6, max_number_nai=6, mode=self._det_sel_mode
-            )
+            if self._det_sel_mode == "bgo_sides_no_bgo":
+                self._grb._get_detector_selection(
+                    min_number_nai=6,
+                    max_number_nai=6,
+                    mode=self._det_sel_mode,
+                    bkg_yaml=self._bkg_yaml,
+                )
             with open(self._bkg_yaml, "r") as f:
                 data = yaml.safe_load(f)
                 data["use_dets"] = list(
