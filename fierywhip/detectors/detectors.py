@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import pkg_resources
 import yaml
+import logging
 
 lu = [
     "n0",
@@ -67,20 +68,20 @@ class DetectorSelection:
         self._set_gbm()
         self._set_gbm_frame()
         if self._mode == "min_sep":
-            print("Using minimum separation mode")
+            logging.info("Using minimum separation mode")
             self._seps = self.gbm.get_separation(self.grb.position)
             self._set_good_dets()
             self._set_normalizing_det()
         elif self._mode == "max_sig" or self._mode == "max_sig_and_lowest":
-            print("Using maximum significance mode")
+            logging.info("Using maximum significance mode")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance()
         elif self._mode == "max_sig_triplets":
-            print(f"Running detector selection mode {self._mode}")
+            logging.info(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance_triplets()
         elif self._mode == "bgo_sides_no_bgo":
-            print(f"Running detector selection mode {self._mode}")
+            logging.info(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._bkg_yaml = kwargs.get("bkg_yaml", None)
             if self._bkg_yaml is None:
@@ -113,7 +114,7 @@ class DetectorSelection:
             trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
         else:
             raise ValueError
-        print(
+        logging.debug(
             f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
         )
         lowerid = np.argwhere(tstart >= trigger_start)[0, 0]
@@ -135,7 +136,7 @@ class DetectorSelection:
             if d not in good_dets and d in lu_nai:
                 if len(good_dets) == 0:
                     self._normalizing_det = d
-                print(f"adding corner of {d}")
+                logging.debug(f"adding corner of {d}")
                 good_dets.extend(triplets[d])
             iterator -= 1
             if (
@@ -167,7 +168,7 @@ class DetectorSelection:
             trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
         else:
             raise ValueError
-        print(
+        logging.debug(
             f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
         )
         lowerid = np.argwhere(tstart >= trigger_start)[0, 0]
@@ -180,7 +181,7 @@ class DetectorSelection:
             self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
-        print(sorted_sig)
+        logging.debug(sorted_sig)
         good_dets = []
         flag = True
         iterator = -1
@@ -208,7 +209,7 @@ class DetectorSelection:
         while flag:
             det = sorted_sig[iterator][0]
             if det not in good_dets and det in lu_nai and det not in blocked_dets:
-                print(f"adding {det}")
+                logging.debug(f"adding {det}")
                 good_dets.append(det)
             iterator -= 1
             if (
@@ -217,7 +218,7 @@ class DetectorSelection:
             ):
                 flag = False
         if self._mode == "max_sig_and_lowest":
-            print(f"Replacing")
+            logging.debug(f"Replacing")
             i = 0
             det = sorted_sig[i][0]
             while det not in lu_nai and det not in good_dets:

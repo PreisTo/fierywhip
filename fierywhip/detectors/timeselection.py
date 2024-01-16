@@ -16,6 +16,7 @@ from threeML.utils.time_series.binned_spectrum_series import BinnedSpectrumSerie
 from threeML.utils.time_interval import TimeIntervalSet
 from threeML.utils.data_builders.time_series_builder import TimeSeriesBuilder
 import matplotlib.pyplot as plt
+import logging
 
 lu = [
     "n0",
@@ -76,7 +77,7 @@ class TimeSelectionNew(TimeSelection):
         self._select_active_time()
 
         while self._bkg_pos_start - self._active_time_stop < 20:
-            print(f"Background pos start too close to trigger time, rerunning")
+            logging.info(f"Background pos start too close to trigger time, rerunning")
             self._trigger_zone_background_stop = self._active_time_stop + 20
             self._select_background()
             self._select_active_time()
@@ -148,7 +149,7 @@ class TimeSelectionNew(TimeSelection):
                         - self._bb_times[np.min(bkg_neg)]
                         >= self._min_bkg_time
                     ):
-                        print(
+                        logging.debug(
                             f"Breaking with a duration of {self._bb_times[np.max(bkg_neg)]+self._bb_width[np.max(bkg_neg)] - self._bb_times[np.min(bkg_neg)]}"
                         )
                         break
@@ -174,12 +175,14 @@ class TimeSelectionNew(TimeSelection):
                         - self._bb_times[np.min(bkg_pos)]
                         >= self._min_bkg_time
                     ) and len(bkg_pos) > 0:
-                        print(
+                        logging.debug(
                             f"Breaking with a duration of {self._bb_times[np.max(bkg_pos)]+self._bb_width[np.max(bkg_pos)] - self._bb_times[np.min(bkg_pos)]}"
                         )
                         break
                     else:
-                        print("not yet fulfilling min bkg time so adding anyways")
+                        logging.debug(
+                            "not yet fulfilling min bkg time so adding anyways"
+                        )
                         bkg_pos.append(index)
                 else:
                     bkg_pos.append(index)
@@ -223,18 +226,19 @@ class TimeSelectionNew(TimeSelection):
         obs_significance = np.zeros((len(self._tstart), 8))
         obs_full, bkg_full = self._tr.observed_and_background()
         n5_skipped = False
+        logging.info("Checking if n5 is used for timeselection, if so replacing it")
         for k, v in avgs_sorted[-3:]:
             if k != "n5":
-                print(f"Using {k}")
+                logging.debug(f"Using {k}")
                 obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                     len(self._tstart), 8
                 )
             else:
-                print("skipping n5")
+                logging.debug("skipping n5")
                 n5_skipped = True
         if n5_skipped:
             k, v = avgs_sorted[-4]
-            print(f"Using {k} instead of n5")
+            logging.info(f"Using {k} instead of n5")
             obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
                 len(self._tstart), 8
             )
@@ -253,7 +257,7 @@ class TimeSelectionNew(TimeSelection):
             sig, obs_significance
         )
         while reason == "min_significance" and min_sig * self._sig_reduce_factor > 2:
-            print(
+            logging.debug(
                 f"Trying if reducing the required significance by {round(1-self._sig_reduce_factor,2)} changes the selection"
             )
             (
@@ -272,9 +276,9 @@ class TimeSelectionNew(TimeSelection):
             else:
                 reason = "no_improvement"
 
-        print(f"Active Time eneded because of {reason}")
+        logging.debug(f"Active Time eneded because of {reason}")
         while at_stop - at_start < self._min_trigger_duration:
-            print(
+            logging.debug(
                 f"Min trigger duration is not met - we will add another bin to the trigger end to fulfill it"
             )
             stopping_index = np.argwhere(self._tstop == at_stop)[0, 0]
@@ -458,7 +462,7 @@ class TimeSelectionNew(TimeSelection):
         bkg = np.array(bkg)
 
         sig = self._max_sig_tsb.significance_per_interval.copy()
-        print(f"This is the significance {sig}")
+        logging.debug(f"This is the significance {sig}")
         return rates_observed, bkg, sig
 
     @property
