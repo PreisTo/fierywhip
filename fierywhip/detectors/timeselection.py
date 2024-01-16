@@ -266,7 +266,7 @@ class TimeSelectionNew(TimeSelection):
                 reason_new,
                 min_sig_new,
             ) = self._select_active_time_algorithm(
-                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor
+                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor,max_trigger_duration = self._max_trigger_duration
             )
             if at_stop_new - at_start_new > at_stop - at_start:
                 at_start = at_start_new
@@ -289,7 +289,7 @@ class TimeSelectionNew(TimeSelection):
         self._tr.set_active_time_interval(self._active_time)
 
     def _select_active_time_algorithm(
-        self, sig, obs, max_trigger_duration=self._max_trigger_duration, min_sig=None
+        self, sig, obs, max_trigger_duration=11, min_sig=None
     ):
         if min_sig is None:
             maxs = np.max(sig)

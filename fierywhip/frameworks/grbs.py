@@ -362,17 +362,24 @@ class GRB:
                 index_col=False,
                 header=None,
             )
+            print(f"This is the stripped GRB name {self._name.strip('GRB')}")
             for j, i in swift.iterrows():
                 name = str(i.loc[0])
+                if len(name) == 8:
+                    name = "0"+name
                 if name == self._name.strip("GRB"):
-                    self._ra = str(i.loc[5])
-                    self._dec = str(i.loc[6])
+                    logging.info(f"Found a match!")
+                    self._ra_icrs = str(i.loc[5])
+                    self._dec_icrs = str(i.loc[6])
                     ra_dec_units = (u.hourangle, u.deg)
+                    self._position = SkyCoord(
+                        ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
+                    )
                     break
-
-        self._position = SkyCoord(
-            ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
-        )
+        else:
+            self._position = SkyCoord(
+                ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
+            )
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()

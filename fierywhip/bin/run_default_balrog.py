@@ -26,18 +26,17 @@ if __name__ == "__main__":
         default(already_run)
     else:
         for g in grb_selection:
+            logging.info(f"This is the grb{g}")
             grb = GRB(name=g)
-            try:
-                rm = RunEffAreaMorgoth(
+            rm = RunEffAreaMorgoth(
                     grb,
                     use_eff_area=False,
-                    det_sel_mode="triplets",
+                    det_sel_mode="max_sig_triplets",
                     spectrum="cpl",
                     max_trigger_duration=22,
                 )
-                rm.run_fit()
-            except (RuntimeError, FitFailed, IndexError):
-                pass
+
+            rm.run_fit()
 
 
 def default(already_run):
