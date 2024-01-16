@@ -5,6 +5,7 @@ from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
 from threeML.data_list import DataList
+from threeML.bayesian.bayesian_analysis import BayesianAnalysis, BayesianResults
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name_to_id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
@@ -13,6 +14,7 @@ import os
 from morgoth.utils.trig_reader import TrigReader
 from mpi4py import MPI
 import logging
+import matplotlib.pyplot as plt
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -244,4 +246,8 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         self._bayes.sampler.setup(
             n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
+
         self._bayes.sample()
+
+        fig = self._bayes.results.corner_plot()
+        fig.savefig(os.path.join(base_dir, self._grb_name))
