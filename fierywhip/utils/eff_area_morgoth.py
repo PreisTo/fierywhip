@@ -443,7 +443,6 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         :return:
         """
 
-        self._bayes = BayesianAnalysis(self._model, self._data_list)
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
         wrap[0] = 1
