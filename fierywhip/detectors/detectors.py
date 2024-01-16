@@ -10,6 +10,7 @@ from morgoth.utils.trig_reader import TrigReader
 import numpy as np
 import pandas as pd
 import pkg_resources
+import yaml
 
 lu = [
     "n0",
