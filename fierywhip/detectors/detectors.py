@@ -53,6 +53,7 @@ class DetectorSelection:
         max_number_nai=fierywhip_config.max_number_det,
         mode=fierywhip_config.det_sel.mode,
         exclude_blocked_dets=fierywhip_config.det_sel.exclude_blocked_dets,
+        **kwargs,
     ):
         self.grb = grb
         self._max_sep = max_sep
@@ -77,6 +78,21 @@ class DetectorSelection:
             print(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_significance_triplets()
+        elif self._mode == "bgo_sides_no_bgo":
+            print(f"Running detector selection mode {self._mode}")
+            self._trigdat_path = self.grb.trigdat
+            self._bkg_yaml = kwargs.get("bkg_yaml", None)
+            if self._bkg_yaml is None:
+                raise ValueError("need to pass bkg_yaml for bgo_sides_no_bgo")
+            with open(self._bkg_yaml, "r") as f:
+                data = yaml.safe_load(f)
+                dets = list(map(id2det, data["use_dets"]))
+                if "b0" in dets:
+                    dets.pop("bo")
+                else:
+                    dets.pop("b1")
+            self._good_dets = dets
+            self._normalizing_det = dets[0]
         else:
             raise NotImplementedError("Mode not implemented")
 
@@ -172,17 +188,17 @@ class DetectorSelection:
                 pkg_resources.resource_filename("fierywhip", "data/blocked_dets.csv")
             )
             # blocked_dets = list(blocked_dets_table["grb" == self.grb.name]["blocked"])
-            temp = blocked_dets_table[
-                blocked_dets_table["grb"] == self.grb.name
-            ]["blocked"].to_list()[0]
-            
+            temp = blocked_dets_table[blocked_dets_table["grb"] == self.grb.name][
+                "blocked"
+            ].to_list()[0]
+
             temp = temp.strip(" ").strip("[").strip("]")
             if len(temp) == 0:
                 blocked_dets = []
             else:
                 temp = temp.split(",")
-                if len(temp)>0:
-                    blocked_dets = list(map(id2name,temp))
+                if len(temp) > 0:
+                    blocked_dets = list(map(id2name, temp))
                 else:
                     blocked_dets = []
         else:
@@ -282,6 +298,12 @@ class DetectorSelection:
             sc_pos_Y=sc_pos[1],
             sc_pos_Z=sc_pos[2],
         )
+
+    def set_good_dets(self, *dets):
+        """
+        Manually set good dets
+        """
+        self._good_dets = dets
 
     @property
     def gbm(self):

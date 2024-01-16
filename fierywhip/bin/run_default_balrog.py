@@ -34,6 +34,7 @@ if __name__ == "__main__":
         "GRB220107615",
     ]
     #    excludes = ["GRB100924165"]
+    excludes = []
     grb_list = GRBList(
         run_det_sel=False, check_finished=False, testing=False, reverse=False
     )
@@ -50,11 +51,11 @@ if __name__ == "__main__":
             ):
                 print(f"Starting Morgoth for {g.name}")
                 try:
-                    #rm = RunMorgoth(g,spectrum = "pl")
+                    # rm = RunMorgoth(g,spectrum = "pl")
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="default",
+                        det_sel_mode="bgo_sides_no_bgo",
                         spectrum="pl",
                     )
                     rm.run_fit()
@@ -65,11 +66,11 @@ if __name__ == "__main__":
         else:
             print(f"Starting Morgoth for {g.name}")
             try:
-                #rm = RunMorgoth(g,spectrum = "pl")
+                # rm = RunMorgoth(g,spectrum = "pl")
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
-                    det_sel_mode="default",
+                    det_sel_mode="bgo_sides_no_bgo",
                     spectrum="pl",
                 )
                 rm.run_fit()
