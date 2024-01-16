@@ -91,7 +91,7 @@ class DetectorSelection:
                 dets = list(map(id2name, data["use_dets"]))
                 if "b0" in dets:
                     dets.pop(dets.index("b0"))
-                else:
+                elif "b1" in dets:
                     dets.pop(dets.index("b1"))
             self._good_dets = dets
             self._normalizing_det = dets[0]
