@@ -19,7 +19,7 @@ if __name__ == "__main__":
         already_run = None
     excludes = []
     grb_list = GRBList(
-        run_det_sel=False, check_finished=False, testing=False, reverse=False
+        run_det_sel=False, check_finished=False, testing=False, reverse=True
     )
     logging.info(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
                         g,
                         use_eff_area=False,
                         det_sel_mode="bgo_sides_no_bgo",
-                        spectrum="pl",
+                        spectrum="cpl",
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                     g,
                     use_eff_area=False,
                     det_sel_mode="bgo_sides_no_bgo",
-                    spectrum="pl",
+                    spectrum="cpl",
                 )
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
