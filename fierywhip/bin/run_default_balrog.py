@@ -41,6 +41,7 @@ if __name__ == "__main__":
                         use_eff_area=False,
                         det_sel_mode="bgo_sides_no_bgo",
                         spectrum="pl",
+                        max_trigger_duration=22,
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -56,6 +57,7 @@ if __name__ == "__main__":
                     use_eff_area=False,
                     det_sel_mode="bgo_sides_no_bgo",
                     spectrum="pl",
+                    max_trigger_duration=22,
                 )
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):

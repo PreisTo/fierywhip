@@ -3,7 +3,7 @@
 import sys
 import warnings
 import logging
-from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatEffArea
+from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatMultipleSelections
 
 warnings.simplefilter("ignore")
 
@@ -34,7 +34,7 @@ spectrum = sys.argv[9]
 
 
 logging.info(f"Using spectrum {spectrum}")
-multinest_fit = MultinestFitTrigdatEffArea(
+multinest_fit = MultinestFitTrigdatMultipleSelections(
     grb=None,
     grb_name=grb_name,
     version=version,

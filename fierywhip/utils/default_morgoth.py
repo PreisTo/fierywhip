@@ -57,6 +57,7 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         run_ts = self.timeselection()
@@ -108,7 +109,8 @@ class RunMorgoth:
                 name=self._grb.name,
                 trigdat_file=self._trigdat_path,
                 fine=True,
-                min_trigger_duration=0.128,
+                min_trigger_duration=0.064,
+                max_trigger_duration=self._max_trigger_duration,
                 min_bkg_time=45,
             )
             logging.info("Done TimeSelectionNew")
