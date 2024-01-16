@@ -58,7 +58,7 @@ class TimeSelectionNew(TimeSelection):
         self._max_factor = kwargs.get("max_factor", 1.2)
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
         self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
-
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
 
@@ -289,7 +289,7 @@ class TimeSelectionNew(TimeSelection):
         self._tr.set_active_time_interval(self._active_time)
 
     def _select_active_time_algorithm(
-        self, sig, obs, max_trigger_duration=11, min_sig=None
+        self, sig, obs, max_trigger_duration=self._max_trigger_duration, min_sig=None
     ):
         if min_sig is None:
             maxs = np.max(sig)
