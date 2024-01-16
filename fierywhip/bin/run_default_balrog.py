@@ -8,36 +8,6 @@ import os
 import logging
 import sys
 
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.INFO)
-    if len(sys.argv) > 1:
-        grb_selection = sys.argv[1].split(",")
-    else:
-        grb_selection = None
-    if os.path.exists(
-        os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
-    ):
-        already_run = pd.read_csv(
-            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv"),
-        )
-    else:
-        already_run = None
-    if grb_selection is None:
-        default(already_run)
-    else:
-        for g in grb_selection:
-            logging.info(f"This is the grb{g}")
-            grb = GRB(name=g)
-            rm = RunEffAreaMorgoth(
-                    grb,
-                    use_eff_area=False,
-                    det_sel_mode="max_sig_triplets",
-                    spectrum="cpl",
-                    max_trigger_duration=22,
-                )
-
-            rm.run_fit()
-
 
 def default(already_run):
     excludes = []
@@ -85,3 +55,34 @@ def default(already_run):
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
                 pass
+
+
+if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.INFO)
+    if len(sys.argv) > 1:
+        grb_selection = sys.argv[1].split(",")
+    else:
+        grb_selection = None
+    if os.path.exists(
+        os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
+    ):
+        already_run = pd.read_csv(
+            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv"),
+        )
+    else:
+        already_run = None
+    if grb_selection is None:
+        default(already_run)
+    else:
+        for g in grb_selection:
+            logging.info(f"This is the grb{g}")
+            grb = GRB(name=g)
+            rm = RunEffAreaMorgoth(
+                grb,
+                use_eff_area=False,
+                det_sel_mode="max_sig_triplets",
+                spectrum="cpl",
+                max_trigger_duration=22,
+            )
+
+            rm.run_fit()
