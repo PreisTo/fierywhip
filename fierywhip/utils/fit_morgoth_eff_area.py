@@ -2,7 +2,7 @@
 
 import sys
 import warnings
-
+import logging
 from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatEffArea
 
 warnings.simplefilter("ignore")
@@ -33,7 +33,7 @@ spectrum = sys.argv[9]
 # get fit object
 
 
-print(f"Using spectrum {spectrum}")
+logging.info(f"Using spectrum {spectrum}")
 multinest_fit = MultinestFitTrigdatEffArea(
     grb=None,
     grb_name=grb_name,

@@ -7,6 +7,7 @@ from gbmgeometry.utils.gbm_time import GBMTime
 from astropy import units as u
 from gbmgeometry.position_interpolator import PositionInterpolator
 import numpy as np
+import logging
 
 
 def calc_angular_incident(grb_position, gbm, gbm_time, interpolator, use_dets=None):
@@ -29,7 +30,7 @@ def calc_angular_incident(grb_position, gbm, gbm_time, interpolator, use_dets=No
         sc_pos_Z=sc_pos[2],
     )
     # grb_position = grb_position.transform_to("icrs")
-    print(grb_position)
+    logging.debug(grb_position)
     b = grb_position.transform_to(gbm_frame)
     if use_dets is None:
         use_dets = gbm.get_good_fov(grb_position, 60, fermi_frame=False)[1]
@@ -69,14 +70,17 @@ def detector_list():
 def nai_list():
     lu = detector_list()[:-2]
     return lu
+
+
 def id2name(id):
-    if type(id) in [list,np.array]:
+    if type(id) in [list, np.array]:
         ret = []
         for i in id:
             ret.append(detector_list()[int(id)])
         return ret
     else:
         return detector_list()[int(id)]
+
 
 def name_to_id(det):
     lu = {
