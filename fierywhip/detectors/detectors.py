@@ -90,9 +90,9 @@ class DetectorSelection:
                 data = yaml.safe_load(f)
                 dets = list(map(id2name, data["use_dets"]))
                 if "b0" in dets:
-                    dets.pop("bo")
+                    dets.pop(dets.index("b0"))
                 else:
-                    dets.pop("b1")
+                    dets.pop(dets.index("b1"))
             self._good_dets = dets
             self._normalizing_det = dets[0]
         else:
