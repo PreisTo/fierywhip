@@ -87,7 +87,7 @@ class DetectorSelection:
                 raise ValueError("need to pass bkg_yaml for bgo_sides_no_bgo")
             with open(self._bkg_yaml, "r") as f:
                 data = yaml.safe_load(f)
-                dets = list(map(id2det, data["use_dets"]))
+                dets = list(map(id2name, data["use_dets"]))
                 if "b0" in dets:
                     dets.pop("bo")
                 else:
