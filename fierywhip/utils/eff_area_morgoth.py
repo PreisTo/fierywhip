@@ -124,15 +124,17 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         self._bkg_fit_files = data1["bkg_fit_files"]
 
             elif (
-                det_sel_mode == "max_sig"
-                or det_sel_mode == "max_sig_and_lowest"
-                or det_sel_mode == "max_sig_triplets"
-                or det_sel_mode == "bgo_sides_no_bgo"
+                det_sel_mode == "bgo_sides_no_bgo"
             ):
                 print("Using pre-set detectors from bkg yaml file")
+                self._grb._get_detector_selection(
+                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode, bkg_yaml = bkg_fit_yaml_file
+                )
                 with open(bkg_fit_yaml_file, "r") as f:
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
+                self._normalizing_det = self._grb.detector_selection.normalizing_det
+                self._use_dets = self._grb.detector_selection.good_dets
 
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
