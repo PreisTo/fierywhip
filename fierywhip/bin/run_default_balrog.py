@@ -8,6 +8,7 @@ import os
 import logging
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.INFO)
     if os.path.exists(
         os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
     ):

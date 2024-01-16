@@ -12,6 +12,7 @@ import yaml
 import os
 from morgoth.utils.trig_reader import TrigReader
 from mpi4py import MPI
+import logging
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
