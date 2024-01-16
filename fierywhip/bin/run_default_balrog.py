@@ -50,11 +50,11 @@ if __name__ == "__main__":
             ):
                 print(f"Starting Morgoth for {g.name}")
                 try:
-                    # rm = RunMorgoth(g)
+                    #rm = RunMorgoth(g,spectrum = "pl")
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="max_sig_triplets",
+                        det_sel_mode="default",
                         spectrum="pl",
                     )
                     rm.run_fit()
@@ -65,11 +65,11 @@ if __name__ == "__main__":
         else:
             print(f"Starting Morgoth for {g.name}")
             try:
-                # rm = RunMorgoth(g)
+                #rm = RunMorgoth(g,spectrum = "pl")
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
-                    det_sel_mode="max_sig_triplets",
+                    det_sel_mode="default",
                     spectrum="pl",
                 )
                 rm.run_fit()
