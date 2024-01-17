@@ -2,6 +2,8 @@
 
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
+from astromodels.functions.priors import Cosine_Prior, Uniform_prior
+from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 
 
 class BALROGLikeMultiple(BALROGLike):
