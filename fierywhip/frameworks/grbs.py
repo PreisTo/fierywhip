@@ -366,14 +366,17 @@ class GRB:
             for j, i in swift.iterrows():
                 name = str(i.loc[0])
                 if len(name) == 8:
-                    name = "0"+name
+                    name = "0" + name
                 if name == self._name.strip("GRB"):
                     logging.info(f"Found a match!")
                     self._ra_icrs = str(i.loc[5])
                     self._dec_icrs = str(i.loc[6])
                     ra_dec_units = (u.hourangle, u.deg)
                     self._position = SkyCoord(
-                        ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
+                        ra=self._ra_icrs,
+                        dec=self._dec_icrs,
+                        unit=ra_dec_units,
+                        frame="icrs",
                     )
                     break
         else:
@@ -455,6 +458,13 @@ class GRB:
         :returns: list with bkg neg and bkg pos start/stop time
         """
         return self._bkg_time
+
+    @property
+    def long_grb(self):
+        return self._long_grb
+
+    def is_long_grb(self, is_it: bool):
+        self._long_grb = is_it
 
     def download_files(self):
         """

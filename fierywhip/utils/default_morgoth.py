@@ -162,6 +162,7 @@ class RunMorgoth:
             self._long_grb = True
         else:
             self._long_grb = False
+        self._grb.is_long_grb(self._long_grb)
         return ts_available
 
     def fit_background(self):
