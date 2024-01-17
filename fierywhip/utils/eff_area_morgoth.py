@@ -8,6 +8,7 @@ from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name_to_id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
+from fierywhip.utils.balrog_like import BALROGLikeMultiple
 import yaml
 import os
 from morgoth.utils.trig_reader import TrigReader
@@ -323,7 +324,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
+            balrog_like = BALROGLikeMultiple.from_spectrumlike(speclike, time=time)
             balrog_like.assign_to_source("first")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
@@ -340,7 +341,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
+            balrog_like = BALROGLikeMultiple.from_spectrumlike(speclike, time=time)
             balrog_like.assign_to_source("second")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
