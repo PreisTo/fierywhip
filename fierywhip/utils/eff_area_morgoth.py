@@ -22,11 +22,14 @@ from astromodels.functions import (
 )
 from astromodels.sources.point_source import PointSource
 from astromodels.core.model import Model
+from threeML.bayesian.bayesian_analysis import BayesianAnalysis
+from threeML.io.plotting.post_process_data_plots import display_spectrum_model_counts
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
+base_dir = os.environ.get("GBM_TRIGGER_DATA_DIR")
 
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
     """
@@ -310,7 +313,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                     f"Can not restore background fit...\n{self._bkg_fit_files}"
                 )
         logging.info(
-            f"Duration of Burst is {self._active_time_float[-1]-self._active_times_float[0]}, we will use 2 responses for this"
+            f"Duration of Burst is {self._active_times_float[-1]-self._active_times_float[0]}, we will use 2 responses for this"
         )
 
         # First
@@ -323,7 +326,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
+            balrog_like = BALROGLike.from_spectrumlike(speclike,name=f"{d}_first", time=time)
             balrog_like.assign_to_source("first")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
@@ -340,7 +343,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
+            balrog_like = BALROGLike.from_spectrumlike(speclike,name=f"{d}_second", time=time)
             balrog_like.assign_to_source("second")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
@@ -464,3 +467,8 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         self._bayes.sample()
+
+        fig = self._bayes.results.corner_plot()
+        fig.savefig(os.path.join(base_dir, self._grb_name,"cc_plots.png"))
+        fig = display_spectrum_model_counts(self._bayes)
+        fig.savefig(os.path.join(base_dir,self._grb_name,"spectrum.png"))
