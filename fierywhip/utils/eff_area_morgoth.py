@@ -381,10 +381,10 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             ps2 = PointSource("second", ra=0.0, dec=0.0, spectral_shape=cpl2)
             self._model = Model(ps1, ps2)
             self._model.link(
-                self._model.first.position.ra, self._model.second.position.ra
+                self._model.second.position.ra, self._model.first.position.ra
             )
             self._model.link(
-                self._model.first.position.dec, self._model.second.position.dec
+                self._model.second.position.dec, self._model.first.position.dec
             )
         # elif spectrum == "band":
         #     band = Band()

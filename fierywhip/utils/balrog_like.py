@@ -92,8 +92,6 @@ class BALROGLikeMultiple(BALROGLike):
 
             ra = self._like_model.point_sources["first"].position.ra.value
             dec = self._like_model.point_sources["first"].position.dec.value
-            self._like_model.point_sources["second"].position.ra.value = ra
-            self._like_model.point_sources["second"].position.dec.value = dec
         else:
             for key in self._like_model.point_sources.keys():
                 self._like_model.point_sources[key].position.ra.prior = Uniform_prior(
