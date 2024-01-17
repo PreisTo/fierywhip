@@ -32,6 +32,7 @@ size = comm.Get_size()
 
 base_dir = os.environ.get("GBM_TRIGGER_DATA_DIR")
 
+
 class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
     """
     Adaption of Morgoth's MultinestFitTrigdat Class to deal with
@@ -327,7 +328,9 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLikeMultiple.from_spectrumlike(speclike,name=f"{d}_first", time=time)
+            balrog_like = BALROGLikeMultiple.from_spectrumlike(
+                speclike, name=f"{d}_first", time=time
+            )
             balrog_like.assign_to_source("first")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
@@ -344,7 +347,9 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             time = 0.5 * (
                 trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
             )
-            balrog_like = BALROGLikeMultiple.from_spectrumlike(speclike,name=f"{d}_second", time=time)
+            balrog_like = BALROGLikeMultiple.from_spectrumlike(
+                speclike, name=f"{d}_second", time=time
+            )
             balrog_like.assign_to_source("second")
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
@@ -468,8 +473,14 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             n_live_points=800, chain_name=chain_path, wrapped_params=wrap, verbose=True
         )
         self._bayes.sample()
-
-        fig = self._bayes.results.corner_plot()
-        fig.savefig(os.path.join(base_dir, self._grb_name,"cc_plots.png"))
-        fig = display_spectrum_model_counts(self._bayes)
-        fig.savefig(os.path.join(base_dir,self._grb_name,"spectrum.png"))
+        if rank == 0:
+            fig = self._bayes.results.corner_plot()
+            fig.savefig(os.path.join(base_dir, self._grb_name, "cc_plots.png"))
+            fig = display_spectrum_model_counts(self._bayes)
+            fig.savefig(os.path.join(base_dir, self._grb_name, "spectrum.png"))
+            res = self._bayes.results
+            res.write_to(
+                os.path.join(
+                    base_dir, self._grb_name, "trigdat/v00/trigdat_v00_loc_results.fits"
+                )
+            )
