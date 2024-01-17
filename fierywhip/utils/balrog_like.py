@@ -122,7 +122,7 @@ class BALROGLikeMultiple(BALROGLike):
 
     @classmethod
     def from_spectrumlike(
-        cls, spectrum_like, time, drm_generator=None, free_position=True
+        cls, spectrum_like, time, name=None, drm_generator=None, free_position=True
     ):
         """
         Generate a BALROGlike from an existing SpectrumLike child
@@ -134,8 +134,11 @@ class BALROGLikeMultiple(BALROGLike):
         :return:
         """
 
+        if name is None:
+            name = spectrum_like.name
+
         return cls(
-            spectrum_like.name,
+            name,
             spectrum_like._observed_spectrum,
             drm_generator,
             spectrum_like._background_spectrum,
