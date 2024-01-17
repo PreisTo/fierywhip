@@ -145,6 +145,23 @@ class RunMorgoth:
             pass
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
+        at = self._tsbb.active_time
+        at = at.split("-")
+        if len(at) == 2:
+            start = float(at[0])
+            stop = float(at[1])
+        elif len(at) == 3:
+            start = -float(at[1])
+            stop = float(at[-1])
+        elif len(at) == 4:
+            start = -float(at[1])
+            stop = -float(at[-1])
+        else:
+            raise ValueError
+        if stop - start > 10:
+            self._long_grb = True
+        else:
+            self._long_grb = False
         return ts_available
 
     def fit_background(self):
@@ -367,7 +384,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         else:
             run_fit = True
             p = subprocess.check_output(
-                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum}",
+                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._long_grb)}",
                 shell=True,
                 env=env,
                 stdin=subprocess.PIPE,

@@ -3,7 +3,10 @@
 import sys
 import warnings
 import logging
-from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatMultipleSelections
+from fierywhip.utils.eff_area_morgoth import (
+    MultinestFitTrigdatMultipleSelections,
+    MultinestFitTrigdatEffArea,
+)
 
 warnings.simplefilter("ignore")
 
@@ -30,22 +33,43 @@ det_sel_mode = sys.argv[6]
 use_eff_area = sys.argv[7]
 grb_file = sys.argv[8]
 spectrum = sys.argv[9]
+if len(sys.argv) > 10:
+    long_grb = sys.argv[10]
+else:
+    long_grb = False
 # get fit object
 
 
 logging.info(f"Using spectrum {spectrum}")
-multinest_fit = MultinestFitTrigdatMultipleSelections(
-    grb=None,
-    grb_name=grb_name,
-    version=version,
-    trigdat_file=trigdat_file,
-    bkg_fit_yaml_file=bkg_fit_yaml_file,
-    time_selection_yaml_file=time_selection_yaml_file,
-    grb_file=grb_file,
-    det_sel_mode=det_sel_mode,
-    use_eff_area=False,
-    spectrum=spectrum,
-)
+if str(long_grb).lower() == "true":
+    logging.info(
+        f"This is a long GRB (active-time > 10s) - we will use two spectra and responses"
+    )
+    multinest_fit = MultinestFitTrigdatMultipleSelections(
+        grb=None,
+        grb_name=grb_name,
+        version=version,
+        trigdat_file=trigdat_file,
+        bkg_fit_yaml_file=bkg_fit_yaml_file,
+        time_selection_yaml_file=time_selection_yaml_file,
+        grb_file=grb_file,
+        det_sel_mode=det_sel_mode,
+        use_eff_area=False,
+        spectrum=spectrum,
+    )
+else:
+    multinest_fit = MultinestFitTrigdatEffArea(
+        grb=None,
+        grb_name=grb_name,
+        version=version,
+        trigdat_file=trigdat_file,
+        bkg_fit_yaml_file=bkg_fit_yaml_file,
+        time_selection_yaml_file=time_selection_yaml_file,
+        grb_file=grb_file,
+        det_sel_mode=det_sel_mode,
+        use_eff_area=False,
+        spectrum=spectrum,
+    )
 multinest_fit.fit()
 multinest_fit.save_fit_result()
 multinest_fit.create_spectrum_plot()
