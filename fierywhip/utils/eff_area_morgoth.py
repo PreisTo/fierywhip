@@ -229,6 +229,52 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             trig_data.append(balrog_like)
         self._data_list = DataList(*trig_data)
 
+    def _define_model(self, spectrum="cpl"):
+        """
+        Define a Model for the fit
+        :param spectrum: Which spectrum type should be used (cpl, band, pl, sbpl or solar_flare)
+        """
+        # data_list=comm.bcast(data_list, root=0)
+        if spectrum == "cpl":
+            # we define the spectral model
+            cpl = Cutoff_powerlaw()
+            cpl.K.max_value = 10**4
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+            cpl.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+            cpl.index.set_uninformative_prior(Uniform_prior)
+            # we define a point source model using the spectrum we just specified
+            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=cpl))
+
+        elif spectrum == "band":
+            band = Band()
+            band.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1200)
+            band.alpha.set_uninformative_prior(Uniform_prior)
+            band.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=1e4)
+            band.beta.set_uninformative_prior(Uniform_prior)
+
+            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=band))
+
+        elif spectrum == "pl":
+            pl = Powerlaw()
+            pl.K.max_value = 10**4
+            pl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+            pl.index.set_uninformative_prior(Uniform_prior)
+            # we define a point source model using the spectrum we just specified
+            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=pl))
+
+        elif spectrum == "sbpl":
+            sbpl = SmoothlyBrokenPowerLaw()
+            sbpl.K.min_value = 1e-5
+            sbpl.K.max_value = 1e4
+            sbpl.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1e4)
+            sbpl.alpha.set_uninformative_prior(Uniform_prior)
+            sbpl.beta.set_uninformative_prior(Uniform_prior)
+            sbpl.break_energy.min_value = 1
+            sbpl.break_energy.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=sbpl))
+       else:
+            raise Exception("Use valid model type: cpl, pl, sbpl, band")
+
 
 class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
     def __init__(
