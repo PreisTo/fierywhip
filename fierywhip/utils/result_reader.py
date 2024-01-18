@@ -150,6 +150,8 @@ class ResultReader:
 
         self._balrog_1_sigma = alpha_one_sigma
         self._balrog_2_sigma = alpha_two_sigma
+        self._balrog_one_sig_err_cirle = alpha_one_sigma
+        self._balrog_two_sig_err_circle = alpha_two_sigma
         logging.info(
             f"Calculated 1 and 2 sigma errors to {round(self._balrog_1_sigma,3)}"
             + f" and {round(self._balrog_2_sigma,3)}"
@@ -240,13 +242,11 @@ class ResultReader:
     @property
     def index(self):
         return self._index1, self._index1_err
-
     @property
-    def _balrog_one_sig_err_cirle(self):
+    def balrog_1_sigma(self):
         return self._balrog_1_sigma
-
     @property
-    def _balrog_two_sig_err_circle(self):
+    def balrog_2_sigma(self):
         return self._balrog_2_sigma
 
 
