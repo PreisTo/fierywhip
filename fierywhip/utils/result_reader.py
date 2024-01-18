@@ -6,7 +6,7 @@ import logging
 from chainconsumer import ChainConsumer
 import os
 import numpy as np
-
+import yaml
 parameter_look_up = {
     "short": ["ra", "dec", "K", "index", "xc"],
     "long": ["ra", "dec", "K1", "index1", "xc1", "K2", "index2", "xc2"],
