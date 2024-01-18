@@ -77,7 +77,7 @@ class ResultReader:
     def _get_error_radii(self):
         chain = np.loadtxt(self._post_equal_weights_file)
         c = ChainConsumer()
-        c.add_chain(chain[:, :-1], parameters=self._parameters.keys()).configure(
+        c.add_chain(chain[:, :-1], parameters=list(self._parameters.keys())).configure(
             plot_hists=False,
             contour_labels="sigma",
             colors="#cd5c5c",
