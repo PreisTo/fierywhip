@@ -585,6 +585,24 @@ class GRB:
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
+        at = self._active_time.split("-")
+        if len(at) == 2:
+            start = float(at[0])
+            stop = float(at[-1])
+        elif len(at) == 3:
+            start = -float(at[1])
+            stop = float(at[-1])
+        elif len(at) == 4:
+            start = -float(at[1])
+            stop = -float(at[-1])
+        else:
+            raise ValueError
+
+        if stop - start > 10:
+            self._long_grb = True
+        else:
+            self._long_grb = False
+
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
