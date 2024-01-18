@@ -39,6 +39,15 @@ class ResultReader:
                 self._parameters[paraname[-1]] = {}
                 for k in dataframe.columns:
                     self._parameters[paraname[-1]][k] = row[k]
+            else:
+                self._parameters[f"{paraname[-1]}_{lu_comps[paraname[0]]}"] = {}
+                for k in dataframe.columns:
+                    self._parameters[f"{paraname[-1]}_{lu_comps[paraname[0]]}"][
+                        k
+                    ] = row[k]
+
+    def _get_error_radii(self):
+        raise NotImplementedError
 
     # TODO ra,dec,1 und 2 sigma,
 
