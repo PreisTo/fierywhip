@@ -7,6 +7,7 @@ from chainconsumer import ChainConsumer
 import os
 import numpy as np
 import yaml
+
 parameter_look_up = {
     "short": ["ra", "dec", "K", "index", "xc"],
     "long": ["ra", "dec", "K1", "index1", "xc1", "K2", "index2", "xc2"],
@@ -15,10 +16,7 @@ parameter_look_up = {
 
 class ResultReader:
     def __init__(
-        self,
-        grb: GRB,
-        post_equal_weights_file: str,
-        results_file: str,
+        self, grb: GRB, post_equal_weights_file: str, results_file: str, **kwargs
     ):
         self._post_equal_weights_file = post_equal_weights_file
         self._bayesian_results = load_analysis_results(results_file)
@@ -26,6 +24,7 @@ class ResultReader:
         self._get_parameters_with_errors()
         self._get_error_radii()
         self._build_report()
+        self._create_plots()
 
     def _get_parameters_with_errors(self, mode="hpd"):
         lu_comps = {"first": "1", "second": "2", "third": "3"}
@@ -156,7 +155,6 @@ class ResultReader:
             + f" and {round(self._balrog_2_sigma,3)}"
         )
 
-
     def _build_report(self):
         temp = list(self._grb.bkg_time)
         if len(temp) == 0:
@@ -164,9 +162,9 @@ class ResultReader:
         else:
             bkg_neg, bkg_pos = temp
             active_time = self._grb.active_time
-        bkg_neg_start,bkg_neg_stop = time_splitter(bkg_neg)
-        bkg_pos_start,bkg_pos_stop = time_splitter(bkg_pos)
-        active_time_start, active_time_stop =time_splitter(active_time)
+        bkg_neg_start, bkg_neg_stop = time_splitter(bkg_neg)
+        bkg_pos_start, bkg_pos_stop = time_splitter(bkg_pos)
+        active_time_start, active_time_stop = time_splitter(active_time)
         self._report = {
             "general": {
                 "grb_name": f"{self._grb.name}",
@@ -222,11 +220,39 @@ class ResultReader:
         with open(file_path, "w") as f:
             yaml.dump(self._report, f, default_flow_style=False)
 
+    def _create_plots(self):
+        if False:
+            fig = self._bayesian_results.corner_plot()
+            fig.savefig()
+
+    @property
+    def ra(self):
+        return self._ra, self._ra_err
+
+    @property
+    def dec(self):
+        return self._dec, self._dec_err
+
+    @property
+    def K(self):
+        return self._K1, self._K1_err
+
+    @property
+    def index(self):
+        return self._index1, self._index1_err
+
+    @property
+    def xc(self):
+        return self._xc1, self._xc1_err
+
+
 def convert_to_float(value):
     if value is not None:
         return float(value)
     else:
         return None
+
+
 def time_splitter(time):
     times = time.split("-")
     if len(times) == 2:
@@ -240,4 +266,4 @@ def time_splitter(time):
         stop = -float(times[-1])
     else:
         raise ValueError(f"Something wrong with the passed time {time}")
-    return start,stop
+    return start, stop
