@@ -25,6 +25,7 @@ class ResultReader:
         self._grb = grb
         self._get_parameters_with_errors()
         self._get_error_radii()
+        self._build_report()
 
     def _get_parameters_with_errors(self, mode="hpd"):
         lu_comps = {"first": "1", "second": "2", "third": "3"}
@@ -71,7 +72,8 @@ class ResultReader:
                     err = np.absolute(self._parameters[para]["negative_error"])
                 paran = "self._" + para
                 exec(paran + "=val")
-                para_err = "self._" + para + "err"
+                para_err = "self._" + para + "_err"
+                logging.info(para_err)
                 exec(para_err + "=err")
 
     def _get_error_radii(self):
@@ -154,9 +156,17 @@ class ResultReader:
             + f" and {round(self._balrog_2_sigma,3)}"
         )
 
-    # TODO ra,dec,1 und 2 sigma,
 
     def _build_report(self):
+        temp = list(self._grb.bkg_time)
+        if len(temp) == 0:
+            raise NotImplementedError
+        else:
+            bkg_neg, bkg_pos = temp
+            active_time = self._grb.active_time
+        bkg_neg_start,bkg_neg_stop = time_splitter(bkg_neg)
+        bkg_pos_start,bkg_pos_stop = time_splitter(bkg_pos)
+        active_time_start, active_time_stop =time_splitter(active_time)
         self._report = {
             "general": {
                 "grb_name": f"{self._grb.name}",
@@ -177,13 +187,13 @@ class ResultReader:
                 "balrog_two_sig_err_circle": convert_to_float(self._balrog_2_sigma),
             },
             "time_selection": {
-                "bkg_neg_start": self._bkg_neg_start,
-                "bkg_neg_stop": self._bkg_neg_stop,
-                "bkg_pos_start": self._bkg_pos_start,
-                "bkg_pos_stop": self._bkg_pos_stop,
-                "active_time_start": self._active_time_start,
-                "active_time_stop": self._active_time_stop,
-                "used_detectors": self._used_detectors,
+                "bkg_neg_start": bkg_neg_start,
+                "bkg_neg_stop": bkg_neg_stop,
+                "bkg_pos_start": bkg_pos_start,
+                "bkg_pos_stop": bkg_pos_stop,
+                "active_time_start": active_time_start,
+                "active_time_stop": active_time_stop,
+                "used_detectors": self._grb.detector_selection.good_dets,
             },
         }
         if len(self._parameters.keys()) == 8:
@@ -212,8 +222,22 @@ class ResultReader:
         with open(file_path, "w") as f:
             yaml.dump(self._report, f, default_flow_style=False)
 
-    def convert_to_float(value):
-        if value is not None:
-            return float(value)
-        else:
-            return None
+def convert_to_float(value):
+    if value is not None:
+        return float(value)
+    else:
+        return None
+def time_splitter(time):
+    times = time.split("-")
+    if len(times) == 2:
+        start = float(times[0])
+        stop = float(times[1])
+    elif len(times) == 3:
+        start = -float(times[1])
+        stop = float(times[-1])
+    elif len(times) == 4:
+        start = -float(times[1])
+        stop = -float(times[-1])
+    else:
+        raise ValueError(f"Something wrong with the passed time {time}")
+    return start,stop
