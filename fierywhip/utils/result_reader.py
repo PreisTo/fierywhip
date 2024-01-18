@@ -38,11 +38,11 @@ class ResultReader:
                 for k in dataframe.columns:
                     self._parameters[paraname[-1]][k] = row[k]
             else:
-                self._parameters[f"{paraname[-1]}_{lu_comps[paraname[0]]}"] = {}
+                self._parameters[f"{paraname[-1]}{lu_comps[paraname[0]]}"] = {}
                 for k in dataframe.columns:
-                    self._parameters[f"{paraname[-1]}_{lu_comps[paraname[0]]}"][
+                    self._parameters[f"{paraname[-1]}{lu_comps[paraname[0]]}"][k] = row[
                         k
-                    ] = row[k]
+                    ]
 
         self._ra = float(self._parameters["ra"]["value"])
         if np.absolute(self._parameters["ra"]["positive_error"]) >= np.absolute(
@@ -71,8 +71,8 @@ class ResultReader:
                     err = np.absolute(self._parameters[para]["negative_error"])
                 paran = "self._" + para
                 exec(paran + "=val")
-                para_err = "self._" + para + "_err"
-                exec(para_err + "=")
+                para_err = "self._" + para + "err"
+                exec(para_err + "=err")
 
     def _get_error_radii(self):
         chain = np.loadtxt(self._post_equal_weights_file)
