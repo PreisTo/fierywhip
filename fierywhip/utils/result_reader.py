@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-from threeML.analysis_results import BayesianResults
+from threeML.analysis_results import BayesianResults, load_analysis_results
 from fierywhip.frameworks.grbs import GRB
 import logging
-
+from chainconsumer import ChainConsumer
+import os
+import numpy as np
 
 parameter_look_up = {
     "short": ["ra", "dec", "K", "index", "xc"],
@@ -14,22 +16,16 @@ parameter_look_up = {
 class ResultReader:
     def __init__(
         self,
-        results: BayesianResults,
         grb: GRB,
+        post_equal_weights_file: str,
+        results_file: str,
     ):
-        self._bayesian_results = results
+        self: _post_equal_weights_file = post_equal_weights_file
+        self._bayesian_results = load_analysis_results(results_file)
         self._grb = grb
-        # Displaying result
-        self._bayesian_results.display()
-        self._base_dir = os.path.join(
-            os.environ.get("GBM_TRIGGER_DATA_DIR"), self._grb.name, "trigdat/v00"
-        )
-        # Storing
-        self._bayesian_results.write_to(
-            os.path.join(self._base_dir, "trigdat_results.fits"), overwrite=True
-        )
 
     def _get_parameters_with_errors(self, mode="hpd"):
+        lu_comps = {"first": "1", "second": "2", "third": "3"}
         dataframe = self._bayesian_results.get_data_frame(mode)
         self._parameters = {}
         for i, row in dataframe.iterrows():
