@@ -40,7 +40,6 @@ import astropy.units as u
 import astropy.io.fits as fits
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
-from morgoth.utils.plot_utils import create_corner_all_plot
 from datetime import datetime
 import subprocess
 import numpy as np
@@ -264,11 +263,6 @@ class RunMorgoth:
         result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
         result_reader.save_result_yml(result_path)
 
-        create_corner_all_plot(
-            post_equal_weights_path,
-            model=self._spectrum,
-            save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
-        )
         template = [
             "grb",
             "ra",
@@ -298,8 +292,8 @@ class RunMorgoth:
             result_reader.ra[1],
             result_reader.dec[0],
             result_reader.dec[1],
-            result_reader._balrog_one_sig_err_circle,
-            result_reader._balrog_two_sig_err_circle,
+            result_reader.balrog_1_sigma,
+            result_reader.balrog_2_sigma,
             self._grb.position.ra.deg,
             self._grb.position.dec.deg,
             SkyCoord(
