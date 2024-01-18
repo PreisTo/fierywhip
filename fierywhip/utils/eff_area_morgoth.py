@@ -284,6 +284,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
         wrap[0] = 1
+        self._bayes = BayesianAnalysis(self._model, self._data_list)
 
         # define temp chain save path
         self._temp_chains_dir = os.path.join(
