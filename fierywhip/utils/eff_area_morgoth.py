@@ -476,11 +476,3 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         if rank == 0:
             fig = self._bayes.results.corner_plot()
             fig.savefig(os.path.join(base_dir, self._grb_name, "cc_plots.png"))
-            fig = display_spectrum_model_counts(self._bayes)
-            fig.savefig(os.path.join(base_dir, self._grb_name, "spectrum.png"))
-            res = self._bayes.results
-            res.write_to(
-                os.path.join(
-                    base_dir, self._grb_name, "trigdat/v00/trigdat_v00_loc_results.fits"
-                )
-            )

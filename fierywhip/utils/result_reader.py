@@ -20,9 +20,11 @@ class ResultReader:
         post_equal_weights_file: str,
         results_file: str,
     ):
-        self: _post_equal_weights_file = post_equal_weights_file
+        self._post_equal_weights_file = post_equal_weights_file
         self._bayesian_results = load_analysis_results(results_file)
         self._grb = grb
+        self._get_parameters_with_errors()
+        self._get_error_radii()
 
     def _get_parameters_with_errors(self, mode="hpd"):
         lu_comps = {"first": "1", "second": "2", "third": "3"}
@@ -42,55 +44,137 @@ class ResultReader:
                         k
                     ] = row[k]
 
+        self._ra = float(self._parameters["ra"]["value"])
+        if np.absolute(self._parameters["ra"]["positive_error"]) >= np.absolute(
+            self._parameters["ra"]["negative_error"]
+        ):
+            self._ra_err = np.absolute(self._parameters["ra"]["positive_error"])
+        else:
+            self._ra_err = np.absolute(self._parameters["ra"]["negative_error"])
+
+        self._dec = float(self._parameters["dec"]["value"])
+        if np.absolute(self._parameters["dec"]["positive_error"]) >= np.absolute(
+            self._parameters["dec"]["negative_error"]
+        ):
+            self._dec_err = np.absolute(self._parameters["dec"]["positive_error"])
+        else:
+            self._dec_err = np.absolute(self._parameters["dec"]["negative_error"])
+
+        for para in self._parameters.keys():
+            if para not in ("ra", "dec"):
+                val = self._parameters[para]["value"]
+                if np.absolute(self._parameters[para]["positive_error"]) >= np.absolute(
+                    self._parameters[para]["negative_error"]
+                ):
+                    err = np.absolute(self._parameters[para]["positive_error"])
+                else:
+                    err = np.absolute(self._parameters[para]["negative_error"])
+                paran = "self._" + para
+                exec(paran + "=val")
+                para_err = "self._" + para + "_err"
+                exec(para_err + "=")
+
     def _get_error_radii(self):
-        raise NotImplementedError
+        chain = np.loadtxt(self._post_equal_weights_file)
+        c = ChainConsumer()
+        c.add_chain(chain[:, :-1], parameters=self._parameters.keys()).configure(
+            plot_hists=False,
+            contour_labels="sigma",
+            colors="#cd5c5c",
+            flip=False,
+            max_ticks=3,
+        )
+        chains, parameters, truth, extents, blind, log_scales = c.plotter._sanitise(
+            None, None, None, None, color_p=True, blind=None
+        )
+
+        hist, x_contour, y_contour = c.plotter._get_smoothed_histogram2d(
+            chains[0], "ra", "dec"
+        )
+        hist[hist == 0] = 1e-16
+        val_contour = c.plotter._convert_to_stdev(hist.T)
+
+        # Truth Values
+        ra = float(self._parameters["ra"]["value"])
+        dec = float(self._parameters["dec"]["value"])
+
+        # One Sigma Error Radius
+        mask = val_contour < 0.68
+        points = []
+        for i in range(len(mask)):
+            for j in range(len(mask[i])):
+                if mask[i][j]:
+                    points.append([x_contour[j], y_contour[i]])
+        points = np.array(points)
+        best_fit_point = [ra, dec]
+        best_fit_point_vec = [
+            np.cos(best_fit_point[1] * np.pi / 180)
+            * np.cos(best_fit_point[0] * np.pi / 180),
+            np.cos(best_fit_point[1] * np.pi / 180)
+            * np.sin(best_fit_point[0] * np.pi / 180),
+            np.sin(best_fit_point[1] * np.pi / 180),
+        ]
+        alpha_largest = 0
+
+        for point_2 in points:
+            point_2_vec = [
+                np.cos(point_2[1] * np.pi / 180) * np.cos(point_2[0] * np.pi / 180),
+                np.cos(point_2[1] * np.pi / 180) * np.sin(point_2[0] * np.pi / 180),
+                np.sin(point_2[1] * np.pi / 180),
+            ]
+            alpha = np.arccos(np.dot(point_2_vec, best_fit_point_vec)) * 180 / np.pi
+            if alpha > alpha_largest:
+                alpha_largest = alpha
+        alpha_one_sigma = alpha_largest
+
+        mask = val_contour < 0.95
+        points = []
+        for i in range(len(mask)):
+            for j in range(len(mask[i])):
+                if mask[i][j]:
+                    points.append([x_contour[j], y_contour[i]])
+        points = np.array(points)
+        alpha_largest = 0
+
+        for point_2 in points:
+            point_2_vec = [
+                np.cos(point_2[1] * np.pi / 180) * np.cos(point_2[0] * np.pi / 180),
+                np.cos(point_2[1] * np.pi / 180) * np.sin(point_2[0] * np.pi / 180),
+                np.sin(point_2[1] * np.pi / 180),
+            ]
+            alpha = np.arccos(np.dot(point_2_vec, best_fit_point_vec)) * 180 / np.pi
+            if alpha > alpha_largest:
+                alpha_largest = alpha
+        alpha_two_sigma = alpha_largest
+
+        self._balrog_1_sigma = alpha_one_sigma
+        self._balrog_2_sigma = alpha_two_sigma
+        logging.info(
+            f"Calculated 1 and 2 sigma errors to {round(self._balrog_1_sigma,3)}"
+            + f" and {round(self._balrog_2_sigma,3)}"
+        )
 
     # TODO ra,dec,1 und 2 sigma,
 
     def _build_report(self):
-        raise NotImplementedError("This needs to be adapted correctly")
         self._report = {
             "general": {
-                "grb_name": f"{self.grb_name}",
-                "grb_name_gcn": f"{self._grb_name_gcn}",
-                "report_type": f"{self.report_type}",
-                "version": f"{self.version}",
-                "trigger_number": self._trigger_number,
-                "trigger_timestamp": self._trigger_timestamp,
-                "data_timestamp": self._data_timestamp,
-                "localization_timestamp": datetime.utcnow().strftime(
-                    "%Y-%m-%dT%H:%M:%S.%fZ"
-                ),
-                "most_likely": self._most_likely,
-                "second_most_likely": self._second_most_likely,
-                "swift": self._swift,
+                "grb_name": f"{self._grb.name}",
             },
             "fit_result": {
-                "model": self._model,
+                "model": "cpl",
                 "ra": convert_to_float(self._ra),
                 "ra_err": convert_to_float(self._ra_err),
                 "dec": convert_to_float(self._dec),
                 "dec_err": convert_to_float(self._dec_err),
-                "spec_K": convert_to_float(self._K),
-                "spec_K_err": convert_to_float(self._K_err),
-                "spec_index": convert_to_float(self._index),
-                "spec_index_err": convert_to_float(self._index_err),
-                "spec_xc": convert_to_float(self._xc),
-                "spec_xc_err": convert_to_float(self._xc_err),
-                "spec_alpha": convert_to_float(self._alpha),
-                "spec_alpha_err": convert_to_float(self._alpha_err),
-                "spec_xp": convert_to_float(self._xp),
-                "spec_xp_err": convert_to_float(self._xp_err),
-                "spec_beta": convert_to_float(self._beta),
-                "spec_beta_err": convert_to_float(self._beta_err),
-                "sat_phi": convert_to_float(self._phi_sat),
-                "sat_theta": convert_to_float(self._theta_sat),
-                "balrog_one_sig_err_circle": convert_to_float(
-                    self._balrog_one_sig_err_circle
-                ),
-                "balrog_two_sig_err_circle": convert_to_float(
-                    self._balrog_two_sig_err_circle
-                ),
+                "spec_K": convert_to_float(self._K1),
+                "spec_K_err": convert_to_float(self._K1_err),
+                "spec_index": convert_to_float(self._index1),
+                "spec_index_err": convert_to_float(self._index1_err),
+                "spec_xc": convert_to_float(self._xc1),
+                "spec_xc_err": convert_to_float(self._xc1_err),
+                "balrog_one_sig_err_circle": convert_to_float(self._balrog_1_sigma),
+                "balrog_two_sig_err_circle": convert_to_float(self._balrog_2_sigma),
             },
             "time_selection": {
                 "bkg_neg_start": self._bkg_neg_start,
@@ -101,16 +185,35 @@ class ResultReader:
                 "active_time_stop": self._active_time_stop,
                 "used_detectors": self._used_detectors,
             },
-            "separation_values": {
-                "bright_sources": self._dic_bright_sources,
-                "SGRs": self._dic_SGRs,
-                "Sun": {
-                    "sun_separation": convert_to_float(self._sun_sep_center),
-                    "sun_within_error": bool(self._sun_sep_error),
-                },
-            },
         }
+        if len(self._parameters.keys()) == 8:
+            logging.debug("exporting parameters for second spectrum")
+            self._report["fit_result"]["spec_K2"] = convert_to_float(self._K2)
+            self._report["fit_result"]["spec_K2_err"] = convert_to_float(self._K2_err)
+            self._report["fit_result"]["spec_index2"] = convert_to_float(self._index2)
+            self._report["fit_result"]["spec_index2_err"] = convert_to_float(
+                self._index2_err
+            )
+            self._report["fit_result"]["spec_xc2"] = convert_to_float(self._xc2)
+            self._report["fit_result"]["spec_xc2_err"] = convert_to_float(self._xc2_err)
+
+        elif len(self._parameters.keys()) == 11:
+            logging.debug("exporting parameters for third spectrum")
+            self._report["fit_result"]["spec_K3"] = convert_to_float(self._K3)
+            self._report["fit_result"]["spec_K3_err"] = convert_to_float(self._K3_err)
+            self._report["fit_result"]["spec_index3"] = convert_to_float(self._index3)
+            self._report["fit_result"]["spec_index3_err"] = convert_to_float(
+                self._index3_err
+            )
+            self._report["fit_result"]["spec_xc3"] = convert_to_float(self._xc3)
+            self._report["fit_result"]["spec_xc3_err"] = convert_to_float(self._xc3_err)
 
     def save_result_yml(self, file_path):
         with open(file_path, "w") as f:
             yaml.dump(self._report, f, default_flow_style=False)
+
+    def convert_to_float(value):
+        if value is not None:
+            return float(value)
+        else:
+            return None

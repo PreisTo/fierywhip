@@ -17,7 +17,9 @@ import pandas as pd
 import morgoth
 import pkg_resources
 from morgoth.configuration import morgoth_config
-from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
+
+# from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
+from fierywhip.utils.result_reader import ResultReader
 from morgoth.utils.env import get_env_value
 from morgoth.utils import file_utils
 from morgoth.utils.download_file import BackgroundDownload
@@ -254,15 +256,9 @@ class RunMorgoth:
         tf_path = os.path.join(base_dir, self._grb.name, "grb_parameters.yml")
         tf.write(tf_path)
         result_reader = ResultReader(
-            grb_name=self._grb.name,
-            report_type="trigdat",
-            version=version,
-            trigger_file=tf_path,
-            time_selection_file=self._ts_yaml,
-            background_file=self._bkg_yaml,
+            grb=self._grb,
             post_equal_weights_file=post_equal_weights_path,
             result_file=result_file,
-            trigdat_file=self._trigdat_path,
         )
         #
         result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
