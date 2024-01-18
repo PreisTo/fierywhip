@@ -272,7 +272,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             sbpl.break_energy.min_value = 1
             sbpl.break_energy.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
             self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=sbpl))
-       else:
+        else:
             raise Exception("Use valid model type: cpl, pl, sbpl, band")
 
 
