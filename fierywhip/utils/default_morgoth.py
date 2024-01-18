@@ -258,7 +258,7 @@ class RunMorgoth:
         result_reader = ResultReader(
             grb=self._grb,
             post_equal_weights_file=post_equal_weights_path,
-            result_file=result_file,
+            results_file=result_file,
         )
         #
         result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
