@@ -242,8 +242,12 @@ class ResultReader:
         return self._index1, self._index1_err
 
     @property
-    def xc(self):
-        return self._xc1, self._xc1_err
+    def _balrog_one_sig_err_cirle(self):
+        return self._balrog_1_sigma
+
+    @property
+    def _balrog_two_sig_err_circle(self):
+        return self._balrog_2_sigma
 
 
 def convert_to_float(value):
