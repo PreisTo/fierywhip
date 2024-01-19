@@ -72,6 +72,7 @@ if __name__ == "__main__":
     else:
         already_run = None
     if grb_selection is None:
+        logging.info("No GRBs passed as argument - will do my usual thing")
         default(already_run)
     else:
         for g in grb_selection:
