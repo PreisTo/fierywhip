@@ -5,7 +5,7 @@ import numpy as np
 from astropy.stats import bayesian_blocks
 from morgoth.utils.trig_reader import TrigReader
 from threeML.utils.statistics.stats_tools import Significance
-from fierywhip.utils.detector_utils import name_to_id
+from fierywhip.utils.detector_utils import name2id
 from gbm_drm_gen import DRMGenTrig
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.io.balrog_like import BALROGLike
@@ -230,7 +230,7 @@ class TimeSelectionNew(TimeSelection):
         for k, v in avgs_sorted[-3:]:
             if k != "n5":
                 logging.debug(f"Using {k}")
-                obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+                obs_significance += self._tr._rates[:, name2id(k), :].reshape(
                     len(self._tstart), 8
                 )
             else:
@@ -239,7 +239,7 @@ class TimeSelectionNew(TimeSelection):
         if n5_skipped:
             k, v = avgs_sorted[-4]
             logging.info(f"Using {k} instead of n5")
-            obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+            obs_significance += self._tr._rates[:, name2id(k), :].reshape(
                 len(self._tstart), 8
             )
         rates, bkg, sig = self._create_additional_timeseries(obs_significance)
