@@ -16,7 +16,7 @@ import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.detectors.timeselection import TimeSelectionNew
+from fierywhip.timeselection.timeselection import TimeSelectionNew
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
