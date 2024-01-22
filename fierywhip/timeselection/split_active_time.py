@@ -161,12 +161,9 @@ def save_lightcurves(trigreader, splits, grb, path=None):
         for x in splits:
             axes[0].vlines(x, 0, 10e5, color="magenta")
         axes[0].set_ylim(ylim)
-        try:
-            fig.savefig(
-                os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
-            )
-
-
+        fig.savefig(
+            os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
+        )
 def rebinning(start, stop, obs, time_bounds):
     times_binned = list(time_bounds)
     # find the correspondingin indices
