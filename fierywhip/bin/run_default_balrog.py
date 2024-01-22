@@ -56,7 +56,7 @@ def default(already_run):
             except (RuntimeError, FitFailed, IndexError):
                 pass
 def check_grb_fit_result(grb_name):
-    path = os.path.join(os.environ.get("GBMDATA"), grb_name, "trigdat/v00/",if"trigdat_v00_loc_results.fits")
+    path = os.path.join(os.environ.get("GBMDATA"), grb_name, "trigdat/v00/","trigdat_v00_loc_results.fits")
     if os.path.exists(path) and os.path.isfile(path):
         return False
     else:
