@@ -8,11 +8,6 @@ import os
 import numpy as np
 import yaml
 
-parameter_look_up = {
-    "short": ["ra", "dec", "K", "index", "xc"],
-    "long": ["ra", "dec", "K1", "index1", "xc1", "K2", "index2", "xc2"],
-}
-
 
 class ResultReader:
     def __init__(
@@ -27,7 +22,7 @@ class ResultReader:
         self._create_plots()
 
     def _get_parameters_with_errors(self, mode="hpd"):
-        lu_comps = {"first": "1", "second": "2", "third": "3"}
+        lu_comps = {"first": "1", "second": "2", "third": "3", "fourth": "4"}
         dataframe = self._bayesian_results.get_data_frame(mode)
         self._parameters = {}
         for i, row in dataframe.iterrows():
@@ -242,9 +237,11 @@ class ResultReader:
     @property
     def index(self):
         return self._index1, self._index1_err
+
     @property
     def balrog_1_sigma(self):
         return self._balrog_1_sigma
+
     @property
     def balrog_2_sigma(self):
         return self._balrog_2_sigma
