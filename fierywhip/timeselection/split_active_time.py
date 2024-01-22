@@ -66,7 +66,7 @@ def calculate_active_time_splits(
         i = name2id(d)
         cps_tmp += cps[i]
     cps = cps_tmp
-    res = bayesian_blocks(start[mask], cps[mask], fitness="events")
+    res = bayesian_blocks(start[mask], cps[mask].astype(int), fitness="events")
     bayesian_blocks_res = rebinning(start[mask], stop[mask], cps[mask], res)
     # calculate the jumps between the return
     jumps = {}
