@@ -555,7 +555,9 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
         wrap[0] = 1
-
+        logging.info(
+            f"These are the free parameters which we will fit:\n{self._model.free_parameters}"
+        )
         # define temp chain save path
         self._temp_chains_dir = os.path.join(
             base_dir, self._grb_name, f"c_trig_{self._version}"
