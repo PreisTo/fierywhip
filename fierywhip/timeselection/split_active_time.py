@@ -149,8 +149,10 @@ def calculate_active_time_splits(
 def save_lightcurves(trigreader, splits, grb, path=None):
     if path is None:
         path = os.path.join(
-            os.environ.get("GBM_TRIGGER_DATA_DIR"), grb, "tridgat/v00/lc"
+            os.environ.get("GBM_TRIGGER_DATA_DIR"), grb, "trigdat/v00/lc"
         )
+    if not os.path.exists(path):
+        os.path.makedirs(path)
     figs = trigreader.view_lightcurve(return_plots=True)
     for f in figs:
         fig = f[1]
@@ -159,9 +161,10 @@ def save_lightcurves(trigreader, splits, grb, path=None):
         for x in splits:
             axes[0].vlines(x, 0, 10e5, color="magenta")
         axes[0].set_ylim(ylim)
-        fig.savefig(
-            os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
-        )
+        try:
+            fig.savefig(
+                os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
+            )
 
 
 def rebinning(start, stop, obs, time_bounds):
