@@ -147,13 +147,19 @@ def calculate_active_time_splits(
 
 
 def save_lightcurves(trigreader, splits, grb, path=None):
+    # TODO set x_lim
     if path is None:
         path = os.path.join(
             os.environ.get("GBM_TRIGGER_DATA_DIR"), grb, "trigdat/v00/lc"
         )
     if not os.path.exists(path):
         os.path.makedirs(path)
-    figs = trigreader.view_lightcurve(return_plots=True)
+
+    bkg_intervals = trigreader.time_series["n0"].bkg_intervals()
+    prev = time_splitter(bkg_intervals[0])
+    after = time_splitter(bkg_intervals[-1])
+
+    figs = trigreader.view_lightcurve(start = prev[-1]-20, stop = after[0]+20,return_plots=True)
     for f in figs:
         fig = f[1]
         axes = fig.get_axes()
@@ -178,3 +184,12 @@ def rebinning(start, stop, obs, time_bounds):
     width_binned = time_bounds[1:] - time_bounds[:-1]
     times_binned.append(stop[-1])
     return times_binned, obs_binned, width_binned
+
+def time_splitter(time:str):
+    splitted_time = time.split("-")
+    if len(splitted_time) == 2:
+        return float(splitted_time[0]),float(splitted_time[1])
+    elif len(splitted_time) == 3:
+        return -float(splitted_time[1]),float(splitted_time[-1])
+    elif len(splitted_time) == 4:
+        return -float(splitted_time[1]),-float(splitted_time[-1])
