@@ -6,9 +6,10 @@ from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
 from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.utils.detector_utils import name_to_id, detector_list, nai_list
+from fierywhip.utils.detector_utils import name2id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
-from fierywhip.utils.balrog_like import BALROGLikeMultiple
+from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
+from fierywhip.timeselection.split_active_time import calculate_active_time_splits
 import yaml
 import os
 from morgoth.utils.trig_reader import TrigReader
@@ -93,7 +94,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         data = yaml.safe_load(f)
                         self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        data["use_dets"] = list(map(name2id, self._use_dets))
                         yaml.safe_dump(data, f)
                 else:
                     with open(bkg_fit_yaml_file, "r") as f:
@@ -112,7 +113,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         data = yaml.safe_load(f)
                         self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        data["use_dets"] = list(map(name2id, self._use_dets))
                         yaml.safe_dump(data, f)
                 else:
                     with open(bkg_fit_yaml_file, "r") as f:
@@ -131,7 +132,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         data = yaml.safe_load(f)
                         self._bkg_fit_files = data["bkg_fit_files"]
                     with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name_to_id, self._use_dets))
+                        data["use_dets"] = list(map(name2id, self._use_dets))
                         yaml.safe_dump(data, f)
                 else:
                     with open(bkg_fit_yaml_file, "r") as f:
@@ -309,6 +310,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             fig.savefig(os.path.join(base_dir, self._grb_name, "cc_plots.png"))
 
 
+mapping = {"0": "first", "1": "second", "2": "third", "3": "fourth"}
+
+
 class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
     def __init__(
         self,
@@ -347,22 +351,10 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 f"{data['active_time']['start']}-{data['active_time']['stop']}"
             )
             self._fine = data["fine"]
-        # TODO determine lenght of duration here and decide how many models
-        # TODO THIS NEEDS TO BE DONE BEFORE DECIDING WHICH CLASS!!!!
-        active_time = self._active_time
-        ats = active_time.split("-")
-        if len(ats) == 2:
-            start = float(ats[0])
-            stop = float(ats[-1])
-        elif len(ats) == 3:
-            start = -float(ats[1])
-            stop = float(ats[-1])
-        elif len(ats) == 4:
-            start = -float(ats[1])
-            stop = -float(ats[-1])
-        else:
-            raise ValueError("Something wrong with active time")
-        self._active_times_float = [start, start + (stop - start) / 2, stop]
+
+        self._active_times_float = calculate_active_time_splits(
+            self._trigdat_file, self._active_time, self._bkg_fit_files, self._use_dets
+        )
         self._define_model(self._spectrum_model)
         self._setup_plugins()
 
@@ -396,46 +388,28 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         logging.info(
             f"Duration of Burst is {self._active_times_float[-1]-self._active_times_float[0]}, we will use 2 responses for this"
         )
-
-        # First
-        trig_reader.set_active_time_interval(
-            f"{self._active_times_float[0]}-{self._active_times_float[1]}"
-        )
-        trig_data = []
-        for d in self._use_dets:
-            speclike = trig_reader.time_series[d].to_spectrumlike()
-            time = 0.5 * (
-                trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
+        for l in range(len(self._active_times_float) - 1):
+            key = mapping[str(l)]
+            trig_reader.set_active_time_interval(
+                f"{self._active_times_float[l]}-{self._active_times_float[l+1]}"
             )
-            balrog_like = BALROGLikeMultiple.from_spectrumlike(
-                speclike, name=f"{d}_first", time=time
-            )
-            balrog_like.assign_to_source("first")
-            balrog_like.set_active_measurements("c1-c6")
-            if self._use_eff_area:
-                balrog_like.fix_eff_area_correction(
-                    self._grb.effective_area_correction(d)
+            trig_data = []
+            for d in self._use_dets:
+                speclike = trig_reader.time_series[d].to_spectrumlike()
+                time = 0.5 * (
+                    trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
                 )
-            trig_data.append(balrog_like)
-
-        trig_reader.set_active_time_interval(
-            f"{self._active_times_float[1]}-{self._active_times_float[2]}"
-        )
-        for d in self._use_dets:
-            speclike = trig_reader.time_series[d].to_spectrumlike()
-            time = 0.5 * (
-                trig_reader.time_series[d].tstart + trig_reader.time_series[d].tstop
-            )
-            balrog_like = BALROGLikeMultiple.from_spectrumlike(
-                speclike, name=f"{d}_second", time=time
-            )
-            balrog_like.assign_to_source("second")
-            balrog_like.set_active_measurements("c1-c6")
-            if self._use_eff_area:
-                balrog_like.fix_eff_area_correction(
-                    self._grb.effective_area_correction(d)
+                balrog_like = BALROGLikeMultiple.from_spectrumlike(
+                    speclike, name=f"{d}_{key}", time=time
                 )
-            trig_data.append(balrog_like)
+                balrog_like.assign_to_source(key)
+                balrog_like.set_active_measurements("c1-c6")
+                if self._use_eff_area:
+                    balrog_like.fix_eff_area_correction(
+                        self._grb.effective_area_correction(d)
+                    )
+                trig_data.append(balrog_like)
+            logging.info(f"Added model for {key}")
 
         self._data_list = DataList(*trig_data)
         # define bayes object with model and data_list
