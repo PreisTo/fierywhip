@@ -353,7 +353,11 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             self._fine = data["fine"]
 
         self._active_times_float = calculate_active_time_splits(
-            self._trigdat_file, self._active_time, self._bkg_fit_files, self._use_dets
+            self._trigdat_file,
+            self._active_time,
+            self._bkg_fit_files,
+            self._use_dets,
+            grb=self._grb_name,
         )
         self._define_model(self._spectrum_model)
         self._setup_plugins()
@@ -450,7 +454,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 cpl3.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
                 cpl3.index.set_uninformative_prior(Uniform_prior)
                 # we define a point source model using the spectrum we just specified
-                ps3 = PointSource("third", ra=0.0, dec=0.0, spectral_shape=cpl2)
+                ps3 = PointSource("third", ra=0.0, dec=0.0, spectral_shape=cpl3)
                 ps_list.append(ps3)
             if len(self._active_times_float) >= 5:
                 cpl4 = Cutoff_powerlaw()
@@ -459,7 +463,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 cpl4.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
                 cpl4.index.set_uninformative_prior(Uniform_prior)
                 # we define a point source model using the spectrum we just specified
-                ps4 = PointSource("fourth", ra=0.0, dec=0.0, spectral_shape=cpl2)
+                ps4 = PointSource("fourth", ra=0.0, dec=0.0, spectral_shape=cpl4)
                 ps_list.append(ps4)
             if len(self._active_times_float) == 2:
                 self._model = Model(ps1)
@@ -555,7 +559,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
         wrap[0] = 1
-        logging.info(
+        print(
             f"These are the free parameters which we will fit:\n{self._model.free_parameters}"
         )
         # define temp chain save path
