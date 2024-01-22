@@ -388,12 +388,13 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         logging.info(
             f"Duration of Burst is {self._active_times_float[-1]-self._active_times_float[0]}, we will use 2 responses for this"
         )
+
+        trig_data = []
         for l in range(len(self._active_times_float) - 1):
             key = mapping[str(l)]
             trig_reader.set_active_time_interval(
                 f"{self._active_times_float[l]}-{self._active_times_float[l+1]}"
             )
-            trig_data = []
             for d in self._use_dets:
                 speclike = trig_reader.time_series[d].to_spectrumlike()
                 time = 0.5 * (
@@ -555,7 +556,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)
         wrap[0] = 1
-        logging.info(
+        print(
             f"These are the free parameters which we will fit:\n{self._model.free_parameters}"
         )
         # define temp chain save path
