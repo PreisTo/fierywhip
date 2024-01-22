@@ -354,7 +354,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         path_to_python = morgoth_config["multinest"]["path_to_python"]
 
         fit_script_path = pkg_resources.resource_filename(
-            "fierywhip", "utils/fit_morgoth_eff_area.py"
+            "fierywhip", "model/utils/fit_morgoth_eff_area.py"
         )
         grb_obj_path = os.path.join(
             base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"
