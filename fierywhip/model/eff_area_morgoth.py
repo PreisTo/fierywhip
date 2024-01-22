@@ -461,8 +461,15 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 # we define a point source model using the spectrum we just specified
                 ps4 = PointSource("fourth", ra=0.0, dec=0.0, spectral_shape=cpl2)
                 ps_list.append(ps4)
+            if len(self._active_times_float) == 2:
+                self._model = Model(ps1)
+            elif len(self._active_times_float) == 3:
+                self._model = Model(ps1, ps2)
+            elif len(self._active_times_float) == 4:
+                self._model = Model(ps1, ps2, ps3)
+            elif len(self._active_times_float) == 5:
+                self._model = Model(ps1, ps2, ps3, ps4)
 
-            self._model = Model(*ps_list)
             if len(self._active_times_float) >= 3:
                 self._model.link(
                     self._model.second.position.ra, self._model.first.position.ra
