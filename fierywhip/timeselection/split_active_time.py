@@ -6,11 +6,13 @@ from fierywhip.utils.detector_utils import name2id
 import logging
 import numpy as np
 
+
 def calculate_active_time_splits(
     trigdat_file: str,
     active_time: str,
     bkg_fit_files: list,
     use_dets: list,
+    grb: str,
     max_drm_time=11,
     min_drm_time=1.024,
 ):
@@ -72,9 +74,7 @@ def calculate_active_time_splits(
     jumps = {}
     for i in range(len(bayesian_blocks_res[0])):
         if i != 0:
-            jumps[str(i)] = (
-                bayesian_blocks_res[1][i] /bayesian_blocks_res[1][i - 1]
-            )
+            jumps[str(i)] = bayesian_blocks_res[1][i] / bayesian_blocks_res[1][i - 1]
         else:
             jumps[str(i)] = 1
 
@@ -95,7 +95,7 @@ def calculate_active_time_splits(
     directions = 0
     while flag:
         add = False
-        if np.absolute(jump_index)<len(jumps_sorted):
+        if np.absolute(jump_index) < len(jumps_sorted):
             ji = jumps_sorted[jump_index][0]
         else:
             raise IndexError
@@ -141,7 +141,24 @@ def calculate_active_time_splits(
                 else:
                     flag = False
         jump_index -= 1
+    save_lightcurves(trig_reader, splits, grb)
     return splits
+
+
+def save_lightcurves(trigreader, splits, grb, path=None):
+    if path is None:
+        path = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "tridgat/v00/lc")
+    figs = trigreader.view_lightcurve(return_plots=True)
+    for f in figs:
+        fig = f[1]
+        axes = fig.get_axes()
+        ylim = axes[0].get_ylim()
+        for x in splits:
+            axes[0].vlines(x, 0, 10e5, color="magenta")
+        axes[0].set_ylim(ylim)
+        fig.savefig(
+            os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
+        )
 
 
 def rebinning(start, stop, obs, time_bounds):
@@ -155,6 +172,6 @@ def rebinning(start, stop, obs, time_bounds):
     obs_binned = []
     for i in range(len(indices) - 1):
         obs_binned.append(np.average(obs[i : i + 1], weights=weights[i : i + 1]))
-    width_binned = time_bounds[1:]-time_bounds[:-1]
+    width_binned = time_bounds[1:] - time_bounds[:-1]
     times_binned.append(stop[-1])
     return times_binned, obs_binned, width_binned
