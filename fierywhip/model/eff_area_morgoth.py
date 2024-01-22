@@ -423,6 +423,8 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         # data_list=comm.bcast(data_list, root=0)
         if spectrum == "cpl":
             # we define the spectral model
+            #
+            ps_list = []
             cpl1 = Cutoff_powerlaw()
             cpl1.K.max_value = 10**4
             cpl1.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
@@ -430,6 +432,8 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             cpl1.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
             ps1 = PointSource("first", ra=0.0, dec=0.0, spectral_shape=cpl1)
+            ps_list.append(ps1)
+
             cpl2 = Cutoff_powerlaw()
             cpl2.K.max_value = 10**4
             cpl2.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
@@ -437,13 +441,50 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             cpl2.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
             ps2 = PointSource("second", ra=0.0, dec=0.0, spectral_shape=cpl2)
-            self._model = Model(ps1, ps2)
-            self._model.link(
-                self._model.second.position.ra, self._model.first.position.ra
-            )
-            self._model.link(
-                self._model.second.position.dec, self._model.first.position.dec
-            )
+            ps_list.append(ps2)
+
+            if len(self._active_times_float) >= 4:
+                cpl3 = Cutoff_powerlaw()
+                cpl3.K.max_value = 10**4
+                cpl3.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+                cpl3.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+                cpl3.index.set_uninformative_prior(Uniform_prior)
+                # we define a point source model using the spectrum we just specified
+                ps3 = PointSource("third", ra=0.0, dec=0.0, spectral_shape=cpl2)
+                ps_list.append(ps3)
+            if len(self._active_times_float) >= 5:
+                cpl4 = Cutoff_powerlaw()
+                cpl4.K.max_value = 10**4
+                cpl4.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+                cpl4.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+                cpl4.index.set_uninformative_prior(Uniform_prior)
+                # we define a point source model using the spectrum we just specified
+                ps4 = PointSource("fourth", ra=0.0, dec=0.0, spectral_shape=cpl2)
+                ps_list.append(ps4)
+
+            self._model = Model(*ps_list)
+            if len(self._active_times_float) >= 3:
+                self._model.link(
+                    self._model.second.position.ra, self._model.first.position.ra
+                )
+                self._model.link(
+                    self._model.second.position.dec, self._model.first.position.dec
+                )
+            if len(self._active_times_float) >= 4:
+                self._model.link(
+                    self._model.third.position.ra, self._model.first.position.ra
+                )
+                self._model.link(
+                    self._model.third.position.dec, self._model.first.position.dec
+                )
+            if len(self._active_times_float) >= 5:
+                self._model.link(
+                    self._model.fourth.position.ra, self._model.first.position.ra
+                )
+                self._model.link(
+                    self._model.fourth.position.dec, self._model.first.position.dec
+                )
+
         # elif spectrum == "band":
         #     band = Band()
         #     band.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1200)
