@@ -43,7 +43,7 @@ else:
 logging.info(f"Using spectrum {spectrum}")
 if str(long_grb).lower() == "true":
     logging.info(
-        f"This is a long GRB (active-time > 10s) - we will use two spectra and responses"
+        f"This is a long GRB (active-time > 10s) - we will use multiple spectra and responses"
     )
     multinest_fit = MultinestFitTrigdatMultipleSelections(
         grb=None,
