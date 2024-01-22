@@ -5,6 +5,7 @@ from morgoth.utils.trig_reader import TrigReader
 from fierywhip.utils.detector_utils import name2id
 import logging
 import numpy as np
+import os
 
 
 def calculate_active_time_splits(
@@ -147,7 +148,9 @@ def calculate_active_time_splits(
 
 def save_lightcurves(trigreader, splits, grb, path=None):
     if path is None:
-        path = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "tridgat/v00/lc")
+        path = os.path.join(
+            os.environ.get("GBM_TRIGGER_DATA_DIR"), grb, "tridgat/v00/lc"
+        )
     figs = trigreader.view_lightcurve(return_plots=True)
     for f in figs:
         fig = f[1]
