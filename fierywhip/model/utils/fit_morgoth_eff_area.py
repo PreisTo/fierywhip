@@ -3,7 +3,7 @@
 import sys
 import warnings
 import logging
-from fierywhip.utils.eff_area_morgoth import (
+from fierywhip.model.eff_area_morgoth import (
     MultinestFitTrigdatMultipleSelections,
     MultinestFitTrigdatEffArea,
 )
