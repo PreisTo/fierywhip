@@ -155,9 +155,9 @@ def save_lightcurves(trigreader, splits, grb, path=None):
     if not os.path.exists(path):
         os.path.makedirs(path)
 
-    bkg_intervals = trigreader.time_series["n0"].bkg_intervals()
-    prev = time_splitter(bkg_intervals[0])
-    after = time_splitter(bkg_intervals[-1])
+    bkg_intervals = trigreader.time_series["n0"].time_series.bkg_intervals
+    prev = bkg_intervals[0].start_time, bkg_intervals[0].stop_time
+    after = bkg_intervals[1].start_time, bkg_intervals[1].stop_time
 
     figs = trigreader.view_lightcurve(start = prev[-1]-20, stop = after[0]+20,return_plots=True)
     for f in figs:
