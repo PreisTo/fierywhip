@@ -140,13 +140,22 @@ class DetectorSelection:
         flag = True
         min_percentage = 10
         use_dets = []
+        logging.info(
+            f"Now setting the detector combinations which have at least {min_percentage}% occurence probability"
+        )
         while flag:
             det = sorted_sig[i][0]
             if det not in use_dets:
+                # append the high sig itself
+                logging.info(
+                    f"Det {det} has a high significance - will use it for refrence"
+                )
+                use_dets.append(det)
                 temp = table.loc[det].to_dict()
                 temp_sorted = sorted(temp.items(), key=lambda x: x[1])
                 for x in temp_sorted:
                     if x[1] >= min_percentage and x[0] not in use_dets:
+                        # appending dets which have the needed visibility probability
                         use_dets.append(x[0])
             if (
                 len(use_dets) < self._min_number_nai

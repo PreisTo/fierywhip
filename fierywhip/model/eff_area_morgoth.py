@@ -152,7 +152,24 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     self._bkg_fit_files = data["bkg_fit_files"]
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
-
+            elif det_sel_mode == "huntsville":
+                self._grb._get_detector_selection(
+                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode
+                )
+                self._normalizing_det = self._grb.detector_selection.normalizing_det
+                self._use_dets = self._grb.detector_selection.good_dets
+                logging.info("Set Dets according to huntsville simulation")
+                if rank == 0:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data = yaml.safe_load(f)
+                        self._bkg_fit_files = data["bkg_fit_files"]
+                    with open(bkg_fit_yaml_file, "w") as f:
+                        data["use_dets"] = list(map(name2id, self._use_dets))
+                        yaml.safe_dump(data, f)
+                else:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data1 = yaml.safe_load(f)
+                        self._bkg_fit_files = data1["bkg_fit_files"]
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
             self.setup_essentials()
