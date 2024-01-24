@@ -191,7 +191,7 @@ class ResultReader:
                 "used_detectors": self._grb.detector_selection.good_dets,
             },
         }
-        if len(self._parameters.keys()) == 8:
+        if len(self._parameters.keys()) >= 8:
             logging.debug("exporting parameters for second spectrum")
             self._report["fit_result"]["spec_K2"] = convert_to_float(self._K2)
             self._report["fit_result"]["spec_K2_err"] = convert_to_float(self._K2_err)
@@ -202,7 +202,7 @@ class ResultReader:
             self._report["fit_result"]["spec_xc2"] = convert_to_float(self._xc2)
             self._report["fit_result"]["spec_xc2_err"] = convert_to_float(self._xc2_err)
 
-        elif len(self._parameters.keys()) == 11:
+        elif len(self._parameters.keys()) >= 11:
             logging.debug("exporting parameters for third spectrum")
             self._report["fit_result"]["spec_K3"] = convert_to_float(self._K3)
             self._report["fit_result"]["spec_K3_err"] = convert_to_float(self._K3_err)
@@ -212,6 +212,16 @@ class ResultReader:
             )
             self._report["fit_result"]["spec_xc3"] = convert_to_float(self._xc3)
             self._report["fit_result"]["spec_xc3_err"] = convert_to_float(self._xc3_err)
+        elif len(self._parameters.keys()) >= 14:
+            logging.debug("exporting parameters for fourth spectrum")
+            self._report["fit_result"]["spec_K4"] = convert_to_float(self._K4)
+            self._report["fit_result"]["spec_K4_err"] = convert_to_float(self._K4_err)
+            self._report["fit_result"]["spec_index4"] = convert_to_float(self._index4)
+            self._report["fit_result"]["spec_index4_err"] = convert_to_float(
+                self._index4_err
+            )
+            self._report["fit_result"]["spec_xc4"] = convert_to_float(self._xc4)
+            self._report["fit_result"]["spec_xc4_err"] = convert_to_float(self._xc4_err)
 
     def save_result_yml(self, file_path):
         with open(file_path, "w") as f:

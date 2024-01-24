@@ -55,7 +55,12 @@ def default(already_run):
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError):
                 pass
-
+def check_grb_fit_result(grb_name):
+    path = os.path.join(os.environ.get("GBMDATA"), grb_name, "trigdat/v00/","trigdat_v00_loc_results.fits")
+    if os.path.exists(path) and os.path.isfile(path):
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
@@ -77,13 +82,23 @@ if __name__ == "__main__":
     else:
         for g in grb_selection:
             logging.info(f"This is the grb{g}")
-            grb = GRB(name=g)
-            rm = RunEffAreaMorgoth(
-                grb,
-                use_eff_area=False,
-                det_sel_mode="max_sig_triplets",
-                spectrum="cpl",
-                max_trigger_duration=22,
-            )
+            run = False
+            try:
+                if check_grb_fit_result(g):
+                    grb = GRB(name=g)
+                    run = True
+            except AttributeError:
+                logging.info(f"No swift position available, will set to ra=0 and dec=0!")
+                if check_grb_fit_result(g):
+                    grb = GRB(name=g, ra = 0, dec =0,run_det_sel = False)
+                    run = True
+            if run:
+                rm = RunEffAreaMorgoth(
+                    grb,
+                    use_eff_area=False,
+                    det_sel_mode="max_sig_triplets",
+                    spectrum="cpl",
+                    max_trigger_duration=22,
+                )
 
-            rm.run_fit()
+                rm.run_fit()
