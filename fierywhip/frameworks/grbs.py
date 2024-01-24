@@ -579,11 +579,12 @@ class GRB:
                         }
                         yaml.safe_dump(ts, f)
         else:
-            tsbb = TimeSelectionNew(
-                name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
-            )
-            self._active_time = tsbb.active_time
-            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+            if self._active_time is None:
+                tsbb = TimeSelectionNew(
+                    name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
+                )
+                self._active_time = tsbb.active_time
+                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
         at = self._active_time.split("-")
         if len(at) == 2:
