@@ -95,8 +95,71 @@ class DetectorSelection:
                     dets.pop(dets.index("b1"))
             self._good_dets = dets
             self._normalizing_det = dets[0]
+        elif self._mode == "huntsville":
+            raise NotImplementedError
         else:
             raise NotImplementedError("Mode not implemented")
+
+    def _set_good_dets_huntsville(self):
+        table = pd.read_csv(
+            pkg_resources.resource_filename(
+                "fierywhip", "/data/huntsville_det_mapping.csv"
+            ),
+            index_col=0,
+        )
+        # convert to percent just for convenience
+        for i in range(len(table)):
+            table.iloc[i] = table.iloc[i] / table.iloc[i].sum() * 100
+        tr = TrigReader(self._trigdat_path, fine=True, verbose=False)
+        self.grb.run_timeselection()
+        tr.set_active_time_interval(self.grb.active_time)
+        tr.set_background_selections(*self.grb.bkg_time)
+        tstart, tstop = tr.tstart_tstop()
+        split = self.grb.active_time.split("-")
+        if len(split) == 2:
+            trigger_start, trigger_stop = list(map(float, split))
+        elif len(split) == 3:
+            trigger_start, trigger_stop = -float(split[1]), float(split[1])
+        elif len(split) == 4:
+            trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
+        else:
+            raise ValueError
+        trigger_start_id = np.argwhere(tstop < trigger_start)[-1, 0]
+        trigger_stop_id = np.argwhere(tstart > trigger_stop)[0, 0]
+        res_dict = {}
+        for d in lu:
+            signs = tr.time_series[d].significance_per_interval
+            maximum = np.max(signs)
+            median = np.median(signs)
+            mean = np.mean(signs)
+            res_dict[d] = median
+        sorted_sig = sorted(res_dict.items(), key=lambda x: x[1])
+        i = -1
+        flag = True
+        min_percentage = 10
+        use_dets = []
+        while flag:
+            det = sorted_sig[i][0]
+            if det not in use_dets:
+                temp = table.loc[det].to_dict()
+                temp_sorted = sorted(temp.items(), key=lambda x: x[1])
+                for x in temp_sorted:
+                    if x[1] >= min_percentage and x[0] not in use_dets:
+                        use_dets.append(x[0])
+            if (
+                len(use_dets) < self._min_number_nai
+                and len(use_dets) < self._max_number_nai
+            ):
+                i -= 1
+            else:
+                flag = False
+
+        if res_dict["b0"] >= res_dict["b1"]:
+            use_dets.append("b0")
+        else:
+            use_dets.append("b1")
+        self._good_dets = use_dets
+        self._normalizing_det = use_dets[0]
 
     def _set_good_dets_significance_triplets(self):
         tr = TrigReader(self._trigdat_path, fine=True, verbose=False)
