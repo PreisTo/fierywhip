@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import healpy as hp
 import os
+from scipy import special
 
 
 class MorgothHealpix:
@@ -83,11 +84,46 @@ class MorgothHealpix:
         :type pos: list, tuple
         :param angle: angle in degree
         :type angle: float
+
+        :return: probability inside the circle
+        :rtype: float
         """
         vec = radec2cartesian(pos)
         ids = hp.query_disc(self._nside, vec, np.deg2rad(angle))
 
         return np.sum(self._hp_map[ids])
+
+    def sigma_radius(self, pos, sigma):
+        """
+        Returns radius needed to contain Nr of sigma
+        :param pos: position of the center in ra/dec
+        :type pos: list/tuple
+        :param sigma: nr of sigma
+        :type sigma: int or list
+
+        :return: radius or list of radii
+        """
+        probs = []
+        radii = []
+        p = 0
+        r = 0
+        while p < 1:
+            p = self.probability_circle(pos, r)
+            probs.append(p)
+            radii.append(r)
+            r += 0.1
+        probs = np.array(probs)
+        radii = np.array(radii)
+        if type(sigma) == list:
+            return_radius = []
+            for s in sigma:
+                percentage = special.erf(s)
+                s_radius = radius[np.argwhere(probs >= percentage)[0, 0]]
+                return_radius.append(s_radius)
+            return return_radius
+        else:
+            percentage = special.erf(sigma)
+            return radius[np.argwhere(probs >= percentage)[0, 0]]
 
     @property
     def healpix_map(self):
