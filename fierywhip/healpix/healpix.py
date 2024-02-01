@@ -29,7 +29,7 @@ class MorgothHealpix:
             "result_path",
             os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "healpix.fits"),
         )
-
+        self._create_healpix_map()
     def _create_healpix_map(self):
         npix = hp.nside2npix(self._nside)
         healpix_map = np.zeros(npix)
