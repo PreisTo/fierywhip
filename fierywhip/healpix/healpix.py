@@ -29,8 +29,8 @@ class MorgothHealpix:
             "result_path",
             os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "healpix.fits"),
         )
-        self._create_healpix_map()
-    def _create_healpix_map(self):
+
+    def create_healpix_map(self):
         npix = hp.nside2npix(self._nside)
         healpix_map = np.zeros(npix)
 
@@ -133,6 +133,11 @@ class MorgothHealpix:
     def from_result_fits_file(cls, result_file: str, **kwargs):
         ar = load_analysis_results(result_file)
         return cls(analysis_result=ar, **kwargs)
+
+    @classmethod
+    def from_healpix_file(cls, healpix_file):
+        self._hp_map = hp.read_map(healpix_file)
+        return cls(None)
 
 
 def radec2cartesian(pos):
