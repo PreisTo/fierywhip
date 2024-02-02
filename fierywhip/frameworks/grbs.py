@@ -16,7 +16,7 @@ import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.detectors.timeselection import TimeSelectionNew
+from fierywhip.timeselection.timeselection import TimeSelectionNew
 from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
@@ -335,8 +335,8 @@ class GRB:
         self._name = kwargs.get("name")
         self._active_time = kwargs.get("active_time", None)
         self._bkg_time = kwargs.get("bkg_time", None)
-        self._ra_icrs = kwargs.get("ra")
-        self._dec_icrs = kwargs.get("dec")
+        self._ra_icrs = kwargs.get("ra", None)
+        self._dec_icrs = kwargs.get("dec", None)
         grb_time = kwargs.get("grb_time", None)
         if grb_time is not None:
             assert (
@@ -355,9 +355,34 @@ class GRB:
             )
         ra_dec_units = kwargs.get("ra_dec_units", (u.deg, u.deg))
 
-        self._position = SkyCoord(
-            ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
-        )
+        if self._ra_icrs is None and self._dec_icrs is None:
+            swift = pd.read_csv(
+                pkg_resources.resource_filename("fierywhip", "data/Fermi_Swift.lis"),
+                sep=" ",
+                index_col=False,
+                header=None,
+            )
+            print(f"This is the stripped GRB name {self._name.strip('GRB')}")
+            for j, i in swift.iterrows():
+                name = str(i.loc[0])
+                if len(name) == 8:
+                    name = "0" + name
+                if name == self._name.strip("GRB"):
+                    logging.info(f"Found a match!")
+                    self._ra_icrs = str(i.loc[5])
+                    self._dec_icrs = str(i.loc[6])
+                    ra_dec_units = (u.hourangle, u.deg)
+                    self._position = SkyCoord(
+                        ra=self._ra_icrs,
+                        dec=self._dec_icrs,
+                        unit=ra_dec_units,
+                        frame="icrs",
+                    )
+                    break
+        else:
+            self._position = SkyCoord(
+                ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
+            )
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()
@@ -433,6 +458,13 @@ class GRB:
         :returns: list with bkg neg and bkg pos start/stop time
         """
         return self._bkg_time
+
+    @property
+    def long_grb(self):
+        return self._long_grb
+
+    def is_long_grb(self, is_it: bool):
+        self._long_grb = is_it
 
     def download_files(self):
         """
@@ -547,11 +579,30 @@ class GRB:
                         }
                         yaml.safe_dump(ts, f)
         else:
-            tsbb = TimeSelectionNew(
-                name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
-            )
-            self._active_time = tsbb.active_time
-            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+            if self._active_time is None:
+                tsbb = TimeSelectionNew(
+                    name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
+                )
+                self._active_time = tsbb.active_time
+                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+
+        at = self._active_time.split("-")
+        if len(at) == 2:
+            start = float(at[0])
+            stop = float(at[-1])
+        elif len(at) == 3:
+            start = -float(at[1])
+            stop = float(at[-1])
+        elif len(at) == 4:
+            start = -float(at[1])
+            stop = -float(at[-1])
+        else:
+            raise ValueError
+
+        if stop - start > 10:
+            self._long_grb = True
+        else:
+            self._long_grb = False
 
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm

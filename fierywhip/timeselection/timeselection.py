@@ -5,7 +5,7 @@ import numpy as np
 from astropy.stats import bayesian_blocks
 from morgoth.utils.trig_reader import TrigReader
 from threeML.utils.statistics.stats_tools import Significance
-from fierywhip.utils.detector_utils import name_to_id
+from fierywhip.utils.detector_utils import name2id
 from gbm_drm_gen import DRMGenTrig
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.io.balrog_like import BALROGLike
@@ -58,7 +58,7 @@ class TimeSelectionNew(TimeSelection):
         self._max_factor = kwargs.get("max_factor", 1.2)
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
         self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
-
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
 
@@ -230,7 +230,7 @@ class TimeSelectionNew(TimeSelection):
         for k, v in avgs_sorted[-3:]:
             if k != "n5":
                 logging.debug(f"Using {k}")
-                obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+                obs_significance += self._tr._rates[:, name2id(k), :].reshape(
                     len(self._tstart), 8
                 )
             else:
@@ -239,7 +239,7 @@ class TimeSelectionNew(TimeSelection):
         if n5_skipped:
             k, v = avgs_sorted[-4]
             logging.info(f"Using {k} instead of n5")
-            obs_significance += self._tr._rates[:, name_to_id(k), :].reshape(
+            obs_significance += self._tr._rates[:, name2id(k), :].reshape(
                 len(self._tstart), 8
             )
         rates, bkg, sig = self._create_additional_timeseries(obs_significance)
@@ -266,7 +266,7 @@ class TimeSelectionNew(TimeSelection):
                 reason_new,
                 min_sig_new,
             ) = self._select_active_time_algorithm(
-                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor
+                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor,max_trigger_duration = self._max_trigger_duration
             )
             if at_stop_new - at_start_new > at_stop - at_start:
                 at_start = at_start_new

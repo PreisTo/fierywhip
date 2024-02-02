@@ -17,7 +17,9 @@ import pandas as pd
 import morgoth
 import pkg_resources
 from morgoth.configuration import morgoth_config
-from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
+
+# from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
+from fierywhip.utils.result_reader import ResultReader
 from morgoth.utils.env import get_env_value
 from morgoth.utils import file_utils
 from morgoth.utils.download_file import BackgroundDownload
@@ -29,16 +31,15 @@ from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
-from fierywhip.utils.eff_area_morgoth import MultinestFitTrigdatEffArea
-from fierywhip.utils.detector_utils import name_to_id
-from fierywhip.detectors.timeselection import TimeSelectionNew
+from fierywhip.model.eff_area_morgoth import MultinestFitTrigdatEffArea
+from fierywhip.utils.detector_utils import name2id
+from fierywhip.timeselection.timeselection import TimeSelectionNew
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 import astropy.io.fits as fits
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
-from morgoth.utils.plot_utils import create_corner_all_plot
 from datetime import datetime
 import subprocess
 import numpy as np
@@ -57,6 +58,7 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         run_ts = self.timeselection()
@@ -108,7 +110,8 @@ class RunMorgoth:
                 name=self._grb.name,
                 trigdat_file=self._trigdat_path,
                 fine=True,
-                min_trigger_duration=0.128,
+                min_trigger_duration=0.064,
+                max_trigger_duration=self._max_trigger_duration,
                 min_bkg_time=45,
             )
             logging.info("Done TimeSelectionNew")
@@ -143,6 +146,24 @@ class RunMorgoth:
             pass
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
+        at = self._tsbb.active_time
+        at = at.split("-")
+        if len(at) == 2:
+            start = float(at[0])
+            stop = float(at[1])
+        elif len(at) == 3:
+            start = -float(at[1])
+            stop = float(at[-1])
+        elif len(at) == 4:
+            start = -float(at[1])
+            stop = -float(at[-1])
+        else:
+            raise ValueError
+        if stop - start > 10:
+            self._long_grb = True
+        else:
+            self._long_grb = False
+        self._grb.is_long_grb(self._long_grb)
         return ts_available
 
     def fit_background(self):
@@ -234,25 +255,14 @@ class RunMorgoth:
         tf_path = os.path.join(base_dir, self._grb.name, "grb_parameters.yml")
         tf.write(tf_path)
         result_reader = ResultReader(
-            grb_name=self._grb.name,
-            report_type="trigdat",
-            version=version,
-            trigger_file=tf_path,
-            time_selection_file=self._ts_yaml,
-            background_file=self._bkg_yaml,
+            grb=self._grb,
             post_equal_weights_file=post_equal_weights_path,
-            result_file=result_file,
-            trigdat_file=self._trigdat_path,
+            results_file=result_file,
         )
         #
         result_path = os.path.join(base_job, f"trigdat_{version}_fit_result.yml")
         result_reader.save_result_yml(result_path)
 
-        create_corner_all_plot(
-            post_equal_weights_path,
-            model=self._spectrum,
-            save_path=os.path.join(base_job, "plots", "all_corner_plot.png"),
-        )
         template = [
             "grb",
             "ra",
@@ -282,8 +292,8 @@ class RunMorgoth:
             result_reader.ra[1],
             result_reader.dec[0],
             result_reader.dec[1],
-            result_reader._balrog_one_sig_err_circle,
-            result_reader._balrog_two_sig_err_circle,
+            result_reader.balrog_1_sigma,
+            result_reader.balrog_2_sigma,
             self._grb.position.ra.deg,
             self._grb.position.dec.deg,
             SkyCoord(
@@ -334,7 +344,7 @@ class RunEffAreaMorgoth(RunMorgoth):
             with open(self._bkg_yaml, "r") as f:
                 data = yaml.safe_load(f)
                 data["use_dets"] = list(
-                    map(name_to_id, self._grb.detector_selection.good_dets)
+                    map(name2id, self._grb.detector_selection.good_dets)
                 )
             with open(self._bkg_yaml, "w") as f:
                 yaml.safe_dump(data, f)
@@ -344,7 +354,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         path_to_python = morgoth_config["multinest"]["path_to_python"]
 
         fit_script_path = pkg_resources.resource_filename(
-            "fierywhip", "utils/fit_morgoth_eff_area.py"
+            "fierywhip", "model/utils/fit_morgoth_eff_area.py"
         )
         grb_obj_path = os.path.join(
             base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"
@@ -365,7 +375,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         else:
             run_fit = True
             p = subprocess.check_output(
-                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum}",
+                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._long_grb)}",
                 shell=True,
                 env=env,
                 stdin=subprocess.PIPE,

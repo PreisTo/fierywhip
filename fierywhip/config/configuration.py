@@ -5,12 +5,12 @@ import pkg_resources
 import os
 
 external_config = False
-# if pkg_resources.resource_filename("fierywhip", "config/config.yml") is not None:
-#     with open(
-#         pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
-#     ) as f:
-#         structure = yaml.safe_load(f)
-#         external_config = True
+if pkg_resources.resource_filename("fierywhip", "config/config.yml") is not None:
+    with open(
+        pkg_resources.resource_filename("fierywhip", "config/config.yml"), "r"
+    ) as f:
+        structure = yaml.safe_load(f)
+        external_config = True
 
 # else:
 #     pass
@@ -31,7 +31,7 @@ if not external_config:
     structure["swift"] = True
     structure["det_sel"] = {}
     structure["det_sel"]["mode"] = "max_sig"
-    structure["det_sel"]["exclude_blocked_dets"] = True
+    structure["det_sel"]["exclude_blocked_dets"] = False
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = False
     structure["timeselection"]["store_and_reload"] = False

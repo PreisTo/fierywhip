@@ -82,7 +82,7 @@ def id2name(id):
         return detector_list()[int(id)]
 
 
-def name_to_id(det):
+def name2id(det):
     lu = {
         "n0": 0,
         "n1": 1,

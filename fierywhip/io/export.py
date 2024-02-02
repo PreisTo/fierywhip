@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 from threeML import *
-from fierywhip.utils.detector_utils import name_to_id, detector_list
+from fierywhip.utils.detector_utils import name2id, detector_list
 from mpi4py import MPI
 import yaml
 
@@ -149,9 +149,9 @@ def matrix_from_yaml(path, exclude=[], type="significance"):
                         norm_det = d
                     else:
                         use_dets.append(d)
-                norm_id = name_to_id(norm_det)
+                norm_id = name2id(norm_det)
                 for d in use_dets:
-                    det_id = name_to_id(d)
+                    det_id = name2id(d)
                     err_neg = float(
                         res[grb]["fit"]["errors"][f"cons_{d}"]["negative_error"]
                     )

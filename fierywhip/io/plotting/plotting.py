@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 import yaml
-from fierywhip.utils.detector_utils import detector_list, nai_list, name_to_id
+from fierywhip.utils.detector_utils import detector_list, nai_list, name2id
 import math
 import os
 import matplotlib
@@ -61,7 +61,7 @@ class Plots:
             # 3 norm
             # 4 error on norm
             # TODO add det lon lat
-            res[name_to_id(d)] = [[], [], [], [], [], []]
+            res[name2id(d)] = [[], [], [], [], [], []]
             # iterate over grbs
             for g in grbs:
                 t = list(rd[g].keys())
@@ -203,7 +203,7 @@ class Plots:
         for d in det:
             num_plots = len(energies)
 
-            energy_dict = self.detectors_array[name_to_id(d)]
+            energy_dict = self.detectors_array[name2id(d)]
             if not os.path.exists(plot_path):
                 os.makedirs(plot_path)
             num_axes = math.ceil(len(energies) / num_plots)
@@ -271,7 +271,7 @@ class Plots:
             ]
             for s in sides:
                 for d in s:
-                    energy_dict = self.detectors_array[name_to_id(d)]
+                    energy_dict = self.detectors_array[name2id(d)]
                     if counter < num_plots:
                         plot_data = np.sort(energy_dict[e][0:2], axis=1)
                         axes[ax].plot(
@@ -441,7 +441,7 @@ class Plots:
     #        self.error_plot_3d()
 
     def detector_statistics(self, det, max_sep=60):
-        det_id = name_to_id(det)
+        det_id = name2id(det)
         dlist = self._detector_lists[det_id]
         vals = np.array(dlist[3])
         errors = (np.array(dlist[4]), np.array(dlist[5]))
@@ -464,7 +464,7 @@ class Plots:
         fig, axes = plt.subplots(ncols=2, nrows=6, figsize=(10, 21))
         axes = axes.flatten()
         for d in nai:
-            det_id = name_to_id(d)
+            det_id = name2id(d)
             dlist = self._detector_lists[det_id]
             err_low = dlist[4]
             err_high = dlist[5]

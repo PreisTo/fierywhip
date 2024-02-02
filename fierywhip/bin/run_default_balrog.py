@@ -6,17 +6,10 @@ from threeML.minimizer.minimization import FitFailed
 import pandas as pd
 import os
 import logging
+import sys
 
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.INFO)
-    if os.path.exists(
-        os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
-    ):
-        already_run = pd.read_csv(
-            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv"),
-        )
-    else:
-        already_run = None
+
+def default(already_run):
     excludes = []
     grb_list = GRBList(
         run_det_sel=False, check_finished=False, testing=False, reverse=False
@@ -39,8 +32,9 @@ if __name__ == "__main__":
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="bgo_sides_no_bgo",
+                        det_sel_mode="huntsville",
                         spectrum="cpl",
+                        max_trigger_duration=30,
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -54,9 +48,59 @@ if __name__ == "__main__":
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
+                    det_sel_mode="huntsville",
+                    spectrum="cpl",
+                    max_trigger_duration=30,
                     det_sel_mode="bgo_sides_no_bgo",
                     spectrum="cpl",
                 )
                 rm.run_fit()
-            except (RuntimeError, FitFailed, IndexError):
+            except (RuntimeError, FitFailed, IndexError, NotImplementedError):
                 pass
+def check_grb_fit_result(grb_name):
+    path = os.path.join(os.environ.get("GBMDATA"), grb_name, "trigdat/v00/","trigdat_v00_loc_results.fits")
+    if os.path.exists(path) and os.path.isfile(path):
+        return False
+    else:
+        return True
+
+if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.INFO)
+    if len(sys.argv) > 1:
+        grb_selection = sys.argv[1].split(",")
+    else:
+        grb_selection = None
+    if os.path.exists(
+        os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
+    ):
+        already_run = pd.read_csv(
+            os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv"),
+        )
+    else:
+        already_run = None
+    if grb_selection is None:
+        logging.info("No GRBs passed as argument - will do my usual thing")
+        default(already_run)
+    else:
+        for g in grb_selection:
+            logging.info(f"This is the grb{g}")
+            run = False
+            try:
+                if check_grb_fit_result(g):
+                    grb = GRB(name=g)
+                    run = True
+            except AttributeError:
+                logging.info(f"No swift position available, will set to ra=0 and dec=0!")
+                if check_grb_fit_result(g):
+                    grb = GRB(name=g, ra = 0, dec =0,run_det_sel = False)
+                    run = True
+            if run:
+                rm = RunEffAreaMorgoth(
+                    grb,
+                    use_eff_area=False,
+                    det_sel_mode="max_sig_triplets",
+                    spectrum="cpl",
+                    max_trigger_duration=22,
+                )
+
+                rm.run_fit()
