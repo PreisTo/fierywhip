@@ -51,6 +51,8 @@ def default(already_run):
                     det_sel_mode="huntsville",
                     spectrum="cpl",
                     max_trigger_duration=30,
+                    det_sel_mode="bgo_sides_no_bgo",
+                    spectrum="cpl",
                 )
                 rm.run_fit()
             except (RuntimeError, FitFailed, IndexError, NotImplementedError):
