@@ -145,7 +145,7 @@ class DetectorSelection:
         )
         while flag:
             det = sorted_sig[i][0]
-            if det not in use_dets:
+            if det not in use_dets and det not in ("b0", "b1"):
                 # append the high sig itself
                 logging.info(
                     f"Det {det} has a high significance - will use it for refrence"

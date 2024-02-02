@@ -32,9 +32,9 @@ def default(already_run):
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="triplets",
+                        det_sel_mode="huntsville",
                         spectrum="cpl",
-                        max_trigger_duration=22,
+                        max_trigger_duration=30,
                     )
                     rm.run_fit()
                 except (RuntimeError, FitFailed, IndexError):
@@ -48,12 +48,12 @@ def default(already_run):
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
-                    det_sel_mode="triplets",
+                    det_sel_mode="huntsville",
                     spectrum="cpl",
-                    max_trigger_duration=22,
+                    max_trigger_duration=30,
                 )
                 rm.run_fit()
-            except (RuntimeError, FitFailed, IndexError):
+            except (RuntimeError, FitFailed, IndexError, NotImplementedError):
                 pass
 def check_grb_fit_result(grb_name):
     path = os.path.join(os.environ.get("GBMDATA"), grb_name, "trigdat/v00/","trigdat_v00_loc_results.fits")
