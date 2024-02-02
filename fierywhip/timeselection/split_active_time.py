@@ -178,6 +178,8 @@ def rebinning(start, stop, obs, time_bounds):
         indices.append(np.argwhere(stop > t)[0, 0])
     indices.append(len(start) - 1)
     weights = stop - start / (stop[-1] - start[0])
+    if np.sum(weights) == 0:
+        weights = np.ones_like(len(indices)-1)
     obs_binned = []
     for i in range(len(indices) - 1):
         obs_binned.append(np.average(obs[i : i + 1], weights=weights[i : i + 1]))
