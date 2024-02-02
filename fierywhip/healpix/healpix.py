@@ -91,42 +91,49 @@ class MorgothHealpix:
         :return: probability inside the circle
         :rtype: float
         """
+        pos = ra_dec_wrapper(pos)
         vec = radec2cartesian(pos)
         ids = hp.query_disc(self._nside, vec, np.deg2rad(angle))
 
         return np.sum(self._hp_map[ids])
 
-    def sigma_radius(self, pos, sigma):
+    def sigma_radius(self, pos, sigma,step_size = 0.1):
         """
         Returns radius needed to contain Nr of sigma
+        May take some time if step_size too small
+
         :param pos: position of the center in ra/dec
         :type pos: list/tuple
         :param sigma: nr of sigma
         :type sigma: int or list
+        :param step_size: step size for which the radius is increased,
+            defaults to 0.1
+        :type step_size: float
 
         :return: radius or list of radii
         """
+        pos = ra_dec_wrapper(pos)
         probs = []
         radii = []
         p = 0
         r = 0
-        while p < 1:
+        while p < np.sum(self._hp_map):
             p = self.probability_circle(pos, r)
             probs.append(p)
             radii.append(r)
-            r += 0.1
+            r += step_size
         probs = np.array(probs)
         radii = np.array(radii)
         if type(sigma) == list:
             return_radius = []
             for s in sigma:
                 percentage = special.erf(s)
-                s_radius = radius[np.argwhere(probs >= percentage)[0, 0]]
+                s_radius = radii[np.argwhere(probs >= percentage)[0, 0]]
                 return_radius.append(s_radius)
             return return_radius
         else:
             percentage = special.erf(sigma)
-            return radius[np.argwhere(probs >= percentage)[0, 0]]
+            return radii[np.argwhere(probs >= percentage)[0, 0]]
 
     @property
     def healpix_map(self):
@@ -140,7 +147,7 @@ class MorgothHealpix:
     @classmethod
     def from_healpix_file(cls, healpix_file):
         hp_map = hp.read_map(healpix_file)
-        return cls(analyis_result=None, hp_map=hp_map)
+        return cls(analysis_result=None, hp_map=hp_map)
 
 
 def radec2cartesian(pos):
@@ -151,3 +158,25 @@ def radec2cartesian(pos):
         np.sin(pos[1]),
     ]
     return vec
+
+def ra_dec_wrapper(pos):
+    ras = pos[0]
+    decs = pos[1]
+    if type(ras) == float:
+        if ras >180:
+            ras -= 360
+        elif ras <= -180:
+            ras += 360
+        if decs > 90:
+            decs-= 180
+        elif decs <= -90:
+            decs += 180
+    else:
+        ras = np.array(ras)
+        decs = np.array(decs)
+        ras[ras>180] -= 360
+        ras[ras<=-180] += 360
+        decs[decs>90] -= 180
+        decs[decs<-90] += 180
+    return ras,decs
+
