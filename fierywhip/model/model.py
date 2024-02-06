@@ -54,7 +54,7 @@ class GRBModel:
         self._fix_position = fix_position
         self._save_lc = save_lc
         if model is not None:
-            self._model = Model
+            self._model = model
         else:
             self._setup_model()
 
