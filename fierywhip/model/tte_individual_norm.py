@@ -41,7 +41,7 @@ class GRBModelIndividualNorm(GRBModel):
     def _setup_model(self):
         ps_list = []
         dets = self.grb.detector_selection.good_dets
-k        for i, d in enumerate(dets):
+        for i, d in enumerate(dets):
             cpl = Cutoff_powerlaw()
             cpl.index_value = -1
             cpl.K.value = 10
