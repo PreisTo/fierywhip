@@ -7,6 +7,7 @@ import numpy as np
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.utils.detector_utils import id2name
 from morgoth.utils.trig_reader import TrigReader
+from morgoth.auto_loc.utils.bkg_fit import BkgFittingTrigdat
 import numpy as np
 import pandas as pd
 import pkg_resources
@@ -98,12 +99,11 @@ class DetectorSelection:
         elif self._mode == "bgo_sides":
             logging.info(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
-            self._bkg_yaml = kwargs.get("bkg_yaml", None)
-            if self._bkg_yaml is None:
-                raise ValueError("need to pass bkg_yaml for bgo_sides_no_bgo")
-            with open(self._bkg_yaml, "r") as f:
-                data = yaml.safe_load(f)
-                dets = list(map(id2name, data["use_dets"]))
+            self.grb.save_timeselection()            
+            bkg_fit = BkgFittingTrigdat(
+                "grb", "v00", self._trigdat_path, self.grb.timeselection_path
+            )
+            dets = bkg_fit.use_dets
             self._good_dets = dets
             self._normalizing_det = dets[0]
 

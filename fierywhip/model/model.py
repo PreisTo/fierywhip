@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from astromodels.functions import Powerlaw, Cutoff_powerlaw, Band
+from astromodels.functions import Powerlaw, Cutoff_powerlaw
 from astromodels.sources.point_source import PointSource
 from astromodels.functions.priors import Log_uniform_prior, Uniform_prior
 from astromodels.core.model import Model
@@ -13,20 +13,12 @@ from threeML.utils.spectrum.binned_spectrum import BinnedSpectrumWithDispersion
 from threeML.io.plotting.post_process_data_plots import (
     display_spectrum_model_counts,
 )
-from astropy.stats import bayesian_blocks
-from threeML.plugins.OGIPLike import OGIPLike
-from threeML import *
-from threeML.minimizer.minimization import FitFailed
 import os
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
-import matplotlib.pyplot as plt
-import yaml
-import numpy as np
-from fierywhip.detectors.detectors import lu
-from fierywhip.config.configuration import fierywhip_config
+from fiesdfasdfrywhip.config.configuration import fierywhip_config
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
