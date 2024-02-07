@@ -18,6 +18,7 @@ from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionEr
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from morgoth.auto_loc.time_selection import TimeSelectionBB
+from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
 from threeML.utils.progress_bar import trange
@@ -598,12 +599,35 @@ class GRB:
             stop = -float(at[-1])
         else:
             raise ValueError
-
         if stop - start > 10:
             self._long_grb = True
         else:
             self._long_grb = False
 
+    def save_timeselection(self, path=None):
+        assert self._active_time is not None, "Timeselection needs to be run before"
+        if path is None:
+            path = os.path.join(
+                os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
+            )
+
+        bkg_neg_start, bkg_neg_stop = time_splitter(self._bkg_time[0])
+        bkg_pos_start, bkg_stop_stop = time_splitter(self._bkg_time[1])
+
+        output_dict = {
+            "active_time": {
+                "start": self._active_time_start,
+                "stop": self._active_time_stop,
+            },
+            "background_time": {
+                "before": {"start": bkg_neg_start, "stop": bkg_neg_stop},
+                "after": {"start": bkg_pos_start, "stop": bkg_pos_stop},
+            },
+        }
+        with open(path, "w+") as f:
+            yaml.safe_dump(output_dict, f)
+        logging.info(f"Saved TS into path {path}")
+        self.timeselection_path = path
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
