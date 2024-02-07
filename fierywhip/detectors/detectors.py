@@ -106,7 +106,7 @@ class DetectorSelection:
             bkg_fit = BkgFittingTrigdat(
                 "grb", "v00", self._trigdat_path, self.grb.timeselection_path
             )
-            dets = id2name(bkg_fit.use_dets)
+            dets = list(map(id2name, bkg_fit.use_dets))
             self._good_dets = dets
             self._normalizing_det = dets[0]
 
