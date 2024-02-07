@@ -605,7 +605,8 @@ class GRB:
             self._long_grb = False
 
     def save_timeselection(self, path=None):
-        assert self._active_time is not None, "Timeselection needs to be run before"
+        if self._active_time is None:
+            self.run_timeselection()    
         if path is None:
             path = os.path.join(
                 os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
