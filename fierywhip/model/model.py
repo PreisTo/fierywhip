@@ -18,7 +18,7 @@ from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
-from fiesdfasdfrywhip.config.configuration import fierywhip_config
+from fierywhip.config.configuration import fierywhip_config
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
