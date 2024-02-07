@@ -614,11 +614,11 @@ class GRB:
 
         bkg_neg_start, bkg_neg_stop = time_splitter(self._bkg_time[0])
         bkg_pos_start, bkg_stop_stop = time_splitter(self._bkg_time[1])
-
+        active_time_start,active_time_stop = time_splitter(self._active_time)
         output_dict = {
             "active_time": {
-                "start": self._active_time_start,
-                "stop": self._active_time_stop,
+                "start": active_time_start,
+                "stop": active_time_stop,
             },
             "background_time": {
                 "before": {"start": bkg_neg_start, "stop": bkg_neg_stop},
