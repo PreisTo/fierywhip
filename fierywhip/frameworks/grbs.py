@@ -624,6 +624,9 @@ class GRB:
                 "before": {"start": bkg_neg_start, "stop": bkg_neg_stop},
                 "after": {"start": bkg_pos_start, "stop": bkg_pos_stop},
             },
+            "max_time": bkg_pos_stop,
+            "poly_order": -1,
+            "fine":True,
         }
         with open(path, "w+") as f:
             yaml.safe_dump(output_dict, f)
