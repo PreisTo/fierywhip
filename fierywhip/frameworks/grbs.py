@@ -613,7 +613,7 @@ class GRB:
             )
 
         bkg_neg_start, bkg_neg_stop = time_splitter(self._bkg_time[0])
-        bkg_pos_start, bkg_stop_stop = time_splitter(self._bkg_time[1])
+        bkg_pos_start, bkg_pos_stop = time_splitter(self._bkg_time[1])
         active_time_start,active_time_stop = time_splitter(self._active_time)
         output_dict = {
             "active_time": {
