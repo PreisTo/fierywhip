@@ -7,7 +7,7 @@ import numpy as np
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.utils.detector_utils import id2name
 from morgoth.utils.trig_reader import TrigReader
-from morgoth.auto_loc.utils.bkg_fit import BkgFittingTrigdat
+from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 import numpy as np
 import pandas as pd
 import pkg_resources
