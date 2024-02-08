@@ -34,9 +34,6 @@ class MorgothHealpix:
             self.create_healpix_map()
 
     def create_healpix_map(self):
-        npix = hp.nside2npix(self._nside)
-        healpix_map = np.zeros(npix)
-
         ras = self._result.samples[0]
         # have to wrap the ras to -180-180
         ras[ras > 180] -= 360
@@ -97,7 +94,7 @@ class MorgothHealpix:
 
         return np.sum(self._hp_map[ids])
 
-    def sigma_radius(self, pos, sigma,step_size = 0.1):
+    def sigma_radius(self, pos, sigma, step_size=0.1):
         """
         Returns radius needed to contain Nr of sigma
         May take some time if step_size too small
@@ -124,7 +121,7 @@ class MorgothHealpix:
             r += step_size
         probs = np.array(probs)
         radii = np.array(radii)
-        if type(sigma) == list:
+        if type(sigma) is list:
             return_radius = []
             for s in sigma:
                 percentage = special.erf(s)
@@ -159,24 +156,24 @@ def radec2cartesian(pos):
     ]
     return vec
 
+
 def ra_dec_wrapper(pos):
     ras = pos[0]
     decs = pos[1]
     if type(ras) == float:
-        if ras >180:
+        if ras > 180:
             ras -= 360
         elif ras <= -180:
             ras += 360
         if decs > 90:
-            decs-= 180
+            decs -= 180
         elif decs <= -90:
             decs += 180
     else:
         ras = np.array(ras)
         decs = np.array(decs)
-        ras[ras>180] -= 360
-        ras[ras<=-180] += 360
-        decs[decs>90] -= 180
-        decs[decs<-90] += 180
-    return ras,decs
-
+        ras[ras > 180] -= 360
+        ras[ras <= -180] += 360
+        decs[decs > 90] -= 180
+        decs[decs < -90] += 180
+    return ras, decs
