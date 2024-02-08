@@ -34,7 +34,7 @@ class GRBModelIndividualNorm(GRBModel):
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements("40-700")
-                spectrum_like.assign_to_source(f"grb_{d})
+                spectrum_like.assign_to_source(f"grb_{d}")
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
@@ -75,6 +75,7 @@ class GRBModelIndividualNorm(GRBModel):
             ps_list.append(ps)
         self._model = Model(*ps_list)
         print(self._model.display())
+        self._model.save('/home/tpreis/model.yml', overwrite=True)
         for j, d in enumerate(dets[1:]):
             for p in [
                 "position.ra",
