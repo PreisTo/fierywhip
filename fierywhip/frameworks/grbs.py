@@ -444,6 +444,8 @@ class GRB:
         """
         :returns: DetectorSelection object for this grb
         """
+        if not hasattr(self, "_detector_selection"):
+            self._get_detector_selection()
         return self._detector_selection
 
     @property
@@ -606,7 +608,7 @@ class GRB:
 
     def save_timeselection(self, path=None):
         if self._active_time is None:
-            self.run_timeselection()    
+            self.run_timeselection()
         if path is None:
             path = os.path.join(
                 os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
@@ -614,7 +616,7 @@ class GRB:
 
         bkg_neg_start, bkg_neg_stop = time_splitter(self._bkg_time[0])
         bkg_pos_start, bkg_pos_stop = time_splitter(self._bkg_time[1])
-        active_time_start,active_time_stop = time_splitter(self._active_time)
+        active_time_start, active_time_stop = time_splitter(self._active_time)
         output_dict = {
             "active_time": {
                 "start": active_time_start,
@@ -626,12 +628,13 @@ class GRB:
             },
             "max_time": bkg_pos_stop,
             "poly_order": -1,
-            "fine":True,
+            "fine": True,
         }
         with open(path, "w+") as f:
             yaml.safe_dump(output_dict, f)
         logging.info(f"Saved TS into path {path}")
         self.timeselection_path = path
+
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
