@@ -16,6 +16,7 @@ class GRBModelIndividualNorm(GRBModel):
         super().__init__(grb, fix_position=False, save_lc=True)
 
     def _to_plugin(self):
+        self.grb.download_files()
         active_time = self.grb.active_time
         active_time = active_time.split("-")
         if len(active_time) == 2:
