@@ -6,11 +6,14 @@ from astromodels.functions import Cutoff_powerlaw
 from astromodels.sources.point_source import PointSource
 from astromodels.core.model import Model
 from astromodels.functions.priors import Log_uniform_prior, Uniform_prior
+from gbm_drm_gen.io.balrog_like import BALROGLike
+from threeML.data_list import DataList
+import os
 
 
 class GRBModelIndividualNorm(GRBModel):
     def __init__(self, grb: GRB):
-        super().__init__(self, fix_position=False, save_lc=True)
+        super().__init__(grb, fix_position=False, save_lc=True)
 
     def _to_plugin(self):
         active_time = self.grb.active_time
@@ -28,15 +31,32 @@ class GRBModelIndividualNorm(GRBModel):
         response_time = (float(start) + float(stop)) / 2
         spectrum_likes = []
         for d in self.grb.detector_selection.good_dets:
-            spectrum_like = self._timeseries[d].to_spectrumlike()
             if self._timeseries[d]._name not in ("b0", "b1"):
+                spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements("40-700")
+                spectrum_likes.append(spectrum_like)
             else:
+                spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements("300-30000")
-
-            spectrum_like.assign_to_source("grb_{d}")
-            spectrum_likes.append(spectrum_like)
-        self._data_list = DataList(*spectrum_likes)
+                spectrum_likes.append(spectrum_like)
+        balrog_likes = []
+        print(f"We are going to use {self.grb.detector_selection.good_dets}")
+        for i, d in enumerate(self.grb.detector_selection.good_dets):
+            bl = BALROGLike.from_spectrumlike(
+                spectrum_likes[i],
+                response_time,
+                self._responses[d],
+                free_position=True,
+            )
+            balrog_likes.append(bl)
+        self._data_list = DataList(*balrog_likes)
+        if self._save_lc:
+            for d in self.grb.detector_selection.good_dets:
+                fig = self._timeseries[d].view_lightcurve()
+                plot_path = os.path.join(self._base_dir, self.grb.name, "lightcurves/")
+                if not os.path.exists(plot_path):
+                    os.makedirs(plot_path)
+                fig.savefig(os.path.join(plot_path, f"{d}.pdf"))
 
     def _setup_model(self):
         ps_list = []
