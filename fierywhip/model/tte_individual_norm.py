@@ -80,5 +80,5 @@ class GRBModelIndividualNorm(GRBModel):
                 "spectrum.Cutoff_powerlaw.xc",
             ]:
                 exec(
-                    f"self._model.link(self._model.grb_{d}.{p},self._model._grb_{dets[0]}.{p})"
+                    f"self._model.link(self._model.grb_{d}.{p},self._model.grb_{dets[0]}.{p})"
                 )
