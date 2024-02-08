@@ -66,7 +66,7 @@ class GRBModelIndividualNorm(GRBModel):
             cpl.index_value = -1
             cpl.K.value = 10
             cpl.xc.value = 300
-            cpl.index.set_uniformative_prior(Uniform_prior)
+            cpl.index.prior = Uniform_prior(lower_bound=-8, upper_bound=8)
             cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=10e3)
             cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10e4)
             ps = PointSource(f"grb_{d}", ra=0.0, dec=0.0, spectral_shape=cpl)
