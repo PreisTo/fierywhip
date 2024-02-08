@@ -35,7 +35,7 @@ class GRBModelIndividualNorm(GRBModel):
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
                 spectrum_like.set_active_measurements("40-700")
-                spectrum_like.assign_to_source(f"grb_{d})
+                spectrum_like.assign_to_source(f"grb_{d}")
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
@@ -80,8 +80,8 @@ class GRBModelIndividualNorm(GRBModel):
             for p in [
                 "position.ra",
                 "position.dec",
-                "spectrum.Cutoff_powerlaw.index",
-                "spectrum.Cutoff_powerlaw.xc",
+                "spectrum.main.Cutoff_powerlaw.index",
+                "spectrum.main.Cutoff_powerlaw.xc",
             ]:
                 exec(
                     f"self._model.link(self._model.grb_{d}.{p},self._model.grb_{dets[0]}.{p})"

@@ -21,7 +21,7 @@ def old():
 
 
 def run_individual_norms():
-    grb_list = GRBList()
+    grb_list = GRBList(run_det_sel = False)
     for grb in grb_list.grbs:
         model = GRBModelIndividualNorm(grb)
         exporter = Exporter(model)
