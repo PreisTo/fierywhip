@@ -75,13 +75,12 @@ class GRBModelIndividualNorm(GRBModel):
             ps_list.append(ps)
         self._model = Model(*ps_list)
         print(self._model.display())
-        self._model.save('/home/tpreis/model.yml', overwrite=True)
         for j, d in enumerate(dets[1:]):
             for p in [
                 "position.ra",
                 "position.dec",
-                "spectrum.Cutoff_powerlaw.index",
-                "spectrum.Cutoff_powerlaw.xc",
+                "spectrum.main.Cutoff_powerlaw.index",
+                "spectrum.main.Cutoff_powerlaw.xc",
             ]:
                 exec(
                     f"self._model.link(self._model.grb_{d}.{p},self._model.grb_{dets[0]}.{p})"
