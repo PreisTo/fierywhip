@@ -45,6 +45,7 @@ class GRBModelIndividualNorm(GRBModel):
         balrog_likes = []
         print(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
+            print(spectrum_likes[i].name)
             bl = BALROGLike.from_spectrumlike(
                 spectrum_likes[i],
                 response_time,
