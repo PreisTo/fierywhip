@@ -2,13 +2,22 @@
 
 from fierywhip.model.model import GRBModel
 from fierywhip.frameworks.grbs import GRB
+from fierywhip.config.configuration import fierywhip_config
 from astromodels.functions import Cutoff_powerlaw
 from astromodels.sources.point_source import PointSource
 from astromodels.core.model import Model
-from astromodels.functions.priors import Log_uniform_prior, Uniform_prior
+from astromodels.functions.priors import Log_uniform_prior, Uniform_prior, Cosine_Prior
 from gbm_drm_gen.io.balrog_like import BALROGLike
+from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from threeML.data_list import DataList
+from threeML.bayesian.bayesian_analysis import BayesianResults, BayesianAnalysis
+from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 import os
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
 
 class GRBModelIndividualNorm(GRBModel):
@@ -46,12 +55,24 @@ class GRBModelIndividualNorm(GRBModel):
         print(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
             print(spectrum_likes[i].name)
-            bl = BALROGLike.from_spectrumlike(
-                spectrum_likes[i],
-                response_time,
-                self._responses[d],
-                free_position=True,
+
+            response = BALROG_DRM(self._responses[d], 0.0, 0.0)
+            spectrum_likes[i]._observed_spectrum._response = response
+            spectrum_likes[i]._observed_spectrum._response.set_time(response_time)
+            bl = DispersionSpectrumLike(
+                spectrum_likes[i].name,
+                spectrum_likes[i]._observed_spectrum,
+                spectrum_likes[i]._background_spectrum,
+                True,
             )
+            # bl = BALROGLike.from_spectrumlike(
+            #     spectrum_likes[i],
+            #     response_time,
+            #     self._responses[d],
+            #     free_position=True,
+            # )
+            # TODO switch to DispersionSpectrumLike and create DRM - set
+            # response at spectrum_like._observed_spectrum,
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
@@ -69,14 +90,29 @@ class GRBModelIndividualNorm(GRBModel):
             cpl = Cutoff_powerlaw()
             cpl.index_value = -1
             cpl.K.value = 10
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1e3)
             cpl.xc.value = 300
-            cpl.index.prior = Uniform_prior(lower_bound=-8, upper_bound=8)
-            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=10e3)
-            cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10e4)
             ps = PointSource(f"grb_{d}", ra=0.0, dec=0.0, spectral_shape=cpl)
             ps_list.append(ps)
         self._model = Model(*ps_list)
         print(self._model.display())
+        exec(
+            f"self._model.grb_{dets[0]}.position.ra.prior"
+            + " = Uniform_prior(lower_bound=0,upper_bound=360)"
+        )
+        exec(
+            f"self._model.grb_{dets[0]}.position.dec.prior"
+            + " = Cosine_Prior(lower_bound=-90,upper_bound=90)"
+        )
+        exec(
+            f"self._model.grb_{dets[0]}.spectrum.main.Cutoff_powerlaw.index.prior"
+            + " = Uniform_prior(lower_bound=-8,upper_bound=8)"
+        )
+        exec(
+            f"self._model.grb_{dets[0]}.spectrum.main.Cutoff_powerlaw.xc.prior"
+            + " = Log_uniform_prior(lower_bound=10,upper_bound=1e4)"
+        )
+
         for j, d in enumerate(dets[1:]):
             for p in [
                 "position.ra",
@@ -85,5 +121,36 @@ class GRBModelIndividualNorm(GRBModel):
                 "spectrum.main.Cutoff_powerlaw.xc",
             ]:
                 exec(
-                    f"self._model.link(self._model.grb_{d}.{p},self._model.grb_{dets[0]}.{p})"
+                    f"self._model.link(self._model.grb_{d}.{p}"
+                    + f",self._model.grb_{dets[0]}.{p})"
                 )
+
+    def fit(self):
+        print("Starting the Fit")
+        self._bayes = BayesianAnalysis(self._model, self._data_list)
+        # wrap for ra angle
+        wrap = [0] * len(self._model.free_parameters)
+        wrap[0] = 1
+
+        # define temp chain save path
+        self._temp_chains_dir = self._base_dir
+        chain_path = os.path.join(self._temp_chains_dir, "chain_")
+
+        # Make temp chains folder if it does not exists already
+        if rank == 0:
+            if not os.path.exists(self._temp_chains_dir):
+                os.makedirs(os.path.join(self._temp_chains_dir))
+
+        # use multinest to sample the posterior
+        # set main_path+trigger to whatever you want to use
+
+        self._bayes.set_sampler("multinest", share_spectrum=True)
+        self._bayes.sampler.setup(
+            n_live_points=fierywhip_config.live_points,
+            chain_name=chain_path,
+            wrapped_params=wrap,
+            verbose=True,
+        )
+        self._bayes.sample()
+        self._results = self._bayes.results
+        self._results.data_list = self._data_list
