@@ -24,7 +24,6 @@ def run_individual_norms():
     grb_list = GRBList(run_det_sel=False)
     for grb in grb_list.grbs:
         model = GRBModelIndividualNorm(grb)
-        model.fit()
         exporter = Exporter(model)
         exporter.export_yaml()
 
