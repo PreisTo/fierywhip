@@ -27,8 +27,7 @@ def run_individual_norms():
     for grb in grb_list.grbs:
         grb_yaml = grb.save_grb(os.path.join(os.environ.get("GBMDATA"),"dumpy_dump.yml"))
         fit_script = pkg_resources.resource_filename("fierywhip", "utils/tte_fit.py")
-        subprocess.check_output("mpiexec -n 8 --bind-to core python
-            {fit_script} {grb_yaml}", shell=True, env=os.environ, stdin=subprocess.PIPE)
+        subprocess.check_output("mpiexec -n 8 --bind-to core python {fit_script} {grb_yaml}", shell=True, env=os.environ, stdin=subprocess.PIPE)
 
 
 if __name__ == "__main__":
