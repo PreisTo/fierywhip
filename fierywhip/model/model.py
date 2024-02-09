@@ -41,8 +41,9 @@ class GRBModel:
         self.grb = grb
         self._yaml_path = base_dir
         self._base_dir = os.path.join(base_dir, self.grb.name)
-        if not os.path.exists(self._base_dir):
-            os.makedirs(self._base_dir)
+        if rank == 0:
+            if not os.path.exists(self._base_dir):
+                os.makedirs(self._base_dir)
         self._fix_position = fix_position
         self._save_lc = save_lc
         if model is not None:
