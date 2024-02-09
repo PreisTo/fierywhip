@@ -5,10 +5,9 @@ from fierywhip.model.model import GRBModel
 from fierywhip.io.export import Exporter
 from threeML.minimizer.minimization import FitFailed
 from fierywhip.model.tte_individual_norm import GRBModelIndividualNorm
-from mpi4py import MPI
-comm = MPI.COMM_WORLD
-size = comm.Get_size()
-rank = comm.Get_rank()
+import subprocess
+import pkg_resources
+import os
 
 def old():
     grb_list = GRBList()
@@ -24,17 +23,12 @@ def old():
 
 
 def run_individual_norms():
-    if rank == 0:
-        grb_list = GRBList(run_det_sel=False)
-    else:
-        print(f"Hello i am rank {rank}")
-        grb_list = None
-    grb_list = comm.bcast(grb_list,root = 0)
-    comm.Barrier()
+    grb_list = GRBList(run_det_sel=False)
     for grb in grb_list.grbs:
-        model = GRBModelIndividualNorm(grb)
-        exporter = Exporter(model)
-        exporter.export_yaml()
+        grb_yaml = grb.save_grb(os.path.join(os.environ.get("GBMDATA"),"dumpy_dump.yml"))
+        fit_script = pkg_resources.resource_filename("fierywhip", "utils/tte_fit.py")
+        subprocess.check_output("mpiexec -n 8 --bind-to core python
+            {fit_script} {grb_yaml}", shell=True, env=os.environ, stdin=subprocess.PIPE)
 
 
 if __name__ == "__main__":
