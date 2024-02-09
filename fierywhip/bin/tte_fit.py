@@ -5,7 +5,10 @@ from fierywhip.model.model import GRBModel
 from fierywhip.io.export import Exporter
 from threeML.minimizer.minimization import FitFailed
 from fierywhip.model.tte_individual_norm import GRBModelIndividualNorm
-
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+size = comm.Get_size()
+rank = comm.Get_rank()
 
 def old():
     grb_list = GRBList()
@@ -21,7 +24,13 @@ def old():
 
 
 def run_individual_norms():
-    grb_list = GRBList(run_det_sel=False)
+    if rank == 0:
+        grb_list = GRBList(run_det_sel=False)
+    else:
+        print(f"Hello i am rank {rank}")
+        grb_list = None
+    grb_list = comm.bcast(grb_list,root = 0)
+    comm.Barrier()
     for grb in grb_list.grbs:
         model = GRBModelIndividualNorm(grb)
         exporter = Exporter(model)
