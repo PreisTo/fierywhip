@@ -673,6 +673,7 @@ class GRB:
 
         with open(path, "w+") as f:
             yaml.safe_dump(export_dict, f)
+        return path
 
     @classmethod
     def grb_from_file(cls, path):
