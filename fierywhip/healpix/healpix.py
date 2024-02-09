@@ -55,7 +55,8 @@ class MorgothHealpix:
 
         # create the numpy array and set the probabilites
         hp_map = np.zeros(hp.nside2npix(self._nside))
-        hp_map[ids] = prob
+        for j, i in enumerate(ids):
+            hp_map[i] += prob[j]
         # normalize this shit
         hp_map = hp_map / np.sum(hp_map)
 
