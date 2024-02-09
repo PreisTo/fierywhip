@@ -100,10 +100,13 @@ class GRBModelIndividualNorm(GRBModel):
             f"self._model.grb_{dets[0]}.position.ra.prior"
             + " = Uniform_prior(lower_bound=0,upper_bound=360)"
         )
+        exec(f"self._model.grb_{dets[0]}.position.ra.fix=False")
+
         exec(
             f"self._model.grb_{dets[0]}.position.dec.prior"
             + " = Cosine_Prior(lower_bound=-90,upper_bound=90)"
         )
+        exec(f"self._model.grb_{dets[0]}.position.dec.fix=False")
         exec(
             f"self._model.grb_{dets[0]}.spectrum.main.Cutoff_powerlaw.index.prior"
             + " = Uniform_prior(lower_bound=-8,upper_bound=8)"
