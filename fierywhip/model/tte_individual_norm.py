@@ -152,5 +152,6 @@ class GRBModelIndividualNorm(GRBModel):
             verbose=True,
         )
         self._bayes.sample()
-        self._results = self._bayes.results
-        self._results.data_list = self._data_list
+        if rank == 0:
+            self._results = self._bayes.results
+            self._results.data_list = self._data_list
