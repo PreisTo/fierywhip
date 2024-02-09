@@ -29,6 +29,8 @@ def run_individual_norms():
         grb_yaml = grb.save_grb(
             os.path.join(os.environ.get("GBMDATA"), "dumpy_dump.yml")
         )
+        grb_yaml = os.path.join(os.environ.get("GBMDATA"), "dumpy_dump.yml")
+
         fit_script = pkg_resources.resource_filename("fierywhip", "utils/tte_fit.py")
         print(fit_script)
         subprocess.check_output(
