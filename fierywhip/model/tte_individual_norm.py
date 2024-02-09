@@ -158,3 +158,6 @@ class GRBModelIndividualNorm(GRBModel):
         if rank == 0:
             self._results = self._bayes.results
             self._results.data_list = self._data_list
+            self._results.write_to(os.path.join(self._temp_chains_dir,"results.fits,"results.fits""))
+            fig = self._results.corner_plot()
+            fig.savefig(os.path.join(self._temp_chains_dir,"corner.png"))
