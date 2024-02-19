@@ -173,7 +173,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             elif det_sel_mode == "all":
                 self._grb._get_detector_selection(mode=det_sel_mode)
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.use_dets
+                self._use_dets = self._grb.detector_selection.good_dets
                 logging.info("Using all those beautiful scintillation dets")
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
