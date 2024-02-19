@@ -114,6 +114,10 @@ class DetectorSelection:
             logging.info(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_huntsville()
+        elif self._mode == "all":
+            logging.info(f"Running detector selection mode {self._mode}")
+            self._good_dets = lu
+            self._normalizing_det = "n0"
         else:
             raise NotImplementedError("Mode not implemented")
 
