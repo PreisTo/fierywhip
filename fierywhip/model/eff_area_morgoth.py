@@ -172,6 +172,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         self._bkg_fit_files = data1["bkg_fit_files"]
             elif det_sel_mode == "all":
                 self._grb._get_detector_selection(mode=det_sel_mode)
+                with open(bkg_fit_yaml_file, "r") as f:
+                    data = yaml.safe_load(f)
+                    self._bkg_fit_files = data["bkg_fit_files"]
+
                 self._normalizing_det = self._grb.detector_selection.normalizing_det
                 self._use_dets = self._grb.detector_selection.good_dets
                 logging.info("Using all those beautiful scintillation dets")
