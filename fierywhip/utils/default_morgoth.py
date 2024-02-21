@@ -139,7 +139,7 @@ class RunMorgoth:
                     "w+",
                 ) as f:
                     yaml.safe_dump(temp, f)
-
+            
         try:
             os.makedirs(os.path.join(base_dir, self._grb.name))
         except FileExistsError:
@@ -163,6 +163,8 @@ class RunMorgoth:
             self._long_grb = True
         else:
             self._long_grb = False
+        self._grb._active_time = self._tsbb.active_time
+        self._grb._bkg_time = [self._tsbb.background_time_neg, self._tsbb.background_time_pos]
         self._grb.is_long_grb(self._long_grb)
         return ts_available
 
