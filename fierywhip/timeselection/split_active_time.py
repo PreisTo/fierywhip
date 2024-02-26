@@ -101,8 +101,8 @@ def calculate_active_time_splits(
     split.append(at_start)
     split.extend(r)
     split.append(at_stop)
-    durations = split[1:] - split[:-1]
-    for start_split, stop_split, d in (split[:-1], split[1:], durations):
+    durations = np.array(split[1:]) - np.array(split[:-1])
+    for start_split, stop_split, d in zip(split[:-1], split[1:], durations):
         if d > max_drm_time and len(split) - 1 <= max_nr_responses:
             split.append(start_split + d / 2)
     split = sorted(split)
