@@ -19,6 +19,7 @@ from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
 from fierywhip.config.configuration import fierywhip_config
+import logging
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -28,6 +29,7 @@ rank = comm.Get_rank()
 class GRBModel:
     """
     Class for modeling, setting up the data and fitting the GRB
+    Only for TTE data!
     """
 
     def __init__(
@@ -62,7 +64,7 @@ class GRBModel:
         temp_timeseries = {}
         temp_responses = {}
         for d in self.grb.detector_selection.good_dets:
-            print(f"Calculating Response for {d}")
+            logging.info(f"Calculating Response for {d}")
             response = BALROG_DRM(
                 DRMGenTTE(
                     tte_file=self.grb.tte_files[d],
@@ -131,7 +133,7 @@ class GRBModel:
                 spectrum_like.set_active_measurements("300-30000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
-        print(f"We are going to use {self.grb.detector_selection.good_dets}")
+        logging.info(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
             bl = BALROGLike.from_spectrumlike(
                 spectrum_likes[i],
@@ -180,7 +182,7 @@ class GRBModel:
         )
 
     def fit(self):
-        print("Starting the Fit")
+        logging.info("Starting the Fit")
         self._bayes = BayesianAnalysis(self._model, self._data_list)
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)

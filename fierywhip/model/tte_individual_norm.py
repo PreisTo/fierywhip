@@ -7,13 +7,13 @@ from astromodels.functions import Cutoff_powerlaw
 from astromodels.sources.point_source import PointSource
 from astromodels.core.model import Model
 from astromodels.functions.priors import Log_uniform_prior, Uniform_prior, Cosine_Prior
-from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from threeML.data_list import DataList
 from threeML.bayesian.bayesian_analysis import BayesianResults, BayesianAnalysis
 from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 import os
 from mpi4py import MPI
+import logging
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -21,6 +21,8 @@ size = comm.Get_size()
 
 
 class GRBModelIndividualNorm(GRBModel):
+    """Individual Norms/Amplitudes for the Spectra of the TTE Fits"""
+
     def __init__(self, grb: GRB):
         grb.download_files()
         super().__init__(grb, fix_position=False, save_lc=True)
@@ -52,9 +54,9 @@ class GRBModelIndividualNorm(GRBModel):
                 spectrum_like.assign_to_source(f"grb_{d}")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
-        print(f"We are going to use {self.grb.detector_selection.good_dets}")
+        logging.info(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
-            print(spectrum_likes[i].name)
+            logging.debug(spectrum_likes[i].name)
 
             response = BALROG_DRM(self._responses[d], 0.0, 0.0)
             spectrum_likes[i]._observed_spectrum._response = response
@@ -65,14 +67,6 @@ class GRBModelIndividualNorm(GRBModel):
                 spectrum_likes[i]._background_spectrum,
                 True,
             )
-            # bl = BALROGLike.from_spectrumlike(
-            #     spectrum_likes[i],
-            #     response_time,
-            #     self._responses[d],
-            #     free_position=True,
-            # )
-            # TODO switch to DispersionSpectrumLike and create DRM - set
-            # response at spectrum_like._observed_spectrum,
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
@@ -95,7 +89,10 @@ class GRBModelIndividualNorm(GRBModel):
             ps = PointSource(f"grb_{d}", ra=0.0, dec=0.0, spectral_shape=cpl)
             ps_list.append(ps)
         self._model = Model(*ps_list)
-        print(self._model.display())
+        logging.debug(self._model.display())
+
+        # Link the position parameters as well as the spectral ones, except the
+        # amplitude/norm one
         exec(
             f"self._model.grb_{dets[0]}.position.ra.prior"
             + " = Uniform_prior(lower_bound=0,upper_bound=360)"
@@ -129,7 +126,7 @@ class GRBModelIndividualNorm(GRBModel):
                 )
 
     def fit(self):
-        print("Starting the Fit")
+        logging.info("Starting the Fit")
         self._bayes = BayesianAnalysis(self._model, self._data_list)
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)

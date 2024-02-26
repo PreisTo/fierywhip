@@ -17,7 +17,6 @@ from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.timeselection.timeselection import TimeSelectionNew
-from morgoth.auto_loc.time_selection import TimeSelectionBB
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
@@ -537,7 +536,7 @@ class GRB:
                     ]
                 else:
                     try:
-                        tsbb = TimeSelectionBB(
+                        tsbb = TimeSelectionNew(
                             self._name, self._trigdat, fine=True, **kwargs
                         )
                         self._active_time = tsbb.active_time

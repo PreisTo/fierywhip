@@ -384,6 +384,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             self._bkg_fit_files,
             self._use_dets,
             grb=self._grb_name,
+            max_nr_responses=2,
         )
         self._define_model(self._spectrum_model)
         self._setup_plugins()
