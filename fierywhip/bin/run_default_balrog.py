@@ -31,7 +31,7 @@ def default(already_run):
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,
-                        det_sel_mode="all",
+                        det_sel_mode="max_sig_triplets",
                         spectrum="cpl",
                         max_trigger_duration=30,
                     )
@@ -47,7 +47,7 @@ def default(already_run):
                 rm = RunEffAreaMorgoth(
                     g,
                     use_eff_area=False,
-                    det_sel_mode="all",
+                    det_sel_mode="max_sig_triplets",
                     spectrum="cpl",
                     max_trigger_duration=30,
                 )
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 rm = RunEffAreaMorgoth(
                     grb,
                     use_eff_area=False,
-                    det_sel_mode="all",
+                    det_sel_mode="max_sig_triplets",
                     spectrum="cpl",
                     max_trigger_duration=22,
                 )
