@@ -28,7 +28,6 @@ def default(already_run):
             ):
                 logging.info(f"Starting Morgoth for {g.name}")
                 try:
-                    # rm = RunMorgoth(g,spectrum = "pl")
                     rm = RunEffAreaMorgoth(
                         g,
                         use_eff_area=False,

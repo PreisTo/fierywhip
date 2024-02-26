@@ -298,7 +298,6 @@ class TimeSelectionNew(TimeSelection):
             min_sig = means + (maxs - means) * 0.2
         tstart = self._tstart
         tstop = self._tstop
-        flag = True
         ts_start = np.argmax(obs)
         ts_stop = np.argmax(obs)
         duration = tstop[ts_stop] - tstart[ts_start]

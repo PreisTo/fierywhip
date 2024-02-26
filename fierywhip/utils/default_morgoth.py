@@ -13,7 +13,6 @@ from fierywhip.utils.result_reader import ResultReader
 from morgoth.utils.env import get_env_value
 from morgoth.utils.trig_reader import TrigReader
 from morgoth.trigger import GBMTriggerFile
-from morgoth.auto_loc.time_selection import TimeSelectionKnown
 from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
