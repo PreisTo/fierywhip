@@ -15,7 +15,6 @@ from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
-from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
@@ -511,95 +510,14 @@ class GRB:
         """
         Timeselection for GRB using morogth auto_loc timeselection
         """
-        if fierywhip_config.timeselection.store_and_reload:
-            flag = False
-            if self._active_time is None and self._bkg_time is None:
-                if os.path.exists(
-                    os.path.join(
-                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                    )
-                ):
-                    with open(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        ),
-                        "r",
-                    ) as f:
-                        ts = yaml.safe_load(f)
-                    if self._name in ts.keys():
-                        flag = True
-                if flag:
-                    self._active_time = ts[self._name]["active_time"]
-                    self._bkg_time = [
-                        ts[self._name]["bkg_neg"],
-                        ts[self._name]["bkg_pos"],
-                    ]
-                else:
-                    try:
-                        tsbb = TimeSelectionNew(
-                            self._name, self._trigdat, fine=True, **kwargs
-                        )
-                        self._active_time = tsbb.active_time
-                        self._bkg_time = [
-                            tsbb.background_time_neg,
-                            tsbb.background_time_pos,
-                        ]
-                    except Exception as e:
-                        raise GRBInitError(str(e))
-                if fierywhip_config.timeselection.save and flag is not True:
-                    if os.path.exists(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        )
-                    ):
-                        with open(
-                            os.path.join(
-                                os.environ.get("GBMDATA"),
-                                "localizing/timeselections.yml",
-                            ),
-                            "r",
-                        ) as f:
-                            ts = yaml.safe_load(f)
-                    else:
-                        ts = {}
-                    try:
-                        os.makedirs(
-                            os.path.join(os.environ.get("GBMDATA"), "localizing")
-                        )
-                    except FileExistsError:
-                        pass
-                    with open(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        ),
-                        "w+",
-                    ) as f:
-                        ts[self._name] = {
-                            "active_time": self._active_time,
-                            "bkg_neg": self._bkg_time[0],
-                            "bkg_pos": self._bkg_time[1],
-                        }
-                        yaml.safe_dump(ts, f)
-        else:
-            if self._active_time is None:
-                tsbb = TimeSelectionNew(
-                    name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
-                )
-                self._active_time = tsbb.active_time
-                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+        if self._active_time is None:
+            tsbb = TimeSelectionNew(
+                name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
+            )
+            self._active_time = tsbb.active_time
+            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
-        at = self._active_time.split("-")
-        if len(at) == 2:
-            start = float(at[0])
-            stop = float(at[-1])
-        elif len(at) == 3:
-            start = -float(at[1])
-            stop = float(at[-1])
-        elif len(at) == 4:
-            start = -float(at[1])
-            stop = -float(at[-1])
-        else:
-            raise ValueError
+        start, stop = time_splitter(self._active_time.split("-"))
         if stop - start > 10:
             self._long_grb = True
         else:
