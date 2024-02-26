@@ -246,9 +246,7 @@ class TimeSelectionNew(TimeSelection):
 
         obs_significance = rates
         bkg_significance = bkg
-        # TODO use correct significance here (property of BALROGLike)
-        # significance_object = Significance(obs_significance, bkg_significance)
-        # sig = significance_object.li_and_ma()
+
         sig[self._tstart < self._trigger_zone_active_start] = 0
         sig[self._tstart > self._trigger_zone_active_stop] = 0
         obs_significance[self._tstart < self._trigger_zone_active_start] = 0
@@ -266,7 +264,10 @@ class TimeSelectionNew(TimeSelection):
                 reason_new,
                 min_sig_new,
             ) = self._select_active_time_algorithm(
-                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor,max_trigger_duration = self._max_trigger_duration
+                sig,
+                obs_significance,
+                min_sig=min_sig * self._sig_reduce_factor,
+                max_trigger_duration=self._max_trigger_duration,
             )
             if at_stop_new - at_start_new > at_stop - at_start:
                 at_start = at_start_new

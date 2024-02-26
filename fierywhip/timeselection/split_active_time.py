@@ -21,6 +21,31 @@ def calculate_active_time_splits(
     max_nr_responses=3,
     min_bin_width=0.064,
 ):
+    """
+    Splits an active time interval using ruptures
+
+    :param trigdat_file: path to trigdat file
+    :type trigdat_file: str
+    :param active_time: the active time string
+    :type active_time: str
+    :param bkg_fit_files: list of path to bkg_fit_files
+    :type bkg_fit_files: list
+    :param use_dets: the dets used for fitting
+    :type use_dets: list
+    :param max_drm_time: maximum time a single split shall last
+    :type max_drm_time: float
+    :param min_drm_time: minimum time a single split shall last
+    :type min_drm_time: float
+    :param max_nr_responses: maximum allowed splits
+    :type max_nr_responses: int
+    :param min_bin_width: min time an original time bin is long,
+        needed for ruptures changepoint detection, defaults to 0.064
+    :type min_bin_width: float
+
+    :returns: splits
+    :rtype: list
+    """
+
     split = []
     success_restore = False
     i = 0
@@ -56,6 +81,17 @@ def calculate_active_time_splits(
         """
         Rebinns CPS into smaller bins with the min time resolution for the
         changepoint selection to use
+
+        :param start: start times
+        :type start: array-like
+        :param stop: stop times
+        :type stop: array-like
+        :param vals: observational data
+        :type vals: array-like
+        :param bin_width: minimum bin width, defaults to 0.064s
+
+        :returns: new_times,new_vals
+        :rtype: tuple
         """
         new_times = np.zeros(np.sum((stop - start) // bin_width).astype(int) + 1)
         new_vals = np.zeros(np.sum((stop - start) // bin_width).astype(int) + 1)
@@ -76,6 +112,8 @@ def calculate_active_time_splits(
         return new_times, new_vals
 
     at_start, at_stop = time_splitter(active_time)
+
+    # just use the active time interval
     mask = np.zeros_like(start).astype(bool)
     mask[np.argwhere(start >= at_start)[0, 0] : np.argwhere(start > at_stop)[0, 0]] = (
         True
@@ -95,6 +133,7 @@ def calculate_active_time_splits(
         if t[-i] == 0:
             faulty.append(t.shape[0] - 1 - i)
 
+    # remove end split
     if len(v) in r:
         r = r[:-1]
 
@@ -110,6 +149,18 @@ def calculate_active_time_splits(
 
 
 def save_lightcurves(trigreader, splits, grb, path=None):
+    """
+    Save the lightcuves and mark the active_time splits
+
+    :param trigreader: trigreader object
+    :type trigreader: TrigReader
+    :param splits: list of active_time splits including start and stop
+    :type splits: array-like
+    :param grb: name of grb
+    :type grb: str
+    :param path: save path, defaults to $GBM_TRIGGER_DATA_DIR/grb/trigdat/v00/lc
+    :type path: path-like
+    """
     # TODO set x_lim
     if path is None:
         path = os.path.join(
@@ -138,6 +189,20 @@ def save_lightcurves(trigreader, splits, grb, path=None):
 
 
 def rebinning(start, stop, obs, time_bounds):
+    """
+    rebinns the times and observational data according to new bins
+    :param start: start times
+    :type start: array-like
+    :param stop: stop times
+    :type stop: array-like
+    :param obs: observational data
+    :type obs: array-like
+    :param time_bounds: new bin-bounds
+    :type time_boudns: array-like
+
+    :returns: times_binned,obs-binned,width_binned
+    :rtype: tuple
+    """
     times_binned = list(time_bounds)
     # find the correspondingin indices
     indices = [0]
@@ -156,6 +221,10 @@ def rebinning(start, stop, obs, time_bounds):
 
 
 def time_splitter(time: str):
+    """
+    Small helper function splitting a time string start-stop
+    into two floats and returns them
+    """
     splitted_time = time.split("-")
     if len(splitted_time) == 2:
         return float(splitted_time[0]), float(splitted_time[1])

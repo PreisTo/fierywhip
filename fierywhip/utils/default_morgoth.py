@@ -1,50 +1,36 @@
 #!/usr/bin/env python3
-
 import warnings
-
-warnings.filterwarnings("ignore")
-import matplotlib.pyplot as plt
 from threeML import update_logging_level
-
-update_logging_level("CRITICAL")
 from gbmgeometry.utils.gbm_time import GBMTime
-import shutil
 import os
-from shutil import copyfile
 from datetime import datetime
 import yaml
 import pandas as pd
 import morgoth
 import pkg_resources
 from morgoth.configuration import morgoth_config
-
-# from morgoth.utils.result_reader import ResultReader, get_best_fit_with_errors
 from fierywhip.utils.result_reader import ResultReader
-from morgoth.utils.env import get_env_value
-from morgoth.utils import file_utils
-from morgoth.utils.download_file import BackgroundDownload
 from morgoth.utils.env import get_env_value
 from morgoth.utils.trig_reader import TrigReader
 from morgoth.trigger import GBMTriggerFile
-from morgoth.auto_loc.time_selection import TimeSelectionBB, TimeSelectionKnown
+from morgoth.auto_loc.time_selection import TimeSelectionKnown
 from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
-from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.frameworks.grbs import GRB
-from fierywhip.model.eff_area_morgoth import MultinestFitTrigdatEffArea
 from fierywhip.utils.detector_utils import name2id
 from fierywhip.timeselection.timeselection import TimeSelectionNew
+from fierywhip.timeselection.split_active_time import time_splitter
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
-import astropy.io.fits as fits
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
-from datetime import datetime
 import subprocess
 import numpy as np
 import logging
 
+update_logging_level("CRITICAL")
+warnings.filterwarnings("ignore")
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 siez = comm.Get_size()
@@ -54,22 +40,33 @@ result_csv = os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_resul
 
 
 class RunMorgoth:
+    """
+    Class that runs all relevant Morgoth Tasks
+    Not compatible with different Detector selections
+    """
+
     def __init__(self, grb: GRB = None, **kwargs):
+        """
+        Init the RunMorgoth Object
+        :param grb: GRB object
+        :type grb: fierywhip.frameworks.grbs.GRB
+        :param **kwargs: spectrum, max_trigger_duration
+        """
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
         self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
-        run_ts = self.timeselection()
+        self.timeselection()
         stop_ts = datetime.now()
-        if not run_ts:
-            self._runtime_ts = float((stop_ts - start_ts).total_seconds())
-        else:
-            self._runtime_ts = np.nan
+        self._runtime_ts = float((stop_ts - start_ts).total_seconds())
         self.fit_background()
 
     def run_fit(self):
+        """
+        Runs the Fit on the RunMorgoth object and analyzes it afterwards
+        """
         logging.info("Starting Fit")
         start_fit = datetime.now()
         run_fit = self.fit()
@@ -82,7 +79,19 @@ class RunMorgoth:
         self.analyze()
 
     def timeselection(self):
-        ts_available = False
+        """
+        Runs the Timeselection for the GRB
+        """
+        self._tsbb = TimeSelectionNew(
+            name=self._grb.name,
+            trigdat_file=self._trigdat_path,
+            fine=True,
+            min_trigger_duration=0.064,  # Thats one fine bin
+            max_trigger_duration=self._max_trigger_duration,
+            min_bkg_time=45,
+        )
+        logging.info("Done TimeSelectionNew")
+
         if os.path.exists(
             os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
         ):
@@ -92,83 +101,44 @@ class RunMorgoth:
                 ),
                 "r",
             ) as f:
-                ts_dict = yaml.safe_load(f)
-            if self._grb.name in ts_dict.keys():
-                ts_available = True
-        ts_available = False
-        if ts_available:
-            self._tsbb = TimeSelectionKnown(
-                active_time=ts_dict[self._grb.name]["active_time"],
-                background_time_neg=ts_dict[self._grb.name]["bkg_neg"],
-                background_time_pos=ts_dict[self._grb.name]["bkg_pos"],
-                max_time=float(ts_dict[self._grb.name]["bkg_pos"].split("-")[-1]),
-                fine=True,
-            )
-            logging.info("Done TimeSelectionKnown")
+                temp = yaml.safe_load(f)
         else:
-            self._tsbb = TimeSelectionNew(
-                name=self._grb.name,
-                trigdat_file=self._trigdat_path,
-                fine=True,
-                min_trigger_duration=0.064,
-                max_trigger_duration=self._max_trigger_duration,
-                min_bkg_time=45,
-            )
-            logging.info("Done TimeSelectionNew")
-            if os.path.exists(
-                os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
-            ):
-                with open(
-                    os.path.join(
-                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                    ),
-                    "r",
-                ) as f:
-                    temp = yaml.safe_load(f)
-            else:
-                temp = {}
-            temp[self._grb.name] = {}
-            temp[self._grb.name]["active_time"] = self._tsbb.active_time
-            temp[self._grb.name]["bkg_neg"] = self._tsbb.background_time_neg
-            temp[self._grb.name]["bkg_pos"] = self._tsbb.background_time_pos
-            if fierywhip_config.timeselection.save:
-                with open(
-                    os.path.join(
-                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                    ),
-                    "w+",
-                ) as f:
-                    yaml.safe_dump(temp, f)
-            
+            temp = {}
+        temp[self._grb.name] = {}
+        temp[self._grb.name]["active_time"] = self._tsbb.active_time
+        temp[self._grb.name]["bkg_neg"] = self._tsbb.background_time_neg
+        temp[self._grb.name]["bkg_pos"] = self._tsbb.background_time_pos
+        if fierywhip_config.timeselection.save:
+            with open(
+                os.path.join(
+                    os.environ.get("GBMDATA"), "localizing/timeselections.yml"
+                ),
+                "w+",
+            ) as f:
+                yaml.safe_dump(temp, f)
+
         try:
             os.makedirs(os.path.join(base_dir, self._grb.name))
         except FileExistsError:
             pass
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
-        at = self._tsbb.active_time
-        at = at.split("-")
-        if len(at) == 2:
-            start = float(at[0])
-            stop = float(at[1])
-        elif len(at) == 3:
-            start = -float(at[1])
-            stop = float(at[-1])
-        elif len(at) == 4:
-            start = -float(at[1])
-            stop = -float(at[-1])
-        else:
-            raise ValueError
+        start, stop = time_splitter(self._tsbb._active_time)
         if stop - start > 10:
             self._long_grb = True
         else:
             self._long_grb = False
         self._grb._active_time = self._tsbb.active_time
-        self._grb._bkg_time = [self._tsbb.background_time_neg, self._tsbb.background_time_pos]
+        self._grb._bkg_time = [
+            self._tsbb.background_time_neg,
+            self._tsbb.background_time_pos,
+        ]
         self._grb.is_long_grb(self._long_grb)
-        return ts_available
 
     def fit_background(self):
+        """
+        Fitting the Background using Morgoths BkgFittingTrigdat
+        """
         self._bkg_yaml = os.path.join(base_dir, self._grb.name, "bkg_fit.yml")
         self._bkg = BkgFittingTrigdat(
             grb_name=self._grb.name,
@@ -186,6 +156,11 @@ class RunMorgoth:
         self._bkg.save_yaml(self._bkg_yaml)
 
     def fit(self):
+        """
+        The actual fit (needs the morgoth config)
+
+        :returns: if the fit has actual been run
+        """
         ncores = str(int(morgoth_config["multinest"]["n_cores"]))
         path_to_python = morgoth_config["multinest"]["path_to_python"]
 
@@ -215,6 +190,10 @@ class RunMorgoth:
     def analyze(
         self,
     ):
+        """
+        Analyzes the result of the fit (well just reads the
+        result to be honest) and saves them to the result_csv
+        """
         version = "v00"
         result_file = os.path.join(
             base_dir,
@@ -319,6 +298,10 @@ class RunMorgoth:
 
 
 class RunEffAreaMorgoth(RunMorgoth):
+    """
+    Same as RunMorgoth but with some more configurability
+    """
+
     def __init__(
         self,
         grb: GRB = None,
@@ -336,22 +319,27 @@ class RunEffAreaMorgoth(RunMorgoth):
         self.setup_use_dets()
 
     def setup_use_dets(self):
-        if self._det_sel_mode != "default":
-            self._grb._get_detector_selection(
-                min_number_nai=6,
-                max_number_nai=6,
-                mode=self._det_sel_mode,
-                bkg_yaml=self._bkg_yaml,
+        """
+        Runs the detector selection and saves them to the bkg_fit.yml
+        """
+        self._grb._get_detector_selection(
+            min_number_nai=6,
+            max_number_nai=6,
+            mode=self._det_sel_mode,
+            bkg_yaml=self._bkg_yaml,
+        )
+        with open(self._bkg_yaml, "r") as f:
+            data = yaml.safe_load(f)
+            data["use_dets"] = list(
+                map(name2id, self._grb.detector_selection.good_dets)
             )
-            with open(self._bkg_yaml, "r") as f:
-                data = yaml.safe_load(f)
-                data["use_dets"] = list(
-                    map(name2id, self._grb.detector_selection.good_dets)
-                )
-            with open(self._bkg_yaml, "w") as f:
-                yaml.safe_dump(data, f)
+        with open(self._bkg_yaml, "w") as f:
+            yaml.safe_dump(data, f)
 
     def fit(self):
+        """
+        Runs the fit script
+        """
         ncores = str(int(morgoth_config["multinest"]["n_cores"]))
         path_to_python = morgoth_config["multinest"]["path_to_python"]
 

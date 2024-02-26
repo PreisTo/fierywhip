@@ -3,7 +3,7 @@
 import sys
 import warnings
 import logging
-from fierywhip.model.eff_area_morgoth import (
+from fierywhip.model.multinest_fit.eff_area_morgoth import (
     MultinestFitTrigdatMultipleSelections,
     MultinestFitTrigdatEffArea,
 )
@@ -21,7 +21,8 @@ try:
         size = comm.Get_size()
     else:
         using_mpi = False
-except:
+except Exception as e:
+    logging.info(f"No mpi4py available - {e}")
     using_mpi = False
 
 grb_name = sys.argv[1]

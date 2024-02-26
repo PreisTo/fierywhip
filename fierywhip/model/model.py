@@ -162,7 +162,7 @@ class GRBModel:
         setup the model using a cutoff powerlaw aka comptonized
         using values from 10.3847/1538-4357/abf24d and morgoth (github.com/grburgess/morgoth)
         """
-        cpl = Cutoff_powerlaw_Ep()
+        cpl = Cutoff_powerlaw()
         cpl.index.value = -1.1
         cpl.K.value = 1
         cpl.xp.value = 200

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import os
-from fierywhip.healpix.healpix import MorgothHealpix
+from fierywhip.io.healpix.healpix import MorgothHealpix
 import re
 import logging
 
 
 def run(path, output_path):
+    """
     ls = os.listdir(path)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
