@@ -517,7 +517,7 @@ class GRB:
             self._active_time = tsbb.active_time
             self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
-        start, stop = time_splitter(self._active_time.split("-"))
+        start, stop = time_splitter(self._active_time)
         if stop - start > 10:
             self._long_grb = True
         else:
