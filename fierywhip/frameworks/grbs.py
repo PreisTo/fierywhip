@@ -111,13 +111,13 @@ class GRBList:
     def _create_grb_objects(self):
         grbs_temp = []
         if rank == 0:
-            if type(self._testing) == bool:
+            if isinstance(self._testing, bool):
                 if self._testing:
                     stop_last = 20
                 else:
                     stop_last = len(self._table)
 
-            elif type(self._testing) == int:
+            elif isinstance(self._testing, int):
                 stop_last = self._testing
             size_per_rank = stop_last // size
         else:
@@ -361,7 +361,7 @@ class GRB:
                 index_col=False,
                 header=None,
             )
-            print(f"This is the stripped GRB name {self._name.strip('GRB')}")
+            logging.info(f"This is the stripped GRB name {self._name.strip('GRB')}")
             for j, i in swift.iterrows():
                 name = str(i.loc[0])
                 if len(name) == 8:
