@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import logging
 import sys
-
+import yaml
 
 def default(already_run):
     excludes = []
@@ -72,8 +72,18 @@ def check_grb_fit_result(grb_name):
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     if len(sys.argv) > 1:
-        grb_selection = sys.argv[1].split(",")
+        timeselection_preload = False
+        if sys.argv[1] != "-f":
+            grb_selection = sys.argv[1].split(",")
+        else:
+            with open(sys.argv[2],"r") as f:
+                grb_selection = f.read().split(",")
+        if "-t" in sys.argv:
+            flag_id = sys.argv.index("-t")
+            ts = sys.argv[flag_id+1]
+            timeselection_preload= True
     else:
+        timeselection_preload = False
         grb_selection = None
     if os.path.exists(
         os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
@@ -99,15 +109,23 @@ if __name__ == "__main__":
                     f"No swift position available, will set to ra=0 and dec=0!"
                 )
                 if check_grb_fit_result(g):
-                    grb = GRB(name=g, ra=0, dec=0, run_det_sel=False)
+                    grb = GRB(name=g, ra=0, dec=0, run_det_sel=False,run_ts = ~timeselection_preload)
                     run = True
+                if timeselection_preload:
+                    with open(ts,"r") as f:
+                        ts_dict = yaml.safe_load(f)
+                        grb._active_time = f"{ts_dict['active_time']['start']}-{ts_dict['active_time']['start']}"
+                        grb._bkg_time = [
+                                f"{ts_dict['background_time']['before']['start']}-{ts_dict['background_time']['before']['start']}",
+                                f"{ts_dict['background_time']['after']['start']}-{ts_dict['background_time']['after']['start']}"
+                                ]
             if run:
                 rm = RunEffAreaMorgoth(
                     grb,
                     use_eff_area=False,
                     det_sel_mode="max_sig_triplets",
                     spectrum="cpl",
-                    max_trigger_duration=22,
+                    max_trigger_duration=30,
                 )
 
                 rm.run_fit()
