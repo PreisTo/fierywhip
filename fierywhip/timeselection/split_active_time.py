@@ -16,8 +16,8 @@ def calculate_active_time_splits(
     bkg_fit_files: list,
     use_dets: list,
     grb: str,
-    max_drm_time=11,
-    min_drm_time=1.024,
+    max_drm_time=10,
+    min_drm_time=2.048,
     max_nr_responses=3,
     min_bin_width=0.064,
 ):
@@ -136,9 +136,9 @@ def calculate_active_time_splits(
     # remove end split
     if len(v) in r:
         r = r[:-1]
-
+    tr = t[r]
     split.append(at_start)
-    split.extend(r)
+    split.extend(tr)
     split.append(at_stop)
     durations = np.array(split[1:]) - np.array(split[:-1])
     for start_split, stop_split, d in zip(split[:-1], split[1:], durations):
