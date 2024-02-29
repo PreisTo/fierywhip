@@ -527,6 +527,8 @@ class GRB:
         if self._active_time is None:
             self.run_timeselection()
         if path is None:
+            if not os.path.exists(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name)):
+                os.makedirs(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name))
             path = os.path.join(
                 os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
             )
