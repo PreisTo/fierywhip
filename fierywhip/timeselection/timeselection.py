@@ -59,6 +59,9 @@ class TimeSelectionNew(TimeSelection):
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
         self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
         self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
+
+        logging.info(f"Starting the TimeSelectionNew with following kwargs: {kwargs}")
+
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
 
