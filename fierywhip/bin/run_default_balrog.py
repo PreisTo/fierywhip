@@ -125,7 +125,7 @@ if __name__ == "__main__":
                     use_eff_area=False,
                     det_sel_mode="max_sig_triplets",
                     spectrum="cpl",
-                    max_trigger_duration=30,
+                    max_trigger_duration=16,
                 )
 
                 rm.run_fit()

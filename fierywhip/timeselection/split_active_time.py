@@ -16,9 +16,9 @@ def calculate_active_time_splits(
     bkg_fit_files: list,
     use_dets: list,
     grb: str,
-    max_drm_time=10,
+    max_drm_time=8,
     min_drm_time=2.048,
-    max_nr_responses=3,
+    max_nr_responses=2,
     min_bin_width=0.064,
 ):
     """
