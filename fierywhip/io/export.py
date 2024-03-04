@@ -31,6 +31,12 @@ lu_id = {
 
 
 class Exporter:
+    """
+    Exporter Class saving the fit results and all the relevant data
+
+    Can be used to create corner and spectrum plots
+    """
+
     def __init__(self, model):
         self._results = model.results
         self._model = model
@@ -63,6 +69,9 @@ class Exporter:
             plt.close("all")
 
     def export_yaml(self):
+        """
+        export the result to a yaml
+        """
         if rank == 0:
             df = self._results.get_data_frame("hpd")
             result_dict = self.grb.detector_selection._create_output_dict()
@@ -91,6 +100,9 @@ class Exporter:
                 yaml.dump(loaded, f)
 
     def export_matrix(self):
+        """
+        Save the effective area values to the matrix
+        """
         if rank == 0:
             res_df = self._results.get_data_frame("hpd")
 
@@ -131,6 +143,10 @@ class Exporter:
 
 
 def matrix_from_yaml(path, exclude=[], type="significance"):
+    """
+    Create the effective area correcton matrix from yaml
+    """
+
     if rank == 0:
         data = np.empty((12, 12, 3), dtype=list)
         for i in range(12):

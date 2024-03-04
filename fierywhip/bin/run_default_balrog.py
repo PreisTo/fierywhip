@@ -9,7 +9,12 @@ import logging
 import sys
 import yaml
 
+
 def default(already_run):
+    """
+    Default way to run morgoth/balrog for trigdat, when no explicit function
+    supplied
+    """
     excludes = []
     grb_list = GRBList(
         run_det_sel=False, check_finished=False, testing=False, reverse=False
@@ -57,6 +62,15 @@ def default(already_run):
 
 
 def check_grb_fit_result(grb_name):
+    """
+    Check if the .fits file created after the fit exists in the
+    default path for a given grb
+
+    :param grb_name: name of grb
+    :type grb_name: str
+
+    :return: bool True if exists and False if not
+    """
     path = os.path.join(
         os.environ.get("GBMDATA"),
         grb_name,
@@ -76,12 +90,12 @@ if __name__ == "__main__":
         if sys.argv[1] != "-f":
             grb_selection = sys.argv[1].split(",")
         else:
-            with open(sys.argv[2],"r") as f:
+            with open(sys.argv[2], "r") as f:
                 grb_selection = f.read().split(",")
         if "-t" in sys.argv:
             flag_id = sys.argv.index("-t")
-            ts = sys.argv[flag_id+1]
-            timeselection_preload= True
+            ts = sys.argv[flag_id + 1]
+            timeselection_preload = True
     else:
         timeselection_preload = False
         grb_selection = None
@@ -109,16 +123,22 @@ if __name__ == "__main__":
                     f"No swift position available, will set to ra=0 and dec=0!"
                 )
                 if check_grb_fit_result(g):
-                    grb = GRB(name=g, ra=0, dec=0, run_det_sel=False,run_ts = ~timeselection_preload)
+                    grb = GRB(
+                        name=g,
+                        ra=0,
+                        dec=0,
+                        run_det_sel=False,
+                        run_ts=~timeselection_preload,
+                    )
                     run = True
                 if timeselection_preload:
-                    with open(ts,"r") as f:
+                    with open(ts, "r") as f:
                         ts_dict = yaml.safe_load(f)
                         grb._active_time = f"{ts_dict['active_time']['start']}-{ts_dict['active_time']['start']}"
                         grb._bkg_time = [
-                                f"{ts_dict['background_time']['before']['start']}-{ts_dict['background_time']['before']['start']}",
-                                f"{ts_dict['background_time']['after']['start']}-{ts_dict['background_time']['after']['start']}"
-                                ]
+                            f"{ts_dict['background_time']['before']['start']}-{ts_dict['background_time']['before']['start']}",
+                            f"{ts_dict['background_time']['after']['start']}-{ts_dict['background_time']['after']['start']}",
+                        ]
             if run:
                 rm = RunEffAreaMorgoth(
                     grb,

@@ -61,6 +61,12 @@ class DetectorSelection:
         exclude_blocked_dets=fierywhip_config.det_sel.exclude_blocked_dets,
         **kwargs,
     ):
+        """
+        initialize the Detector selection, uses defaults value from config
+        :param grb: GRB object
+        :type grb: fierywhip.frameworks.grbs.GRB
+        """
+
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
@@ -218,7 +224,7 @@ class DetectorSelection:
             self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
-        print(sorted_sig)
+        logging.debug(sorted_sig)
         good_dets = []
         flag = True
         iterator = -1
@@ -296,7 +302,7 @@ class DetectorSelection:
                     blocked_dets = []
         else:
             blocked_dets = []
-        print(blocked_dets)
+        logging.debug(blocked_dets)
         while flag:
             det = sorted_sig[iterator][0]
             if det not in good_dets and det in lu_nai and det not in blocked_dets:
@@ -395,6 +401,9 @@ class DetectorSelection:
     def set_good_dets(self, *dets):
         """
         Manually set good dets
+
+        :param dets: list with dets
+        :type dets: list
         """
         self._good_dets = dets
 
