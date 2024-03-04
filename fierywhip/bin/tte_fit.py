@@ -9,11 +9,31 @@ import subprocess
 import pkg_resources
 import os
 import yaml
+import sys
+
+
+def passed_arguments():
+    if len(sys.argv) > 1:
+        if sys.argv[1] != "-f":
+            grb_selection = sys.argv[1].split(",")
+        else:
+            with open(sys.argv[2], "r") as f:
+                grb_selection = f.read().split(",")
+    else:
+        grb_selection = None
+    return grb_selection
 
 
 def old(ts_path=None):
-    grb_list = GRBList(run_det_sel=False)
-    for grb in grb_list.grbs:
+    selection = passed_arguments()
+    if selection is None:
+        grb_list = GRBList(run_det_sel=False)
+        run_list = grb_list.grbs
+    else:
+        run_list = []
+        for s in selection:
+            run_list.append(GRB(name=s, run_det_sel=False))
+    for grb in run_list:
         grb.timeselection_from_yaml(
             os.path.join(ts_path, grb.name, "timeselection.yml")
         )
