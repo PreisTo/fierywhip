@@ -7,6 +7,11 @@ from threeML.plugins.DispersionSpectrumLike import DispersionSpectrumLike
 
 
 class BALROGLikeMultiple(BALROGLike):
+    """
+    Class that adapts BALROGLike from gbm_drm_gen (Burgess et al., 2018)
+    also see github.com/grburgess/gbm_drm_gen for this
+    """
+
     def __init__(
         self,
         name,

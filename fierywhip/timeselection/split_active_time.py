@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-from astropy.stats.bayesian_blocks import bayesian_blocks
+# from astropy.stats.bayesian_blocks import bayesian_blocks
 from morgoth.utils.trig_reader import TrigReader
 from fierywhip.utils.detector_utils import name2id
-import logging
+
+# import logging
 import numpy as np
 import os
+import ruptures as rpt
 
 
 def calculate_active_time_splits(
@@ -14,9 +16,36 @@ def calculate_active_time_splits(
     bkg_fit_files: list,
     use_dets: list,
     grb: str,
-    max_drm_time=11,
-    min_drm_time=1.024,
+    max_drm_time=8,
+    min_drm_time=2.048,
+    max_nr_responses=2,
+    min_bin_width=0.064,
 ):
+    """
+    Splits an active time interval using ruptures
+
+    :param trigdat_file: path to trigdat file
+    :type trigdat_file: str
+    :param active_time: the active time string
+    :type active_time: str
+    :param bkg_fit_files: list of path to bkg_fit_files
+    :type bkg_fit_files: list
+    :param use_dets: the dets used for fitting
+    :type use_dets: list
+    :param max_drm_time: maximum time a single split shall last
+    :type max_drm_time: float
+    :param min_drm_time: minimum time a single split shall last
+    :type min_drm_time: float
+    :param max_nr_responses: maximum allowed splits
+    :type max_nr_responses: int
+    :param min_bin_width: min time an original time bin is long,
+        needed for ruptures changepoint detection, defaults to 0.064
+    :type min_bin_width: float
+
+    :returns: splits
+    :rtype: list
+    """
+
     split = []
     success_restore = False
     i = 0
@@ -30,7 +59,7 @@ def calculate_active_time_splits(
             )
             success_restore = True
             i = 0
-        except Exception as e:
+        except Exception:
             import time
 
             time.sleep(1)
@@ -41,112 +70,97 @@ def calculate_active_time_splits(
 
     trig_reader.set_active_time_interval(active_time)
     cps, bkg = trig_reader.observed_and_background()
-    start, stop = trig_reader.tstart_tstop()
-    assert len(start) == len(cps[0]), "len of times and count rates notmatching"
-    mask = np.zeros_like(cps[0], dtype=int)
-    trigger_start = 0
-    trigger_stop = 0
-    at = active_time.split("-")
-    if len(at) == 2:
-        trigger_start = float(at[0])
-        trigger_stop = float(at[-1])
-    elif len(at) == 3:
-        trigger_start = -float(at[1])
-        trigger_stop = float(at[-1])
-    elif len(at) == 4:
-        trigger_start = -float(at[1])
-        trigger_stop = -float(at[-1])
-    else:
-        raise ValueError
-    mask[
-        np.argwhere(start >= trigger_start)[0, 0] : np.argwhere(start > trigger_stop)[
-            0, 0
-        ]
-    ] = 1
-    mask = mask.astype(bool)
-    cps_tmp = np.empty(len(cps[0]), dtype=float)
+    cps_new = np.zeros_like(cps[0])
+    # adding up all the dets we will use
     for d in use_dets:
         i = name2id(d)
-        cps_tmp += cps[i]
-    cps = cps_tmp
-    res = bayesian_blocks(start[mask], cps[mask].astype(int), fitness="events")
-    bayesian_blocks_res = rebinning(start[mask], stop[mask], cps[mask], res)
-    # calculate the jumps between the return
-    jumps = {}
-    for i in range(len(bayesian_blocks_res[0])):
-        if i != 0:
-            jumps[str(i)] = bayesian_blocks_res[1][i] / bayesian_blocks_res[1][i - 1]
-        else:
-            jumps[str(i)] = 1
+        cps_new += cps[i]
+    start, stop = trig_reader.tstart_tstop()
 
-    jumps_sorted = sorted(jumps.items(), key=lambda item: item[-1])
+    def rebinning_changepoints(start, stop, vals, bin_width=min_bin_width):
+        """
+        Rebinns CPS into smaller bins with the min time resolution for the
+        changepoint selection to use
 
-    splits = [trigger_start, trigger_stop]
+        :param start: start times
+        :type start: array-like
+        :param stop: stop times
+        :type stop: array-like
+        :param vals: observational data
+        :type vals: array-like
+        :param bin_width: minimum bin width, defaults to 0.064s
 
-    def get_corresponding_index(s, sl):
-        for x, e in enumerate(sl):
-            if e < s:
-                pass
+        :returns: new_times,new_vals
+        :rtype: tuple
+        """
+        new_times = np.zeros(np.sum((stop - start) // bin_width).astype(int) + 1)
+        new_vals = np.zeros(np.sum((stop - start) // bin_width).astype(int) + 1)
+        new_times_counter = 0
+        for x, y, z in zip(start, stop, vals):
+            if y - x > bin_width:
+                fine_bin_number = int((y - x) // bin_width)
+                for i in range(fine_bin_number):
+                    nt = x + i * bin_width
+                    new_times[new_times_counter] = nt
+                    new_vals[new_times_counter] = z
+                    new_times_counter += 1
+
             else:
-                return x
-        return len(sl)
+                new_times[new_times_counter] = x
+                new_vals[new_times_counter] = z
+                new_times_counter += 1
+        return new_times, new_vals
 
-    jump_index = -1
-    flag = True
-    directions = 0
-    while flag:
-        add = False
-        if np.absolute(jump_index) < len(jumps_sorted):
-            ji = jumps_sorted[jump_index][0]
-        else:
-            raise IndexError
-        st = bayesian_blocks_res[0][int(ji)]
-        si = get_corresponding_index(st, splits)
-        if directions == 0:
-            add = True
-        elif directions == 1:
-            if st > buffer_st:
-                if (
-                    st - splits[si - 1] >= min_drm_time
-                    and splits[si] - st >= min_drm_time
-                ):
-                    add = True
-        elif directions == -1:
-            if st < buffer_st:
-                if (
-                    st - splits[si - 1] >= min_drm_time
-                    and splits[si] - st >= min_drm_time
-                ):
-                    add = True
+    at_start, at_stop = time_splitter(active_time)
 
-        if add:
-            if st < splits[-1] and st > splits[0]:
-                splits.insert(si, st)
-                if (
-                    st - splits[si - 1] > max_drm_time
-                    and splits[si + 1] - st <= max_drm_time
-                ):
-                    directions = -1
-                    buffer_st = st
-                elif (
-                    splits[si + 1] - st > max_drm_time
-                    and st - splits[si - 1] <= max_drm_time
-                ):
-                    directions = 1
-                    buffer_st = st
-                elif (
-                    st - splits[si - 1] > max_drm_time
-                    and splits[si - 1] - st > max_drm_time
-                ):
-                    directions = 0
-                else:
-                    flag = False
-        jump_index -= 1
-    save_lightcurves(trig_reader, splits, grb)
-    return splits
+    # just use the active time interval
+    mask = np.zeros_like(start).astype(bool)
+    mask[np.argwhere(start >= at_start)[0, 0] : np.argwhere(start > at_stop)[0, 0]] = (
+        True
+    )
+    t, v = rebinning_changepoints(start[mask], stop[mask], cps_new[mask])
+    res = rpt.Dynp(model="l2", min_size=min_drm_time // min_bin_width).fit(v)
+    flag_rpt = True
+    failed = 0
+    while flag_rpt:
+        try:
+            r = res.predict(max_nr_responses)
+            flag_rpt = False
+        except rpt.exceptions.BadSegmentationParameters:
+            failed += 1
+    faulty = []
+    for i in range(t.shape[0]):
+        if t[-i] == 0:
+            faulty.append(t.shape[0] - 1 - i)
+
+    # remove end split
+    if len(v) in r:
+        r = r[:-1]
+    tr = t[r]
+    split.append(at_start)
+    split.extend(tr)
+    split.append(at_stop)
+    durations = np.array(split[1:]) - np.array(split[:-1])
+    for start_split, stop_split, d in zip(split[:-1], split[1:], durations):
+        if d > max_drm_time and len(split) - 1 <= max_nr_responses:
+            split.append(start_split + d / 2)
+    split = sorted(split)
+    return split
 
 
 def save_lightcurves(trigreader, splits, grb, path=None):
+    """
+    Save the lightcuves and mark the active_time splits
+
+    :param trigreader: trigreader object
+    :type trigreader: TrigReader
+    :param splits: list of active_time splits including start and stop
+    :type splits: array-like
+    :param grb: name of grb
+    :type grb: str
+    :param path: save path, defaults to $GBM_TRIGGER_DATA_DIR/grb/trigdat/v00/lc
+    :type path: path-like
+    """
     # TODO set x_lim
     if path is None:
         path = os.path.join(
@@ -159,7 +173,9 @@ def save_lightcurves(trigreader, splits, grb, path=None):
     prev = bkg_intervals[0].start_time, bkg_intervals[0].stop_time
     after = bkg_intervals[1].start_time, bkg_intervals[1].stop_time
 
-    figs = trigreader.view_lightcurve(start = prev[-1]-20, stop = after[0]+20,return_plots=True)
+    figs = trigreader.view_lightcurve(
+        start=prev[-1] - 20, stop=after[0] + 20, return_plots=True
+    )
     for f in figs:
         fig = f[1]
         axes = fig.get_axes()
@@ -170,7 +186,23 @@ def save_lightcurves(trigreader, splits, grb, path=None):
         fig.savefig(
             os.path.join(path, f"{grb}_lightcurve_trigdat_detector_{f[0]}_plot_v00.png")
         )
+
+
 def rebinning(start, stop, obs, time_bounds):
+    """
+    rebinns the times and observational data according to new bins
+    :param start: start times
+    :type start: array-like
+    :param stop: stop times
+    :type stop: array-like
+    :param obs: observational data
+    :type obs: array-like
+    :param time_bounds: new bin-bounds
+    :type time_boudns: array-like
+
+    :returns: times_binned,obs-binned,width_binned
+    :rtype: tuple
+    """
     times_binned = list(time_bounds)
     # find the correspondingin indices
     indices = [0]
@@ -179,7 +211,7 @@ def rebinning(start, stop, obs, time_bounds):
     indices.append(len(start) - 1)
     weights = stop - start / (stop[-1] - start[0])
     if np.sum(weights) == 0:
-        weights = np.ones_like(len(indices)-1)
+        weights = np.ones_like(len(indices) - 1)
     obs_binned = []
     for i in range(len(indices) - 1):
         obs_binned.append(np.average(obs[i : i + 1], weights=weights[i : i + 1]))
@@ -187,11 +219,16 @@ def rebinning(start, stop, obs, time_bounds):
     times_binned.append(stop[-1])
     return times_binned, obs_binned, width_binned
 
-def time_splitter(time:str):
+
+def time_splitter(time: str):
+    """
+    Small helper function splitting a time string start-stop
+    into two floats and returns them
+    """
     splitted_time = time.split("-")
     if len(splitted_time) == 2:
-        return float(splitted_time[0]),float(splitted_time[1])
+        return float(splitted_time[0]), float(splitted_time[1])
     elif len(splitted_time) == 3:
-        return -float(splitted_time[1]),float(splitted_time[-1])
+        return -float(splitted_time[1]), float(splitted_time[-1])
     elif len(splitted_time) == 4:
-        return -float(splitted_time[1]),-float(splitted_time[-1])
+        return -float(splitted_time[1]), -float(splitted_time[-1])

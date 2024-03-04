@@ -12,6 +12,7 @@ from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
 from fierywhip.timeselection.split_active_time import calculate_active_time_splits
 import yaml
 import os
+import time
 from morgoth.utils.trig_reader import TrigReader
 from mpi4py import MPI
 import logging
@@ -170,6 +171,15 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     with open(bkg_fit_yaml_file, "r") as f:
                         data1 = yaml.safe_load(f)
                         self._bkg_fit_files = data1["bkg_fit_files"]
+            elif det_sel_mode == "all":
+                self._grb._get_detector_selection(mode=det_sel_mode)
+                with open(bkg_fit_yaml_file, "r") as f:
+                    data = yaml.safe_load(f)
+                    self._bkg_fit_files = data["bkg_fit_files"]
+
+                self._normalizing_det = self._grb.detector_selection.normalizing_det
+                self._use_dets = self._grb.detector_selection.good_dets
+                logging.info("Using all those beautiful scintillation dets")
             else:
                 raise NotImplementedError("det_sel_mode not supported (yet)")
             self.setup_essentials()
@@ -186,7 +196,6 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
                 super().setup_essentials()
-
     def setup_essentials(self):
         with open(self._bkg_fit_yaml_file, "r") as f:
             data = yaml.safe_load(f)
@@ -375,6 +384,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             self._bkg_fit_files,
             self._use_dets,
             grb=self._grb_name,
+            max_nr_responses=1,
         )
         self._define_model(self._spectrum_model)
         self._setup_plugins()
@@ -455,16 +465,18 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             # we define a point source model using the spectrum we just specified
             ps1 = PointSource("first", ra=0.0, dec=0.0, spectral_shape=cpl1)
             ps_list.append(ps1)
-
-            cpl2 = Cutoff_powerlaw()
-            cpl2.K.max_value = 10**4
-            cpl2.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
-            cpl2.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-            cpl2.index.set_uninformative_prior(Uniform_prior)
-            # we define a point source model using the spectrum we just specified
-            ps2 = PointSource("second", ra=0.0, dec=0.0, spectral_shape=cpl2)
-            ps_list.append(ps2)
-
+            logging.getLogger().setLevel("INFO")
+            logging.info(f"These are the splits: {self._active_times_float}, and this the length: {len(self._active_times_float)}")
+            if len(self._active_times_float) >= 3:
+                cpl2 = Cutoff_powerlaw()
+                cpl2.K.max_value = 10**4
+                cpl2.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
+                cpl2.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
+                cpl2.index.set_uninformative_prior(Uniform_prior)
+                # we define a point source model using the spectrum we just specified
+                ps2 = PointSource("second", ra=0.0, dec=0.0, spectral_shape=cpl2)
+                ps_list.append(ps2)
+                logging.info("Added PS2")
             if len(self._active_times_float) >= 4:
                 cpl3 = Cutoff_powerlaw()
                 cpl3.K.max_value = 10**4
@@ -474,6 +486,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 # we define a point source model using the spectrum we just specified
                 ps3 = PointSource("third", ra=0.0, dec=0.0, spectral_shape=cpl3)
                 ps_list.append(ps3)
+                logging.info("Added PS3")
             if len(self._active_times_float) >= 5:
                 cpl4 = Cutoff_powerlaw()
                 cpl4.K.max_value = 10**4
@@ -483,7 +496,9 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 # we define a point source model using the spectrum we just specified
                 ps4 = PointSource("fourth", ra=0.0, dec=0.0, spectral_shape=cpl4)
                 ps_list.append(ps4)
-            else:
+                logging.info("Added PS4")
+            if len(self._active_times_float)>5:
+                logging.info(f"Wrong number of splits!!! {len(self._active_times_float)}")
                 raise NotImplementedError
             if len(self._active_times_float) == 2:
                 self._model = Model(ps1)
@@ -570,7 +585,6 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         #     )
         else:
             raise Exception("Use valid model type: cpl, pl, sbpl, band or solar_flare")
-
     def fit(self):
         """
         Fit the model to data using multinest

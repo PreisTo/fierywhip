@@ -15,9 +15,8 @@ from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
-from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.timeselection.timeselection import TimeSelectionNew
-from morgoth.auto_loc.time_selection import TimeSelectionBB
+from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
 import numpy as np
 from threeML.utils.progress_bar import trange
@@ -112,13 +111,13 @@ class GRBList:
     def _create_grb_objects(self):
         grbs_temp = []
         if rank == 0:
-            if type(self._testing) == bool:
+            if isinstance(self._testing, bool):
                 if self._testing:
                     stop_last = 20
                 else:
                     stop_last = len(self._table)
 
-            elif type(self._testing) == int:
+            elif isinstance(self._testing, int):
                 stop_last = self._testing
             size_per_rank = stop_last // size
         else:
@@ -362,7 +361,7 @@ class GRB:
                 index_col=False,
                 header=None,
             )
-            print(f"This is the stripped GRB name {self._name.strip('GRB')}")
+            logging.info(f"This is the stripped GRB name {self._name.strip('GRB')}")
             for j, i in swift.iterrows():
                 name = str(i.loc[0])
                 if len(name) == 8:
@@ -443,6 +442,8 @@ class GRB:
         """
         :returns: DetectorSelection object for this grb
         """
+        if not hasattr(self, "_detector_selection"):
+            self._get_detector_selection()
         return self._detector_selection
 
     @property
@@ -509,100 +510,49 @@ class GRB:
         """
         Timeselection for GRB using morogth auto_loc timeselection
         """
-        if fierywhip_config.timeselection.store_and_reload:
-            flag = False
-            if self._active_time is None and self._bkg_time is None:
-                if os.path.exists(
-                    os.path.join(
-                        os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                    )
-                ):
-                    with open(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        ),
-                        "r",
-                    ) as f:
-                        ts = yaml.safe_load(f)
-                    if self._name in ts.keys():
-                        flag = True
-                if flag:
-                    self._active_time = ts[self._name]["active_time"]
-                    self._bkg_time = [
-                        ts[self._name]["bkg_neg"],
-                        ts[self._name]["bkg_pos"],
-                    ]
-                else:
-                    try:
-                        tsbb = TimeSelectionBB(
-                            self._name, self._trigdat, fine=True, **kwargs
-                        )
-                        self._active_time = tsbb.active_time
-                        self._bkg_time = [
-                            tsbb.background_time_neg,
-                            tsbb.background_time_pos,
-                        ]
-                    except Exception as e:
-                        raise GRBInitError(str(e))
-                if fierywhip_config.timeselection.save and flag is not True:
-                    if os.path.exists(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        )
-                    ):
-                        with open(
-                            os.path.join(
-                                os.environ.get("GBMDATA"),
-                                "localizing/timeselections.yml",
-                            ),
-                            "r",
-                        ) as f:
-                            ts = yaml.safe_load(f)
-                    else:
-                        ts = {}
-                    try:
-                        os.makedirs(
-                            os.path.join(os.environ.get("GBMDATA"), "localizing")
-                        )
-                    except FileExistsError:
-                        pass
-                    with open(
-                        os.path.join(
-                            os.environ.get("GBMDATA"), "localizing/timeselections.yml"
-                        ),
-                        "w+",
-                    ) as f:
-                        ts[self._name] = {
-                            "active_time": self._active_time,
-                            "bkg_neg": self._bkg_time[0],
-                            "bkg_pos": self._bkg_time[1],
-                        }
-                        yaml.safe_dump(ts, f)
-        else:
-            if self._active_time is None:
-                tsbb = TimeSelectionNew(
-                    name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
-                )
-                self._active_time = tsbb.active_time
-                self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
+        if self._active_time is None:
+            tsbb = TimeSelectionNew(
+                name=self._name, trigdat_file=self._trigdat, fine=True, **kwargs
+            )
+            self._active_time = tsbb.active_time
+            self._bkg_time = [tsbb.background_time_neg, tsbb.background_time_pos]
 
-        at = self._active_time.split("-")
-        if len(at) == 2:
-            start = float(at[0])
-            stop = float(at[-1])
-        elif len(at) == 3:
-            start = -float(at[1])
-            stop = float(at[-1])
-        elif len(at) == 4:
-            start = -float(at[1])
-            stop = -float(at[-1])
-        else:
-            raise ValueError
-
+        start, stop = time_splitter(self._active_time)
         if stop - start > 10:
             self._long_grb = True
         else:
             self._long_grb = False
+
+    def save_timeselection(self, path=None):
+        if self._active_time is None:
+            self.run_timeselection()
+        if path is None:
+            if not os.path.exists(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name)):
+                os.makedirs(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name))
+            path = os.path.join(
+                os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
+            )
+
+        bkg_neg_start, bkg_neg_stop = time_splitter(self._bkg_time[0])
+        bkg_pos_start, bkg_pos_stop = time_splitter(self._bkg_time[1])
+        active_time_start, active_time_stop = time_splitter(self._active_time)
+        output_dict = {
+            "active_time": {
+                "start": active_time_start,
+                "stop": active_time_stop,
+            },
+            "background_time": {
+                "before": {"start": bkg_neg_start, "stop": bkg_neg_stop},
+                "after": {"start": bkg_pos_start, "stop": bkg_pos_stop},
+            },
+            "max_time": bkg_pos_stop,
+            "poly_order": -1,
+            "fine": True,
+        }
+        with open(path, "w+") as f:
+            yaml.safe_dump(output_dict, f)
+        logging.info(f"Saved TS into path {path}")
+        self.timeselection_path = path
 
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm
@@ -642,6 +592,7 @@ class GRB:
 
         with open(path, "w+") as f:
             yaml.safe_dump(export_dict, f)
+        return path
 
     @classmethod
     def grb_from_file(cls, path):

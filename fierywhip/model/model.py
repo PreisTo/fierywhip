@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from astromodels.functions import Powerlaw, Cutoff_powerlaw, Band
+from astromodels.functions import Powerlaw, Cutoff_powerlaw
 from astromodels.sources.point_source import PointSource
 from astromodels.functions.priors import Log_uniform_prior, Uniform_prior
 from astromodels.core.model import Model
@@ -13,20 +13,13 @@ from threeML.utils.spectrum.binned_spectrum import BinnedSpectrumWithDispersion
 from threeML.io.plotting.post_process_data_plots import (
     display_spectrum_model_counts,
 )
-from astropy.stats import bayesian_blocks
-from threeML.plugins.OGIPLike import OGIPLike
-from threeML import *
-from threeML.minimizer.minimization import FitFailed
 import os
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
-import matplotlib.pyplot as plt
-import yaml
-import numpy as np
-from fierywhip.detectors.detectors import lu
 from fierywhip.config.configuration import fierywhip_config
+import logging
 
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -36,6 +29,7 @@ rank = comm.Get_rank()
 class GRBModel:
     """
     Class for modeling, setting up the data and fitting the GRB
+    Only for TTE data!
     """
 
     def __init__(
@@ -49,12 +43,13 @@ class GRBModel:
         self.grb = grb
         self._yaml_path = base_dir
         self._base_dir = os.path.join(base_dir, self.grb.name)
-        if not os.path.exists(self._base_dir):
-            os.makedirs(self._base_dir)
+        if rank == 0:
+            if not os.path.exists(self._base_dir):
+                os.makedirs(self._base_dir)
         self._fix_position = fix_position
         self._save_lc = save_lc
         if model is not None:
-            self._model = Model
+            self._model = model
         else:
             self._setup_model()
 
@@ -69,7 +64,7 @@ class GRBModel:
         temp_timeseries = {}
         temp_responses = {}
         for d in self.grb.detector_selection.good_dets:
-            print(f"Calculating Response for {d}")
+            logging.info(f"Calculating Response for {d}")
             response = BALROG_DRM(
                 DRMGenTTE(
                     tte_file=self.grb.tte_files[d],
@@ -138,7 +133,7 @@ class GRBModel:
                 spectrum_like.set_active_measurements("300-30000")
                 spectrum_likes.append(spectrum_like)
         balrog_likes = []
-        print(f"We are going to use {self.grb.detector_selection.good_dets}")
+        logging.info(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
             bl = BALROGLike.from_spectrumlike(
                 spectrum_likes[i],
@@ -169,7 +164,7 @@ class GRBModel:
         setup the model using a cutoff powerlaw aka comptonized
         using values from 10.3847/1538-4357/abf24d and morgoth (github.com/grburgess/morgoth)
         """
-        cpl = Cutoff_powerlaw_Ep()
+        cpl = Cutoff_powerlaw()
         cpl.index.value = -1.1
         cpl.K.value = 1
         cpl.xp.value = 200
@@ -187,7 +182,7 @@ class GRBModel:
         )
 
     def fit(self):
-        print("Starting the Fit")
+        logging.info("Starting the Fit")
         self._bayes = BayesianAnalysis(self._model, self._data_list)
         # wrap for ra angle
         wrap = [0] * len(self._model.free_parameters)

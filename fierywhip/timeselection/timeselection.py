@@ -59,6 +59,9 @@ class TimeSelectionNew(TimeSelection):
         self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
         self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
         self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
+
+        logging.info(f"Starting the TimeSelectionNew with following kwargs: {kwargs}")
+
         # creating trigreader object
         self._tr = TrigReader(self._trigdat_file, self._fine)
 
@@ -246,9 +249,7 @@ class TimeSelectionNew(TimeSelection):
 
         obs_significance = rates
         bkg_significance = bkg
-        # TODO use correct significance here (property of BALROGLike)
-        # significance_object = Significance(obs_significance, bkg_significance)
-        # sig = significance_object.li_and_ma()
+
         sig[self._tstart < self._trigger_zone_active_start] = 0
         sig[self._tstart > self._trigger_zone_active_stop] = 0
         obs_significance[self._tstart < self._trigger_zone_active_start] = 0
@@ -266,7 +267,10 @@ class TimeSelectionNew(TimeSelection):
                 reason_new,
                 min_sig_new,
             ) = self._select_active_time_algorithm(
-                sig, obs_significance, min_sig=min_sig * self._sig_reduce_factor,max_trigger_duration = self._max_trigger_duration
+                sig,
+                obs_significance,
+                min_sig=min_sig * self._sig_reduce_factor,
+                max_trigger_duration=self._max_trigger_duration,
             )
             if at_stop_new - at_start_new > at_stop - at_start:
                 at_start = at_start_new
@@ -297,7 +301,6 @@ class TimeSelectionNew(TimeSelection):
             min_sig = means + (maxs - means) * 0.2
         tstart = self._tstart
         tstop = self._tstop
-        flag = True
         ts_start = np.argmax(obs)
         ts_stop = np.argmax(obs)
         duration = tstop[ts_stop] - tstart[ts_start]

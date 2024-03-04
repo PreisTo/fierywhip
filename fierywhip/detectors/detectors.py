@@ -7,7 +7,7 @@ import numpy as np
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.utils.detector_utils import id2name
 from morgoth.utils.trig_reader import TrigReader
-import numpy as np
+from morgoth.auto_loc.bkg_fit import BkgFittingTrigdat
 import pandas as pd
 import pkg_resources
 import yaml
@@ -46,6 +46,10 @@ triplets = {
 
 
 class DetectorSelection:
+    """
+    Class used for selecting detectors
+    """
+
     def __init__(
         self,
         grb,
@@ -57,6 +61,12 @@ class DetectorSelection:
         exclude_blocked_dets=fierywhip_config.det_sel.exclude_blocked_dets,
         **kwargs,
     ):
+        """
+        initialize the Detector selection, uses defaults value from config
+        :param grb: GRB object
+        :type grb: fierywhip.frameworks.grbs.GRB
+        """
+
         self.grb = grb
         self._max_sep = max_sep
         self._max_sep_normalizing = max_sep_normalizing
@@ -95,10 +105,25 @@ class DetectorSelection:
                     dets.pop(dets.index("b1"))
             self._good_dets = dets
             self._normalizing_det = dets[0]
+        elif self._mode == "bgo_sides":
+            logging.info(f"Running detector selection mode {self._mode}")
+            self._trigdat_path = self.grb.trigdat
+            self.grb.save_timeselection()
+            bkg_fit = BkgFittingTrigdat(
+                "grb", "v00", self._trigdat_path, self.grb.timeselection_path
+            )
+            dets = list(map(id2name, bkg_fit.use_dets))
+            self._good_dets = dets
+            self._normalizing_det = dets[0]
+
         elif self._mode == "huntsville":
             logging.info(f"Running detector selection mode {self._mode}")
             self._trigdat_path = self.grb.trigdat
             self._set_good_dets_huntsville()
+        elif self._mode == "all":
+            logging.info(f"Running detector selection mode {self._mode}")
+            self._good_dets = lu
+            self._normalizing_det = "n0"
         else:
             raise NotImplementedError("Mode not implemented")
 
@@ -126,14 +151,10 @@ class DetectorSelection:
             trigger_start, trigger_stop = -float(split[1]), -float(split[-1])
         else:
             raise ValueError
-        trigger_start_id = np.argwhere(tstop < trigger_start)[-1, 0]
-        trigger_stop_id = np.argwhere(tstart > trigger_stop)[0, 0]
         res_dict = {}
         for d in lu:
             signs = tr.time_series[d].significance_per_interval
-            maximum = np.max(signs)
             median = np.median(signs)
-            mean = np.mean(signs)
             res_dict[d] = median
         sorted_sig = sorted(res_dict.items(), key=lambda x: x[1])
         i = -1
@@ -141,21 +162,23 @@ class DetectorSelection:
         min_percentage = 10
         use_dets = []
         logging.info(
-            f"Now setting the detector combinations which have at least {min_percentage}% occurence probability"
+            "Now setting the detector combinations which have "
+            + f"at least {min_percentage}% occurence probability"
         )
         while flag:
             det = sorted_sig[i][0]
             if det not in use_dets and det not in ("b0", "b1"):
                 # append the high sig itself
                 logging.info(
-                    f"Det {det} has a high significance - will use it for refrence"
+                    f"Det {det} has a high significance - " + "will use it for refrence"
                 )
                 use_dets.append(det)
                 temp = table.loc[det].to_dict()
                 temp_sorted = sorted(temp.items(), key=lambda x: x[1])
                 for x in temp_sorted:
                     if x[1] >= min_percentage and x[0] not in use_dets:
-                        # appending dets which have the needed visibility probability
+                        # appending dets which have the needed
+                        # visibility probability
                         use_dets.append(x[0])
             if (
                 len(use_dets) < self._min_number_nai
@@ -189,7 +212,7 @@ class DetectorSelection:
         else:
             raise ValueError
         logging.debug(
-            f"These are the trigger start {trigger_start} and stop {trigger_stop} times"
+            f"The trigger start {trigger_start} and stop {trigger_stop}" + " times"
         )
         lowerid = np.argwhere(tstart >= trigger_start)[0, 0]
         upperid = np.argwhere(tstart > trigger_stop)[0, 0]
@@ -201,7 +224,7 @@ class DetectorSelection:
             self._significances[d] = np.max(signs)
         lu_nai = lu[:-2]
         sorted_sig = sorted(self._significances.items(), key=lambda x: x[1])
-        print(sorted_sig)
+        logging.debug(sorted_sig)
         good_dets = []
         flag = True
         iterator = -1
@@ -279,7 +302,7 @@ class DetectorSelection:
                     blocked_dets = []
         else:
             blocked_dets = []
-        print(blocked_dets)
+        logging.debug(blocked_dets)
         while flag:
             det = sorted_sig[iterator][0]
             if det not in good_dets and det in lu_nai and det not in blocked_dets:
@@ -292,7 +315,7 @@ class DetectorSelection:
             ):
                 flag = False
         if self._mode == "max_sig_and_lowest":
-            logging.debug(f"Replacing")
+            logging.debug("Replacing")
             i = 0
             det = sorted_sig[i][0]
             while det not in lu_nai and det not in good_dets:
@@ -378,6 +401,9 @@ class DetectorSelection:
     def set_good_dets(self, *dets):
         """
         Manually set good dets
+
+        :param dets: list with dets
+        :type dets: list
         """
         self._good_dets = dets
 

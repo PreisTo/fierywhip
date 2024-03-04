@@ -4,8 +4,13 @@ from fierywhip.frameworks.grbs import GRB, GRBList
 from fierywhip.model.model import GRBModel
 from fierywhip.io.export import Exporter
 from threeML.minimizer.minimization import FitFailed
+from fierywhip.model.tte_individual_norm import GRBModelIndividualNorm
+import subprocess
+import pkg_resources
+import os
 
-if __name__ == "__main__":
+
+def old():
     grb_list = GRBList()
     for grb in grb_list.grbs:
         print(f"Started for {grb.name}\n\n")
@@ -16,3 +21,25 @@ if __name__ == "__main__":
             exporter.export_matrix()
         except (FitFailed, TypeError, IndexError, RuntimeError, FileNotFoundError) as e:
             print(e)
+
+
+def run_individual_norms():
+    grb_list = GRBList(run_det_sel=False)
+    for grb in grb_list.grbs:
+        grb_yaml = grb.save_grb(
+            os.path.join(os.environ.get("GBMDATA"), "dumpy_dump.yml")
+        )
+        grb_yaml = os.path.join(os.environ.get("GBMDATA"), "dumpy_dump.yml")
+
+        fit_script = pkg_resources.resource_filename("fierywhip", "utils/tte_fit.py")
+        print(fit_script)
+        subprocess.check_output(
+            f"mpiexec -n 8 --bind-to core python {fit_script} {grb_yaml}",
+            shell=True,
+            env=os.environ,
+            stdin=subprocess.PIPE,
+        )
+
+
+if __name__ == "__main__":
+    run_individual_norms()
