@@ -8,11 +8,16 @@ from fierywhip.model.tte_individual_norm import GRBModelIndividualNorm
 import subprocess
 import pkg_resources
 import os
+import yaml
 
 
-def old():
-    grb_list = GRBList()
+def old(ts_path=None):
+    grb_list = GRBList(run_det_sel=False)
     for grb in grb_list.grbs:
+        grb.timeselection_from_yaml(
+            os.path.join(ts_path, grb.name, "timeselection.yml")
+        )
+        grb.detector_selection()
         print(f"Started for {grb.name}\n\n")
         try:
             model = GRBModel(grb)
@@ -23,9 +28,12 @@ def old():
             print(e)
 
 
-def run_individual_norms():
-    grb_list = GRBList(run_det_sel=False)
+def run_individual_norms(ts_path=None):
+    grb_list = GRBList()
     for grb in grb_list.grbs:
+        grb.timeselection_from_yaml(
+            os.path.join(ts_path, grb.name, "timeselection.yml")
+        )
         grb_yaml = grb.save_grb(
             os.path.join(os.environ.get("GBMDATA"), "dumpy_dump.yml")
         )
@@ -42,4 +50,4 @@ def run_individual_norms():
 
 
 if __name__ == "__main__":
-    run_individual_norms()
+    old("/data/tpreis/GBM_TRIGGER_DATA_LONG")

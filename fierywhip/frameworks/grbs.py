@@ -527,8 +527,12 @@ class GRB:
         if self._active_time is None:
             self.run_timeselection()
         if path is None:
-            if not os.path.exists(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name)):
-                os.makedirs(os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"),self.name))
+            if not os.path.exists(
+                os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name)
+            ):
+                os.makedirs(
+                    os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name)
+                )
             path = os.path.join(
                 os.environ.get("GBM_TRIGGER_DATA_DIR"), self.name, "timeselection.yml"
             )
@@ -553,6 +557,17 @@ class GRB:
             yaml.safe_dump(output_dict, f)
         logging.info(f"Saved TS into path {path}")
         self.timeselection_path = path
+
+    def timeselection_from_yaml(self, path):
+        with open(path, "r") as f:
+            ts = yaml.safe_load(f)
+        at = ts["active_time"]
+        self._active_time = f"{at['start']}-{at['stop']}"
+        bkg_times = []
+        bkg = ts["background_time"]
+        for x in ["before", "after"]:
+            bkg_times.append(f"{bkg[x]['start']}-{bkg[x]['stop']}")
+        self._bkg_time = bkg_times
 
     def _get_effective_area_correction(self, nm):
         self._normalizing_matrix = nm
