@@ -10,7 +10,7 @@ import pkg_resources
 import os
 import yaml
 import sys
-
+import logging
 
 def passed_arguments():
     if len(sys.argv) > 1:
@@ -32,7 +32,7 @@ def old(ts_path=None):
     else:
         run_list = []
         for s in selection:
-            run_list.append(GRB(name=s, run_det_sel=False))
+            run_list.append(GRB(name=s.strip("\n"),ra = 0,dec = 0, run_det_sel=False))
     for grb in run_list:
         grb.timeselection_from_yaml(
             os.path.join(ts_path, grb.name, "timeselection.yml")
@@ -70,4 +70,5 @@ def run_individual_norms(ts_path=None):
 
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel("INFO")
     old("/data/tpreis/GBM_TRIGGER_DATA_LONG")
