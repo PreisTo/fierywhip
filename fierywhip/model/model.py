@@ -158,7 +158,7 @@ class GRBModel:
                         )
                     else:
                         bl.fix_effective_area_correction(1)
-            balrog_likes.append(bl)
+                balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
             for d in self.grb.detector_selection.good_dets:
