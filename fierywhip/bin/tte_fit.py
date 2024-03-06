@@ -51,12 +51,12 @@ def old(ts_path=None):
             grb.download_files(dets="all")
 
             gauss1 = Gaussian()
-            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=100)
-            gauss1.mu.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=30)
+            gauss1.mu.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             gauss1.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             gauss2 = Gaussian()
-            gauss2.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=100)
-            gauss2.mu.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss2.F.prior = Log_uniform_prior(lower_bound=10, upper_bound=100)
+            gauss2.mu.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             gauss2.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             total = gauss1 + gauss2
             ps = PointSource("GRB", 20, -20, spectral_shape=total)
