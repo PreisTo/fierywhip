@@ -34,16 +34,18 @@ def old(ts_path=None):
         for s in selection:
             run_list.append(GRB(name=s.strip("\n"),ra = 0,dec = 0, run_det_sel=False))
     for grb in run_list:
-        grb.timeselection_from_yaml(
-            os.path.join(ts_path, grb.name, "timeselection.yml")
-        )
-        grb.detector_selection()
+        if ts_path is not None:
+            grb.timeselection_from_yaml(
+                os.path.join(ts_path, grb.name, "timeselection.yml")
+             )
+            grb.detector_selection()
         print(f"Started for {grb.name}\n\n")
         try:
-            model = GRBModel(grb)
-            exporter = Exporter(model)
-            exporter.export_yaml()
-            exporter.export_matrix()
+            grb.download_files(dets="all")
+            model = GRBModel(grb,fix_position = False)
+#            exporter = Exporter(model)
+#            exporter.export_yaml()
+#            exporter.export_matrix()
         except (FitFailed, TypeError, IndexError, RuntimeError, FileNotFoundError) as e:
             print(e)
 
@@ -71,4 +73,4 @@ def run_individual_norms(ts_path=None):
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
-    old("/data/tpreis/GBM_TRIGGER_DATA_LONG")
+    old()

@@ -15,6 +15,7 @@ from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
+from fierywhip.utils.detector_utils import detector_list,nai_list
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
@@ -26,20 +27,9 @@ comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
 
-lu = [
-    "n0",
-    "n1",
-    "n2",
-    "n3",
-    "n4",
-    "n5",
-    "n6",
-    "n7",
-    "n8",
-    "n9",
-    "na",
-    "nb",
-]
+lu = detector_list()
+lu_nai = nai_list()
+
 month_lu = {
     "JAN": "01",
     "FEB": "02",
@@ -585,12 +575,12 @@ class GRB:
         self._normalizing_matrix = nm
         norm_det = self._detector_selection.normalizing_det
         good_dets = self._detector_selection.good_dets
-        norm_id = lu.index(norm_det)
+        norm_id = lu_nai.index(norm_det)
         row = self._normalizing_matrix[norm_id]
         eff_area_dict = {}
         for gd in good_dets:
             if gd != norm_det and gd not in ("b0", "b1"):
-                i = lu.index(gd)
+                i = lu_nai.index(gd)
                 eff_area_dict[gd] = row[i]
             else:
                 eff_area_dict[gd] = 1
