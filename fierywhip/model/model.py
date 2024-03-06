@@ -40,7 +40,9 @@ class GRBModel:
         base_dir=os.path.join(os.environ.get("GBMDATA"), "localizing"),
         fix_position=True,
         save_lc=False,
+        use_eff_area = True
     ):
+        self._use_eff_area = use_eff_area
         self.grb = grb
         self._yaml_path = base_dir
         self._base_dir = os.path.join(base_dir, self.grb.name)
@@ -142,14 +144,15 @@ class GRBModel:
                 self._responses[d],
                 free_position=free_position,
             )
-            if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
-                bl.use_effective_area_correction(
-                    min_value=fierywhip_config.eff_corr_lim_low,
-                    max_value=fierywhip_config.eff_corr_lim_high,
-                    use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
-                )
-            else:
-                bl.fix_effective_area_correction(1)
+            if self._use_eff_area:
+                if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
+                    bl.use_effective_area_correction(
+                        min_value=fierywhip_config.eff_corr_lim_low,
+                        max_value=fierywhip_config.eff_corr_lim_high,
+                        use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
+                    )
+                else:
+                    bl.fix_effective_area_correction(1)
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
