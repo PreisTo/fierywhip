@@ -11,6 +11,11 @@ import os
 import yaml
 import sys
 import logging
+from astromodels import *
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
 
 
 def passed_arguments():
@@ -43,8 +48,24 @@ def old(ts_path=None):
         print(f"Started for {grb.name}\n\n")
         try:
             grb.download_files(dets="all")
-            model = GRBModel(grb, fix_position=False, use_eff_area=False)
-            exporter = Exporter(model)
+
+            gauss1 = Gaussian()
+            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=10000)
+            gauss1.mu.prior = Uniform_prior(lower_bound=10, upper_bound=100)
+            gauss1.sigma.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss2 = Gaussian()
+            gauss2.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=10000)
+            gauss2.mu.prior = Uniform_prior(lower_bound=10, upper_bound=100)
+            gauss2.sigma.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            total = gauss1 + gauss2
+            ps = PointSource("GRB", 0, 0, spectral_shape=total)
+            spectral_model = Model(ps)
+
+            model = GRBModel(
+                grb, model=spectral_model, fix_position=False, use_eff_area=False
+            )
+            if rank == 0:
+                exporter = Exporter(model)
         #            exporter.export_yaml()
         #            exporter.export_matrix()
         except (FitFailed, TypeError, IndexError, RuntimeError, FileNotFoundError) as e:
