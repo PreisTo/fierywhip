@@ -171,7 +171,7 @@ class GRBModel:
         cpl.xc.value = 200
         cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
         cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
-        cpl.xp.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
+        cpl.xc.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
             PointSource(
