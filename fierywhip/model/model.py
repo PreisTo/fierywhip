@@ -209,8 +209,14 @@ class GRBModel:
             verbose=True,
         )
         self._bayes.sample()
-        self._results = self._bayes.results
-        self._results.data_list = self._data_list
+
+        if rank == 0:
+            self._results = self._bayes.results
+            self._results.data_list = self._data_list
+            self._results.write_to(
+                os.path.join(self._base_dir, f"{self.grb.name}.fits")
+            )
+            logging.info(f"Stored Fit result in {os.path.join(self._base_dir)}")
 
     @property
     def results(self):
