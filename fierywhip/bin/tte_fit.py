@@ -12,6 +12,7 @@ import yaml
 import sys
 import logging
 
+
 def passed_arguments():
     if len(sys.argv) > 1:
         if sys.argv[1] != "-f":
@@ -32,20 +33,20 @@ def old(ts_path=None):
     else:
         run_list = []
         for s in selection:
-            run_list.append(GRB(name=s.strip("\n"),ra = 0,dec = 0, run_det_sel=False))
+            run_list.append(GRB(name=s.strip("\n"), ra=0, dec=0, run_det_sel=False))
     for grb in run_list:
         if ts_path is not None:
             grb.timeselection_from_yaml(
                 os.path.join(ts_path, grb.name, "timeselection.yml")
-             )
+            )
             grb.detector_selection()
         print(f"Started for {grb.name}\n\n")
         try:
             grb.download_files(dets="all")
-            model = GRBModel(grb,fix_position = False)
-#            exporter = Exporter(model)
-#            exporter.export_yaml()
-#            exporter.export_matrix()
+            model = GRBModel(grb, fix_position=False, use_eff_area=False)
+            exporter = Exporter(model)
+        #            exporter.export_yaml()
+        #            exporter.export_matrix()
         except (FitFailed, TypeError, IndexError, RuntimeError, FileNotFoundError) as e:
             print(e)
 
