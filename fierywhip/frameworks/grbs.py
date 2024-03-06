@@ -14,7 +14,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
-from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
+from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError,
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
@@ -467,16 +467,28 @@ class GRB:
     def is_long_grb(self, is_it: bool):
         self._long_grb = is_it
 
-    def download_files(self):
+    def download_files(self,dets = "good_dets"):
         """
         Downloading TTE and CSPEC files from FTP
         """
         logging.info("Downloading TTE and CSPEC files")
         self.tte_files = {}
         self.cspec_files = {}
-        for d in self.detector_selection.good_dets:
-            self.tte_files[d] = download_tte_file(self._name, d)
-            self.cspec_files[d] = download_cspec_file(self._name, d)
+        if dets == "good_dets":
+            for d in self.detector_selection.good_dets:
+                self.tte_files[d] = download_tte_file(self._name, d)
+                self.cspec_files[d] = download_cspec_file(self._name, d)
+        elif dets == "all":
+            for d in lu:
+                self.tte_files[d] = download_tte_file(self._name, d)
+                self.cspec_files[d] = download_cspec_file(self._name, d)
+
+        elif isinstance(dets,list):
+            for d in dets:
+                self.tte_files[d] = download_tte_file(self._name,d)
+                self.cspec_files[d] = download_cspec_file(self._name, d)
+
+
 
     def _get_trigdat_path(self):
         """
