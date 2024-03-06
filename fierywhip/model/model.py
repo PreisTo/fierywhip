@@ -15,10 +15,12 @@ from threeML.io.plotting.post_process_data_plots import (
 )
 import os
 from gbm_drm_gen.io.balrog_like import BALROGLike
+from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
 from fierywhip.config.configuration import fierywhip_config
+from fierywhip.timeselection.split_active_time import calculate_active_time_splits
 import logging
 
 comm = MPI.COMM_WORLD
@@ -29,7 +31,6 @@ rank = comm.Get_rank()
 class GRBModel:
     """
     Class for modeling, setting up the data and fitting the GRB
-    Only for TTE data!
     """
 
     def __init__(
@@ -167,7 +168,7 @@ class GRBModel:
         cpl = Cutoff_powerlaw()
         cpl.index.value = -1.1
         cpl.K.value = 1
-        cpl.xp.value = 200
+        cpl.xc.value = 200
         cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
         cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
         cpl.xp.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
@@ -218,3 +219,99 @@ class GRBModel:
     @property
     def bayes(self):
         return self._bayes
+
+
+class GRBModelLong(GRBModel):
+    """
+    Use Multiple Responses for TTE Fit
+    """
+
+    def __init__(
+        self,
+        grb,
+        model=None,
+        base_dir=os.path.join(os.environ.get("GBMDATA"), "localizing"),
+        fix_position=False,
+        save_lc=False,
+    ):
+        super().__init__(grb, model, base_dir, fix_position, save_lc)
+
+    def _to_plugin(self):
+        if self._fix_position:
+            free_position = False
+        else:
+            free_position = True
+        active_time = self.grb.active_time
+        bkg_times = self.grb.bkg_time
+        splits = calculate_active_time_splits(
+            self.grb.trigdat,
+            active_time=active_time,
+            use_dets=self.grb.detector_selection,
+            grb=self.grb.name,
+            bkg_time_intv=bkg_times,
+        )
+        self._source_names = ["first", "second", "third", "fourth"]
+        logging.info(
+            f"This is a long GRB, we will use these times to split the active time {splits}"
+        )
+
+        spectrum_likes = []
+        balrog_likes = []
+        for l in range(len(splits) - 1):
+            response_time = splits[l] + (splits[l + 1] - splits[l]) / 2
+            for d in self.grb.detector_selection.good_dets:
+                if self._timeseries[d]._name not in ("b0", "b1"):
+                    spectrum_like = self._timeseries[d].to_spectrumlike()
+                    spectrum_like.set_active_measurements("40-700")
+                else:
+                    spectrum_like = self._timeseries[d].to_spectrumlike()
+                    spectrum_like.set_active_measurements("300-30000")
+                spectrum_likes.append(spectrum_like)
+            logging.info(f"We are going to use {self.grb.detector_selection.good_dets}")
+
+            for i, d in enumerate(self.grb.detector_selection.good_dets):
+
+                bl = BALROGLike.from_spectrumlike(
+                    spectrum_likes[i],
+                    time=response_time,
+                    free_position=free_position,
+                )
+                if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
+                    bl.use_effective_area_correction(
+                        min_value=fierywhip_config.eff_corr_lim_low,
+                        max_value=fierywhip_config.eff_corr_lim_high,
+                        use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
+                    )
+                else:
+                    bl.fix_effective_area_correction(1)
+                bl.assign_to_source(self._source_names[l])
+                balrog_likes.append(bl)
+        self._data_list = DataList(*balrog_likes)
+        if self._save_lc:
+            for d in self.grb.detector_selection.good_dets:
+                fig = self._timeseries[d].view_lightcurve()
+                plot_path = os.path.join(self._base_dir, self.grb.name, "lightcurves/")
+                if not os.path.exists(plot_path):
+                    os.makedirs(plot_path)
+                fig.savefig(os.path.join(plot_path, f"{d}.pdf"))
+
+    def _setup_model(self):
+        """
+        setup the model using a cutoff powerlaw aka comptonized
+        using values from 10.3847/1538-4357/abf24d and morgoth (github.com/grburgess/morgoth)
+        """
+        cpl1 = Cutoff_powerlaw()
+        cpl1.index.value = -1.1
+        cpl1.K.value = 1
+        cpl1.xp.value = 200
+        cpl1.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
+        cpl1.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
+        cpl1.xp.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
+        ps1 = PointSource(
+            "first",
+            self.grb.position.ra.deg,
+            self.grb.position.dec.deg,
+            spectral_shape=cpl1,
+        )
+
+        self._model = Model()
