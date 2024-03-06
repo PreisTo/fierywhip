@@ -12,6 +12,7 @@ import yaml
 import sys
 import logging
 from astromodels import *
+from astromodels.functions import Gaussian, Log_uniform_prior, Uniform_prior
 from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
@@ -50,15 +51,15 @@ def old(ts_path=None):
             grb.download_files(dets="all")
 
             gauss1 = Gaussian()
-            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=10000)
-            gauss1.mu.prior = Uniform_prior(lower_bound=10, upper_bound=100)
-            gauss1.sigma.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=100)
+            gauss1.mu.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss1.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             gauss2 = Gaussian()
-            gauss2.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=10000)
-            gauss2.mu.prior = Uniform_prior(lower_bound=10, upper_bound=100)
-            gauss2.sigma.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss2.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=100)
+            gauss2.mu.prior = Uniform_prior(lower_bound=1, upper_bound=100)
+            gauss2.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
             total = gauss1 + gauss2
-            ps = PointSource("GRB", 0, 0, spectral_shape=total)
+            ps = PointSource("GRB", 20, -20, spectral_shape=total)
             spectral_model = Model(ps)
 
             model = GRBModel(

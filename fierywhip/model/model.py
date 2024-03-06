@@ -40,7 +40,7 @@ class GRBModel:
         base_dir=os.path.join(os.environ.get("GBMDATA"), "localizing"),
         fix_position=True,
         save_lc=False,
-        use_eff_area = True
+        use_eff_area=True,
     ):
         self._use_eff_area = use_eff_area
         self.grb = grb
@@ -129,7 +129,7 @@ class GRBModel:
         for d in self.grb.detector_selection.good_dets:
             if self._timeseries[d]._name not in ("b0", "b1"):
                 spectrum_like = self._timeseries[d].to_spectrumlike()
-                spectrum_like.set_active_measurements("40-700")
+                spectrum_like.set_active_measurements("10-500")
                 spectrum_likes.append(spectrum_like)
             else:
                 spectrum_like = self._timeseries[d].to_spectrumlike()
@@ -138,21 +138,26 @@ class GRBModel:
         balrog_likes = []
         logging.info(f"We are going to use {self.grb.detector_selection.good_dets}")
         for i, d in enumerate(self.grb.detector_selection.good_dets):
-            bl = BALROGLike.from_spectrumlike(
-                spectrum_likes[i],
-                response_time,
-                self._responses[d],
-                free_position=free_position,
-            )
-            if self._use_eff_area:
-                if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
-                    bl.use_effective_area_correction(
-                        min_value=fierywhip_config.eff_corr_lim_low,
-                        max_value=fierywhip_config.eff_corr_lim_high,
-                        use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
-                    )
-                else:
-                    bl.fix_effective_area_correction(1)
+            if d not in ("b0", "b1"):
+                bl = BALROGLike.from_spectrumlike(
+                    spectrum_likes[i],
+                    response_time,
+                    self._responses[d],
+                    free_position=free_position,
+                )
+                if self._use_eff_area:
+                    if d not in (
+                        "b0",
+                        "b1",
+                        self.grb.detector_selection.normalizing_det,
+                    ):
+                        bl.use_effective_area_correction(
+                            min_value=fierywhip_config.eff_corr_lim_low,
+                            max_value=fierywhip_config.eff_corr_lim_high,
+                            use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
+                        )
+                    else:
+                        bl.fix_effective_area_correction(1)
             balrog_likes.append(bl)
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
@@ -174,7 +179,7 @@ class GRBModel:
         cpl.xc.value = 200
         cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
         cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
-        cpl.xc.prior = Uniform_prior(lower_bound=10, upper_bound=10000)
+        cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
 
         self._model = Model(
             PointSource(
