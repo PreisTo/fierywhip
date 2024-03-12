@@ -13,9 +13,10 @@ import ruptures as rpt
 def calculate_active_time_splits(
     trigdat_file: str,
     active_time: str,
-    bkg_fit_files: list,
-    use_dets: list,
-    grb: str,
+    bkg_fit_files=None,
+    bkg_time_intv=None,
+    use_dets=None,
+    grb="grb",
     max_drm_time=8,
     min_drm_time=2.048,
     max_nr_responses=2,
@@ -47,26 +48,33 @@ def calculate_active_time_splits(
     """
 
     split = []
-    success_restore = False
-    i = 0
-    while not success_restore:
-        try:
-            trig_reader = TrigReader(
-                trigdat_file,
-                fine=True,
-                verbose=False,
-                restore_poly_fit=bkg_fit_files,
-            )
-            success_restore = True
-            i = 0
-        except Exception:
-            import time
+    if bkg_fit_files is not None:
+        success_restore = False
+        i = 0
+        while not success_restore:
+            try:
+                trig_reader = TrigReader(
+                    trigdat_file,
+                    fine=True,
+                    verbose=False,
+                    restore_poly_fit=bkg_fit_files,
+                )
+                success_restore = True
+                i = 0
+            except Exception:
+                import time
 
-            time.sleep(1)
-            pass
-        i += 1
-        if i == 50:
-            raise AssertionError(f"Can not restore background fit...\n{bkg_fit_files}")
+                time.sleep(1)
+                pass
+            i += 1
+            if i == 50:
+                raise AssertionError(
+                    f"Can not restore background fit...\n{bkg_fit_files}"
+                )
+    else:
+        assert bkg_time_intv is not None, "need to at least supply bkg time interval"
+        trig_reader = TrigReader(trigdat_file, fine=True, verbose=False)
+        trig_reader.set_background_time_intervals(*bkg_time_intv)
 
     trig_reader.set_active_time_interval(active_time)
     cps, bkg = trig_reader.observed_and_background()
