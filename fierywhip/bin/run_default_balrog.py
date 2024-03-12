@@ -45,7 +45,7 @@ def check_exclude(grb: str) -> bool:
 
     excludes = []
 
-    logging.debug(f"Checking {g.name}")
+    logging.debug(f"Checking {grb}")
     if os.path.exists(
         os.path.join(os.environ.get("GBM_TRIGGER_DATA_DIR"), "morgoth_results.csv")
     ):
@@ -57,7 +57,7 @@ def check_exclude(grb: str) -> bool:
 
     if already_run is not None:
         if grb not in list(already_run["grb"]) and grb not in excludes:
-            if not check_grb_fit_result(grb):
+            if check_grb_fit_result(grb):
                 return False
 
     return True
@@ -74,7 +74,7 @@ def run_morgoth(grb):
         spectrum="cpl",
         max_trigger_duration=30,
     )
-    rm.run_morgoth()
+    rm.run_fit()
 
 
 def default():
@@ -106,11 +106,11 @@ def run_selection(grb_selection):
     :type grb_selection: list
     """
     for g in grb_selection:
-        logging.info(f"This is the grb{g}")
+        logging.debug(f"This is the grb {g}")
         if not check_exclude(g):
             try:
                 grb = GRB(name=g)
-            except AttributeERror:
+            except AttributeError:
                 logging.info(
                     "No Swift Position, but no worries we will set it to ra = dec = 0 deg"
                 )
@@ -119,6 +119,8 @@ def run_selection(grb_selection):
                 run_morgoth(grb)
             except (RuntimeError, FitFailed, IndexError):
                 pass
+        else:
+            logging.info(f"{g} was already run")
 
 
 def argv_parsing():
