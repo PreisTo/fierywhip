@@ -116,25 +116,40 @@ def run_selection(grb_selection):
                 )
                 grb = GRB(name=g, ra=0, dec=0)
             try:
-                run_fit(grb)
+                run_morgoth(grb)
             except (RuntimeError, FitFailed, IndexError):
                 pass
 
 
 def argv_parsing():
-    if sys.argv[1] != "-f":
-        grb_selection = sys.argv[1].split(",")
-    else:
-        with open(sys.argv[2], "r") as f:
-            grb_selection = f.read().split(",")
+    """
+    Check the passed args
+
+    flag -f: specify file with comma split grb names
+    or pass grb comma split grbs ! caution no whitespace
+
+    :returns: list with grb names
+    """
+    # TODO usage for config!!!
+    grb_selection = None
+    morgoth_config = {}
+    if len(sys.argv) > 1:
+        if "-c" in sys.argv:
+            config_index = sys.argv.index("-c") + 1
+            with open(sys.argv[config_index], "r") as f:
+                morgoth_config = yaml.safe_load(f)
+        if "-f" in sys.argv:
+            file_index = sys.argv.index("-f") + 1
+            with open(sys.argv[file_index], "r") as f:
+                grb_selection = f.read().split(",")
+        else:
+            grb_selection = sys.argv[1].split(",")
+    return grb_selection
 
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
-    if len(sys.argv) > 1:
-        grb_selection = argv_parsing()
-    else:
-        grb_selection = None
+    grb_selection = argv_parsing()
     if grb_selection is None:
         logging.info("No GRBs passed as argument - will do my usual thing")
         default(already_run)
