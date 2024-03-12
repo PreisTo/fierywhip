@@ -152,6 +152,6 @@ if __name__ == "__main__":
     grb_selection = argv_parsing()
     if grb_selection is None:
         logging.info("No GRBs passed as argument - will do my usual thing")
-        default(already_run)
+        default()
     else:
         run_selection(grb_selection)

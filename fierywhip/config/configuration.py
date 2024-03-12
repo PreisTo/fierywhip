@@ -1,9 +1,18 @@
 #!/usr/bin/python
 from omegaconf import OmegaConf
 import yaml
-import pkg_resources as resource
+import pkg_resources
 
 
+def save_default_to_yaml(yaml_path):
+    structure = {}
+    structure = default_timeselection(structure)
+    structure = default_det_sel(structure)
+    structure = default_data_loading(structure)
+    structure = default_fit_settings(structure)
+    structure = default_exporting(structure)
+    with open(yaml_path, "w+") as f:
+        yaml.dump(structure, f)
 def default_timeselection(structure: dict) -> dict:
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = False
@@ -54,14 +63,13 @@ def default_exporting(structure: dict) -> dict:
 
 external_config = False
 
-yaml_path = resource.resource_filename("fierywhip", "config/config.yml")
+yaml_path = pkg_resources.resource_filename("fierywhip", "config/config.yml")
 if yaml_path is not None:
     with open(yaml_path, "r") as f:
         structure = yaml.safe_load(f)
         external_config = True
 
-# else:
-#     pass
+
 if not external_config:
     structure = {}
     structure = default_timeselection(structure)
@@ -69,15 +77,6 @@ if not external_config:
     structure = default_data_loading(structure)
     structure = default_fit_settings(structure)
     structure = default_exporting(structure)
-    fierywhip_config = OmegaConf.create(structure)
+fierywhip_config = OmegaConf.create(structure)
 
 
-def save_default_to_yaml(yaml_path):
-    structure = {}
-    structure = default_timeselection(structure)
-    structure = default_det_sel(structure)
-    structure = default_data_loading(structure)
-    structure = default_fit_settings(structure)
-    structure = default_exporting(structure)
-    with open(yaml_path, "w+") as f:
-        yaml.dump(structure, f)
