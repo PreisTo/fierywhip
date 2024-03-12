@@ -77,7 +77,7 @@ def run_morgoth(grb):
     rm.run_fit()
 
 
-def default():
+def default(force):
     """
     Default way to run morgoth/balrog for trigdat, when no explicit function
     supplied
@@ -88,7 +88,7 @@ def default():
     logging.info(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
 
     for g in grb_list.grbs:
-        if not check_exclude(g.name):
+        if not check_exclude(g.name) or force:
             logging.info(f"Starting Morgoth for {g.name}")
             try:
                 run_morgoth(g)
@@ -98,7 +98,7 @@ def default():
             logging.info(f"Skipping Morgoth for {g.name}")
 
 
-def run_selection(grb_selection):
+def run_selection(grb_selection, force):
     """
     Run Morgoth for a selection of grbs
 
@@ -107,7 +107,7 @@ def run_selection(grb_selection):
     """
     for g in grb_selection:
         logging.debug(f"This is the grb {g}")
-        if not check_exclude(g):
+        if not check_exclude(g) or force:
             try:
                 grb = GRB(name=g)
             except AttributeError:
@@ -135,6 +135,7 @@ def argv_parsing():
     # TODO usage for config!!!
     grb_selection = None
     morgoth_config = {}
+    force = False
     if len(sys.argv) > 1:
         if "-c" in sys.argv:
             config_index = sys.argv.index("-c") + 1
@@ -144,16 +145,22 @@ def argv_parsing():
             file_index = sys.argv.index("-f") + 1
             with open(sys.argv[file_index], "r") as f:
                 grb_selection = f.read().split(",")
+        if "--force" in sys.argv:
+            force = True
+            logging.info("FORCE: We will not check if the GRB has already been run")
         else:
-            grb_selection = sys.argv[1].split(",")
-    return grb_selection
+            force = False
+        if "-g" in sys.argv:
+            grb_index = sys.argv.index("-g") + 1
+            grb_selection = sys.argv[grb_index].split(",")
+    return grb_selection, force
 
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
-    grb_selection = argv_parsing()
+    grb_selection, force = argv_parsing()
     if grb_selection is None:
         logging.info("No GRBs passed as argument - will do my usual thing")
-        default()
+        default(force=force)
     else:
-        run_selection(grb_selection)
+        run_selection(grb_selection, force=force)
