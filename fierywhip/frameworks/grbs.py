@@ -492,7 +492,7 @@ class GRB:
         )
         if not os.path.exists(trigdat_path):
             try:
-                download_trigdata_file(f"bn{self._name.strip('GRB')}")
+                download_trigdata_file(f"bn{self._name.strip('GRB')}".strip('\n'))
             except (TypeError, URLError):
                 raise GRBInitError
         if os.path.exists(trigdat_path):
