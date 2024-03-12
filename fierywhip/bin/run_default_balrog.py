@@ -63,10 +63,10 @@ def check_exclude(grb: str) -> bool:
     return True
 
 
-# TODO pass run config and incorporate into confi
-
-
-def run_fit(grb):
+def run_morgoth(grb):
+    """
+    Runs morgoth for a passed GRB object with the settings
+    """
     rm = RunEffAreaMorgoth(
         grb,
         use_eff_area=False,
@@ -74,7 +74,7 @@ def run_fit(grb):
         spectrum="cpl",
         max_trigger_duration=30,
     )
-    rm.run_fit()
+    rm.run_morgoth()
 
 
 def default():
@@ -91,7 +91,7 @@ def default():
         if not check_exclude(g.name):
             logging.info(f"Starting Morgoth for {g.name}")
             try:
-                run_fit(g)
+                run_morgoth(g)
             except (RuntimeError, FitFailed, IndexError):
                 pass
         else:
