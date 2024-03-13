@@ -128,7 +128,7 @@ class GRBModel:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=fierywhip_config.live_points_trigdat,
+            n_live_points=fierywhip_config.config.live_points_trigdat,
             chain_name=chain_path,
             wrapped_params=wrap,
             verbose=True,

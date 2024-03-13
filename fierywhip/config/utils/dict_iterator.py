@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import logging
+from omegaconf import OmegaConf
+
 
 def recursive_key_finder(dictionary: dict, key: str) -> (bool, str):
     """
@@ -35,3 +38,32 @@ def recursive_key_finder(dictionary: dict, key: str) -> (bool, str):
             break
 
     return found, path
+
+
+def update_config(config: OmegaConf, update_vals: dict):
+    """
+    Update given config with a dict of new vals. Key of new vals only needs to
+    be the last key, assuming unique key names
+
+    :param config: the config that needs updating
+    :type config: OmegaConf
+    :param update_vals: the vals for updating
+    :type update_vals: dict
+
+    :returns: config
+    """
+    for key in update_vals.keys():
+        flag, path = recursive_key_finder(config, key)
+        if flag:
+            path = path.split("&")
+            temp = config
+            assert key == path[-1], "Path to key does not match key"
+            for p in path:
+                # this works thanks to omegaconf assignig by
+                temp = temp[p]
+            temp = update_vals[key]
+            logging.info(f"Updated {path} with {update_vals[key]}")
+        else:
+            logging.info("The key %s was not found in the config, skipping", key)
+
+    return config

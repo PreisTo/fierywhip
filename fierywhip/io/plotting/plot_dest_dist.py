@@ -16,7 +16,7 @@ class DetDistPlot:
             os.environ.get("GBMDATA"), "localizing/det_matrix.npy"
         ),
         matrix=None,
-        lims=(fierywhip_config.eff_corr_lim_low, fierywhip_config.eff_corr_lim_high),
+        lims=(fierywhip_config.config.eff_corr_lim_low, fierywhip_config.config.eff_corr_lim_high),
         selection_plot=True,
     ):
         if matrix is None:
@@ -81,8 +81,8 @@ class DetDistPlot:
         im = ax.imshow(
             blank,
             cmap="coolwarm",
-            vmin=fierywhip_config.eff_corr_lim_low,
-            vmax=fierywhip_config.eff_corr_lim_high,
+            vmin=fierywhip_config.config.eff_corr_lim_low,
+            vmax=fierywhip_config.config.eff_corr_lim_high,
         )
         for i in range(12):
             blank[i, i] = int(np.sum(matrix[i, i]))
@@ -118,7 +118,7 @@ class DetDistPlot:
         plt.subplots_adjust(bottom=0.2, top=0.8)
         cax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
         fig.colorbar(im, cax=cax, orientation="horizontal")
-        fig.savefig(os.path.join(fierywhip_config.default_plot_path, "test.pdf"))
+        fig.savefig(os.path.join(fierywhip_config.config.default_plot_path, "test.pdf"))
         print(self._rejected)
 
     def _selection_plot(self):
@@ -142,7 +142,7 @@ class DetDistPlot:
         ax.set_xticks(range(12), labels=lu)
         ax.set_yticks(range(12), labels=lu)
         ax.set_title(
-            f"Relative Selection of dets for {total_bursts} GRBs\n Mode: {fierywhip_config.det_sel.mode}"
+            f"Relative Selection of dets for {total_bursts} GRBs\n Mode: {fierywhip_config.config.det_sel.mode}"
         )
         fig.tight_layout()
 
@@ -150,5 +150,5 @@ class DetDistPlot:
         cax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
         fig.colorbar(im, cax=cax, orientation="horizontal")
         fig.savefig(
-            os.path.join(fierywhip_config.default_plot_path, "test_selection.pdf")
+            os.path.join(fierywhip_config.config.default_plot_path, "test_selection.pdf")
         )

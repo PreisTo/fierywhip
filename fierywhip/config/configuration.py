@@ -2,81 +2,70 @@
 from omegaconf import OmegaConf
 import yaml
 import pkg_resources
+from fierywhip.config.utils.dict_iterator import recursive_key_finder
+from fierywhip.config.utils.default_config import *
+from fierywhip.config.utils.update_dict import *
+import logging
 
 
-def save_default_to_yaml(yaml_path):
-    structure = {}
-    structure = default_timeselection(structure)
-    structure = default_det_sel(structure)
-    structure = default_data_loading(structure)
-    structure = default_fit_settings(structure)
-    structure = default_exporting(structure)
-    with open(yaml_path, "w+") as f:
-        yaml.dump(structure, f)
-def default_timeselection(structure: dict) -> dict:
-    structure["timeselection"] = {}
-    structure["timeselection"]["save"] = False
-    structure["timeselection"]["store_and_reload"] = False
-    return structure
+class FierywhipConfig:
+    """
+    The Config for the whole package
+    """
 
+    def __init__(self, structure):
+        self._config = OmegaConf.create(structure)
 
-def default_fit_settings(structure: dict) -> dict:
-    structure["live_points"] = 800
-    structure["live_points_trigdat"] = 1200
-    return structure
+    def update_config(self, update_vals: dict):
+        """
+        Update given config with a dict of new vals. Key of new vals only needs to
+        be the last key, assuming unique key names
 
+        :param update_vals: the vals for updating
+        :type update_vals: dict
 
-def default_data_loading(structure: dict) -> dict:
-    structure["ipn"] = {}
-    structure["ipn"]["small"] = False
-    structure["ipn"]["full"] = False
-    structure["swift"] = True
-    structure["grb_list"] = {"create_objects": True}
-    return structure
+        :returns: config
+        """
+        new = self._config.copy()
+        for key in update_vals.keys():
+            flag, path = recursive_key_finder(self._config, key)
+            if flag:
+                path = path.split("&")
+                if len(path) == 1:
+                    new = level1(self._config.copy(), path, update_vals[key])
+                elif len(path) == 2:
+                    new = level2(self._config.copy(), path, update_vals[key])
+                elif len(path) == 3:
+                    new = level3(self._config.copy(), path, update_vals[key])
+                elif len(path) == 4:
+                    new = level4(self._config.copy(), path, update_vals[key])
 
+                logging.info(f"Updated {path} with {update_vals[key]}")
 
-def default_det_sel(structure: dict) -> dict:
-    structure["det_sel"] = {}
-    structure["det_sel"]["mode"] = "max_sig"
-    structure["det_sel"]["exclude_blocked_dets"] = False
-    structure["max_sep"] = 60
-    structure["max_sep_norm"] = 40
-    structure["max_number_det"] = 3
-    structure["min_number_det"] = 3
-    return structure
+            else:
+                logging.info("The key %s was not found in the config, creating it", key)
+                new = self._config.copy()
+                new[key] = update_vals[key]
+        self._config = OmegaConf.create(new)
 
+    @property
+    def config(self):
+        return self._config
 
-def default_eff_correction(structure: dict) -> dict:
-    structure["eff_corr_lim_low"] = 0.8
-    structure["eff_corr_lim_high"] = 1.2
-    structure["eff_corr_gaussian"] = True
-    return structure
+    @classmethod
+    def from_yaml(cls, yaml_path):
+        with open(yaml_path, "r") as f:
+            structure = yaml.safe_load(f)
+        return cls(structure)
 
+    @classmethod
+    def from_default(cls):
+        structure = default_complete()
+        return cls(structure)
 
-def default_exporting(structure: dict) -> dict:
-    structure["default_plot_path"] = None
-    structure["comparison"] = {}
-    structure["comparison"]["csv_path"] = None
-    structure["comparison"]["csv_name"] = None
-    return structure
-
-
-external_config = False
 
 yaml_path = pkg_resources.resource_filename("fierywhip", "config/config.yml")
 if yaml_path is not None:
-    with open(yaml_path, "r") as f:
-        structure = yaml.safe_load(f)
-        external_config = True
-
-
-if not external_config:
-    structure = {}
-    structure = default_timeselection(structure)
-    structure = default_det_sel(structure)
-    structure = default_data_loading(structure)
-    structure = default_fit_settings(structure)
-    structure = default_exporting(structure)
-fierywhip_config = OmegaConf.create(structure)
-
-
+    fierywhip_config = FierywhipConfig.from_yaml(yaml_path)
+else:
+    fierywhip_config = FierywhipConfig.from_default()
