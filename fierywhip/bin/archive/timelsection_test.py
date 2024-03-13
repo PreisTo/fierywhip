@@ -5,7 +5,7 @@ import yaml
 import os
 
 if __name__ == "__main__":
-    fierywhip_config.timeselection.store_and_reload = False
+    fierywhip_config.config.timeselection.store_and_reload = False
     yaml_path = os.path.join(os.environ.get("HOME"), "ts.yml")
     grblist = GRBList(run_det_sel=False, check_finished=False)
     for g in grblist.grbs:

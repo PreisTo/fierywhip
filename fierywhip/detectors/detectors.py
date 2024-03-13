@@ -53,12 +53,12 @@ class DetectorSelection:
     def __init__(
         self,
         grb,
-        max_sep=fierywhip_config.max_sep,
-        max_sep_normalizing=fierywhip_config.max_sep_norm,
-        min_number_nai=fierywhip_config.min_number_det,
-        max_number_nai=fierywhip_config.max_number_det,
-        mode=fierywhip_config.det_sel.mode,
-        exclude_blocked_dets=fierywhip_config.det_sel.exclude_blocked_dets,
+        max_sep=fierywhip_config.config.max_sep,
+        max_sep_normalizing=fierywhip_config.config.max_sep_norm,
+        min_number_nai=fierywhip_config.config.min_number_det,
+        max_number_nai=fierywhip_config.config.max_number_det,
+        mode=fierywhip_config.config.det_sel.mode,
+        exclude_blocked_dets=fierywhip_config.config.det_sel.exclude_blocked_dets,
         **kwargs,
     ):
         """
@@ -254,7 +254,6 @@ class DetectorSelection:
         tr.set_active_time_interval(self.grb.active_time)
         tr.set_background_selections(*self.grb.bkg_time)
         self._significances = {}
-        # TODO set the significance outside the trigger area zero
         tstart, tstop = tr.tstart_tstop()
         split = self.grb.active_time.split("-")
         if len(split) == 2:

@@ -13,7 +13,7 @@ import numpy as np
 
 def create_df(
     result_path=os.path.join(
-        fierywhip_config.comparison.csv_path, fierywhip_config.comparison.csv_name
+        fierywhip_config.config.comparison.csv_path, fierywhip_config.config.comparison.csv_name
     )
 ):
     result_df = None
@@ -36,8 +36,8 @@ def create_df(
 
 def save_df(
     df,
-    result_path=fierywhip_config.comparison.csv_path,
-    result_filename=fierywhip_config.comparison.csv_name,
+    result_path=fierywhip_config.config.comparison.csv_path,
+    result_filename=fierywhip_config.config.comparison.csv_name,
 ):
     if not os.path.exists(result_path):
         os.makedirs(result_path)
@@ -46,7 +46,7 @@ def save_df(
 
 result_df = create_df(
     os.path.join(
-        fierywhip_config.comparison.csv_path, fierywhip_config.comparison.csv_name
+        fierywhip_config.config.comparison.csv_path, fierywhip_config.config.comparison.csv_name
     )
 )
 

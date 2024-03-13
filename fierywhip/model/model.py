@@ -152,9 +152,9 @@ class GRBModel:
                         self.grb.detector_selection.normalizing_det,
                     ):
                         bl.use_effective_area_correction(
-                            min_value=fierywhip_config.eff_corr_lim_low,
-                            max_value=fierywhip_config.eff_corr_lim_high,
-                            use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
+                            min_value=fierywhip_config.config.eff_corr_lim_low,
+                            max_value=fierywhip_config.config.eff_corr_lim_high,
+                            use_gaussian_prior=fierywhip_config.config.eff_corr_gaussian,
                         )
                     else:
                         bl.fix_effective_area_correction(1)
@@ -211,7 +211,7 @@ class GRBModel:
 
         self._bayes.set_sampler("multinest", share_spectrum=True)
         self._bayes.sampler.setup(
-            n_live_points=fierywhip_config.live_points,
+            n_live_points=fierywhip_config.config.live_points,
             chain_name=chain_path,
             wrapped_params=wrap,
             verbose=True,
@@ -292,9 +292,9 @@ class GRBModelLong(GRBModel):
                 )
                 if d not in ("b0", "b1", self.grb.detector_selection.normalizing_det):
                     bl.use_effective_area_correction(
-                        min_value=fierywhip_config.eff_corr_lim_low,
-                        max_value=fierywhip_config.eff_corr_lim_high,
-                        use_gaussian_prior=fierywhip_config.eff_corr_gaussian,
+                        min_value=fierywhip_config.config.eff_corr_lim_low,
+                        max_value=fierywhip_config.config.eff_corr_lim_high,
+                        use_gaussian_prior=fierywhip_config.config.eff_corr_gaussian,
                     )
                 else:
                     bl.fix_effective_area_correction(1)

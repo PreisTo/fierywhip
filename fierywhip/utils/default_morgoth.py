@@ -107,7 +107,7 @@ class RunMorgoth:
         temp[self._grb.name]["active_time"] = self._tsbb.active_time
         temp[self._grb.name]["bkg_neg"] = self._tsbb.background_time_neg
         temp[self._grb.name]["bkg_pos"] = self._tsbb.background_time_pos
-        if fierywhip_config.timeselection.save:
+        if fierywhip_config.config.timeselection.save:
             with open(
                 os.path.join(
                     os.environ.get("GBMDATA"), "localizing/timeselections.yml"

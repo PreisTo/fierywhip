@@ -20,7 +20,7 @@ class NormalizationMatrix:
 
     def create_norm_matrix(
         self,
-        lims=(fierywhip_config.eff_corr_lim_low, fierywhip_config.eff_corr_lim_high),
+        lims=(fierywhip_config.config.eff_corr_lim_low, fierywhip_config.config.eff_corr_lim_high),
     ):
         vals = self._result_matrix[:, :, 0]
         error_pos = np.array(self._result_matrix[:, :, 1])

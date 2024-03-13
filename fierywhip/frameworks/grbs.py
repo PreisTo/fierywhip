@@ -95,7 +95,7 @@ class GRBList:
 
         self._table = comm.bcast(self._table, root=0)
         self._check_already_run = comm.bcast(self._check_already_run, root=0)
-        if fierywhip_config.grb_list.create_objects:
+        if fierywhip_config.config.grb_list.create_objects:
             self._create_grb_objects()
 
     def _create_grb_objects(self):
@@ -149,7 +149,7 @@ class GRBList:
         Loads Fermi-Swift burst provided in package resources
         """
         names, ras, decs = [], [], []
-        if fierywhip_config.swift:
+        if fierywhip_config.config.swift:
             self._swift_table = pd.read_csv(
                 swift_list, sep=" ", index_col=False, header=None
             )
@@ -176,7 +176,7 @@ class GRBList:
         ras = []
         decs = []
         types = []
-        if fierywhip_config.ipn.small:
+        if fierywhip_config.config.ipn.small:
             self._ipn_table = pd.read_csv(table_path, sep=" ", index_col=False)
             for i, b in self._ipn_table.iterrows():
                 names.append(f"GRB{str(b['name']).strip('bn')}")

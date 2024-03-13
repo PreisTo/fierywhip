@@ -21,7 +21,7 @@ def check_grb_fit_result(grb_name):
     :returns: bool True if exists and False if not
     """
     path = os.path.join(
-        os.environ.get("GBMDATA"),
+        os.environ.get("GBM_TRIGGER_DATA_DIR"),
         grb_name,
         "trigdat/v00/",
         "trigdat_v00_loc_results.fits",
@@ -57,8 +57,11 @@ def check_exclude(grb: str) -> bool:
 
     if already_run is not None:
         if grb not in list(already_run["grb"]) and grb not in excludes:
-            if check_grb_fit_result(grb):
+            if not check_grb_fit_result(grb):
                 return False
+
+    if already_run is None:
+        return False
 
     return True
 
@@ -133,9 +136,9 @@ def argv_parsing():
     :returns: list with grb names
     """
     # TODO usage for config!!!
-    grb_selection = None
+    selection = None
     morgoth_config = {}
-    force = False
+    force_run = False
     if len(sys.argv) > 1:
         if "-c" in sys.argv:
             config_index = sys.argv.index("-c") + 1
@@ -144,21 +147,24 @@ def argv_parsing():
         if "-f" in sys.argv:
             file_index = sys.argv.index("-f") + 1
             with open(sys.argv[file_index], "r") as f:
-                grb_selection = f.read().split(",")
+                selection = f.read().split(",")
         if "--force" in sys.argv:
-            force = True
+            force_run = True
             logging.info("FORCE: We will not check if the GRB has already been run")
         else:
-            force = False
+            force_run = False
         if "-g" in sys.argv:
             grb_index = sys.argv.index("-g") + 1
-            grb_selection = sys.argv[grb_index].split(",")
-    return grb_selection, force
+            selection = sys.argv[grb_index].split(",")
+    return selection, force_run, morgoth_config
 
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
-    grb_selection, force = argv_parsing()
+    grb_selection, force, morgoth_config = argv_parsing()
+
+    fierywhip_config.update_config(morgoth_config)
+    logging.info(fierywhip_config.config)
     if grb_selection is None:
         logging.info("No GRBs passed as argument - will do my usual thing")
         default(force=force)
