@@ -30,6 +30,7 @@ def default_data_loading(structure: dict) -> dict:
     structure["grb_list"]["run_det_sel"] = True
     structure["grb_list"]["testing"] = False
     structure["grb_list"]["reverse"] = False
+    structure["grb_list"]["create_objects"] = True
     return structure
 
 

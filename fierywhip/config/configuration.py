@@ -64,8 +64,16 @@ class FierywhipConfig:
         return cls(structure)
 
 
-yaml_path = pkg_resources.resource_filename("fierywhip", "config/config.yml")
+yaml_path = None
+try:
+    yaml_path = pkg_resources.resource_filename("fierywhip", "config/config.yml")
+except FileNotFoundError:
+    logging.info("No config.yml found")
+    yaml_path = None
 if yaml_path is not None:
-    fierywhip_config = FierywhipConfig.from_yaml(yaml_path)
+    try:
+        fierywhip_config = FierywhipConfig.from_yaml(yaml_path)
+    except FileNotFoundError:
+        fierywhip_config = FierywhipConfig.from_default()
 else:
     fierywhip_config = FierywhipConfig.from_default()
