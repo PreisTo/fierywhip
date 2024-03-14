@@ -5,12 +5,17 @@ def default_timeselection(structure: dict) -> dict:
     structure["timeselection"] = {}
     structure["timeselection"]["save"] = False
     structure["timeselection"]["store_and_reload"] = False
+    structure["timeselection"]["max_trigger_duration"] = 11
+    structure["timeselection"]["min_trigger_duration"] = 0.064
+    structure["timeselection"]["min_bkg_time"] = 45
     return structure
 
 
 def default_fit_settings(structure: dict) -> dict:
     structure["live_points"] = 800
     structure["live_points_trigdat"] = 1200
+    structure["mpiexec_path"] = "/usr/bin/mpiexec"
+    structure["multinest_nr_cores"] = 8
     return structure
 
 
@@ -20,6 +25,11 @@ def default_data_loading(structure: dict) -> dict:
     structure["ipn"]["full"] = False
     structure["swift"] = True
     structure["grb_list"] = {"create_objects": True}
+    structure["grb_list"] = {}
+    structure["grb_list"]["check_finished"] = True
+    structure["grb_list"]["run_det_sel"] = True
+    structure["grb_list"]["testing"] = False
+    structure["grb_list"]["reverse"] = False
     return structure
 
 
@@ -35,9 +45,11 @@ def default_det_sel(structure: dict) -> dict:
 
 
 def default_eff_correction(structure: dict) -> dict:
-    structure["eff_corr_lim_low"] = 0.8
-    structure["eff_corr_lim_high"] = 1.2
-    structure["eff_corr_gaussian"] = True
+    structure["eff_area_correction"] = {}
+    structure["eff_area_correction"]["use_eff_corr"] = False
+    structure["eff_area_correction"]["eff_corr_lim_low"] = 0.8
+    structure["eff_area_correction"]["eff_corr_lim_high"] = 1.2
+    structure["eff_area_correction"]["eff_corr_gaussian"] = True
     return structure
 
 
@@ -46,6 +58,12 @@ def default_exporting(structure: dict) -> dict:
     structure["comparison"] = {}
     structure["comparison"]["csv_path"] = None
     structure["comparison"]["csv_name"] = None
+    return structure
+
+
+def default_tte_stuff(structure: dict) -> dict:
+    structure["tte"] = {}
+    structure["tte"]["fix_position"] = False
     return structure
 
 
@@ -60,4 +78,5 @@ def default_complete() -> dict:
     structure = default_data_loading(structure)
     structure = default_fit_settings(structure)
     structure = default_exporting(structure)
+    structure = default_tte_stuff(structure)
     return structure

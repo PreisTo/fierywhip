@@ -7,6 +7,7 @@ from fierywhip.model.multinest_fit.eff_area_morgoth import (
     MultinestFitTrigdatMultipleSelections,
     MultinestFitTrigdatEffArea,
 )
+from fierywhip.config.configuration import fierywhip_config
 
 warnings.simplefilter("ignore")
 
@@ -14,16 +15,13 @@ try:
     from mpi4py import MPI
 
     if MPI.COMM_WORLD.Get_size > 1:
-        using_mpi = True
-
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
     else:
-        using_mpi = False
+    logging.error(f"No mpi4py available!!!")
 except Exception as e:
-    logging.info(f"No mpi4py available - {e}")
-    using_mpi = False
+    logging.error(f"No mpi4py available - {e}")
 
 grb_name = sys.argv[1]
 version = sys.argv[2]
@@ -55,7 +53,7 @@ if str(long_grb).lower() == "true":
         time_selection_yaml_file=time_selection_yaml_file,
         grb_file=grb_file,
         det_sel_mode=det_sel_mode,
-        use_eff_area=False,
+        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_area,
         spectrum=spectrum,
     )
 else:
@@ -68,7 +66,7 @@ else:
         time_selection_yaml_file=time_selection_yaml_file,
         grb_file=grb_file,
         det_sel_mode=det_sel_mode,
-        use_eff_area=False,
+        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_area,
         spectrum=spectrum,
     )
 multinest_fit.fit()

@@ -72,10 +72,10 @@ def run_morgoth(grb):
     """
     rm = RunEffAreaMorgoth(
         grb,
-        use_eff_area=False,
-        det_sel_mode="max_sig_triplets",
+        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_corr,
+        det_sel_mode=fierywhip_config.config.det_sel.mode,
         spectrum="cpl",
-        max_trigger_duration=30,
+        max_trigger_duration=fierywhip_config.config.timeselection.max_trigger_duration,
     )
     rm.run_fit()
 

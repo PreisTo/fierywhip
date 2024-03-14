@@ -5,6 +5,7 @@ from fierywhip.model.model import GRBModel
 from fierywhip.io.export import Exporter
 from threeML.minimizer.minimization import FitFailed
 from fierywhip.model.tte_individual_norm import GRBModelIndividualNorm
+from fierywhip.config.configuration import fierywhip_config
 import subprocess
 import pkg_resources
 import os
@@ -50,20 +51,10 @@ def old(ts_path=None):
         try:
             grb.download_files(dets="all")
 
-            gauss1 = Gaussian()
-            gauss1.F.prior = Log_uniform_prior(lower_bound=0.001, upper_bound=30)
-            gauss1.mu.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
-            gauss1.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
-            gauss2 = Gaussian()
-            gauss2.F.prior = Log_uniform_prior(lower_bound=10, upper_bound=100)
-            gauss2.mu.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
-            gauss2.sigma.prior = Log_uniform_prior(lower_bound=1, upper_bound=100)
-            total = gauss1 + gauss2
-            ps = PointSource("GRB", 20, -20, spectral_shape=total)
-            spectral_model = Model(ps)
-
             model = GRBModel(
-                grb, model=spectral_model, fix_position=False, use_eff_area=False
+                grb,
+                fix_position=fierywhip_config.config.tte.fix_position,
+                use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_area,
             )
             if rank == 0:
                 exporter = Exporter(model)
@@ -87,7 +78,7 @@ def run_individual_norms(ts_path=None):
         fit_script = pkg_resources.resource_filename("fierywhip", "utils/tte_fit.py")
         print(fit_script)
         subprocess.check_output(
-            f"mpiexec -n 8 --bind-to core python {fit_script} {grb_yaml}",
+            f"{fierywhip_config.config.mpiexec_path} -n {fierywhip_config.config.mulinest_nr_cores} --bind-to core python {fit_script} {grb_yaml}",
             shell=True,
             env=os.environ,
             stdin=subprocess.PIPE,

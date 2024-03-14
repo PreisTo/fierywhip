@@ -54,7 +54,8 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
-        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
+        self._max_trigger_duration = kwargs.get(
+            "max_trigger_duration",
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         self.timeselection()
@@ -85,11 +86,11 @@ class RunMorgoth:
             name=self._grb.name,
             trigdat_file=self._trigdat_path,
             fine=True,
-            min_trigger_duration=0.064,  # Thats one fine bin
+            min_trigger_duration=fierywhip_config.config.timeselection.min_trigger_duration,  # Thats one fine bin
             max_trigger_duration=self._max_trigger_duration,
-            min_bkg_time=45,
+            min_bkg_time=fierywhip_config.config.timeselection.min_bkg_time,
         )
-        logging.info("Done TimeSelectionNew")
+        logging.info("Done TimeSelectionNew. Now storing it.")
 
         if os.path.exists(
             os.path.join(os.environ.get("GBMDATA"), "localizing/timeselections.yml")
@@ -304,8 +305,8 @@ class RunEffAreaMorgoth(RunMorgoth):
     def __init__(
         self,
         grb: GRB = None,
-        use_eff_area: bool = False,
-        det_sel_mode: str = "default",
+        use_eff_area: bool = fierywhip_config.config.eff_area_correction.use_ef_area,
+        det_sel_mode: str = fierywhip_config.config.det_sel.mode,
         **kwargs,
     ):
         assert isinstance(
@@ -322,8 +323,8 @@ class RunEffAreaMorgoth(RunMorgoth):
         Runs the detector selection and saves them to the bkg_fit.yml
         """
         self._grb._get_detector_selection(
-            min_number_nai=6,
-            max_number_nai=6,
+            min_number_nai=fierywhip_config.config.min_number_det,
+            max_number_nai=fierywhip_config.config.max_number_det,
             mode=self._det_sel_mode,
             bkg_yaml=self._bkg_yaml,
         )
@@ -339,8 +340,9 @@ class RunEffAreaMorgoth(RunMorgoth):
         """
         Runs the fit script
         """
-        ncores = str(int(morgoth_config["multinest"]["n_cores"]))
+        ncores = fierywhip_config.config.multinest_nr_cores
         path_to_python = morgoth_config["multinest"]["path_to_python"]
+        path_to_mpiexec = fierywhip_config.config.mpiexec_path
 
         fit_script_path = pkg_resources.resource_filename(
             "fierywhip", "model/utils/fit_morgoth_eff_area.py"
@@ -364,7 +366,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         else:
             run_fit = True
             p = subprocess.check_output(
-                f"/usr/bin/mpiexec -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._long_grb)}",
+                f"{path_to_mpiexec} -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._long_grb)}",
                 shell=True,
                 env=env,
                 stdin=subprocess.PIPE,

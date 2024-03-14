@@ -15,7 +15,7 @@ from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
 from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
-from fierywhip.utils.detector_utils import detector_list,nai_list
+from fierywhip.utils.detector_utils import detector_list, nai_list
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
@@ -52,7 +52,11 @@ class GRBList:
     """
 
     def __init__(
-        self, check_finished=True, run_det_sel=True, testing=False, reverse=False
+        self,
+        check_finished=fierywhip_config.config.grb_list.check_finished,
+        run_det_sel=fierywhip_config.config.grb_list.run_det_sel,
+        testing=fierywhip_config.config.grb_list.testing,
+        reverse=fierywhip_config.config.grb_list.reverse,
     ):
         """
         :param check_finished:  looks up the localizing/results.yml if GRB is
@@ -69,17 +73,10 @@ class GRBList:
         self._testing = testing
         if rank == 0:
             namess, rass, decss = self._load_swift_bursts()
-            # namesi, rasi, decsi, typesi = self._load_ipn_bursts()
             names_all = namess
             ras_all = rass
             decs_all = decss
             types_all = ["swift"] * len(decs_all)
-            # for i, n in enumerate(namess):
-            #    if n not in names_all:
-            #        names_all.append(n)
-            #        ras_all.append(rass[i])
-            #        decs_all.append(decss[i])
-            #        types_all.append("swift")
             self._table = pd.DataFrame(
                 {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
                 index=None,
@@ -457,7 +454,7 @@ class GRB:
     def is_long_grb(self, is_it: bool):
         self._long_grb = is_it
 
-    def download_files(self,dets = "good_dets"):
+    def download_files(self, dets="good_dets"):
         """
         Downloading TTE and CSPEC files from FTP
         """
@@ -473,12 +470,10 @@ class GRB:
                 self.tte_files[d] = download_tte_file(self._name, d)
                 self.cspec_files[d] = download_cspec_file(self._name, d)
 
-        elif isinstance(dets,list):
+        elif isinstance(dets, list):
             for d in dets:
-                self.tte_files[d] = download_tte_file(self._name,d)
+                self.tte_files[d] = download_tte_file(self._name, d)
                 self.cspec_files[d] = download_cspec_file(self._name, d)
-
-
 
     def _get_trigdat_path(self):
         """
@@ -492,7 +487,7 @@ class GRB:
         )
         if not os.path.exists(trigdat_path):
             try:
-                download_trigdata_file(f"bn{self._name.strip('GRB')}".strip('\n'))
+                download_trigdata_file(f"bn{self._name.strip('GRB')}".strip("\n"))
             except (TypeError, URLError):
                 raise GRBInitError
         if os.path.exists(trigdat_path):

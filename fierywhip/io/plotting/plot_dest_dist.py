@@ -16,7 +16,7 @@ class DetDistPlot:
             os.environ.get("GBMDATA"), "localizing/det_matrix.npy"
         ),
         matrix=None,
-        lims=(fierywhip_config.config.eff_corr_lim_low, fierywhip_config.config.eff_corr_lim_high),
+        lims=(fierywhip_config.config.eff_area_correction.eff_corr_lim_low, fierywhip_config.config.eff_area_correction.eff_corr_lim_high),
         selection_plot=True,
     ):
         if matrix is None:
@@ -81,8 +81,8 @@ class DetDistPlot:
         im = ax.imshow(
             blank,
             cmap="coolwarm",
-            vmin=fierywhip_config.config.eff_corr_lim_low,
-            vmax=fierywhip_config.config.eff_corr_lim_high,
+            vmin=fierywhip_config.config.eff_area_correction.eff_corr_lim_low,
+            vmax=fierywhip_config.config.eff_area_correction.eff_corr_lim_high,
         )
         for i in range(12):
             blank[i, i] = int(np.sum(matrix[i, i]))
