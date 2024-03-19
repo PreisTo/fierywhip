@@ -138,7 +138,10 @@ class TimeSelectionNew(TimeSelection):
             ):
                 flag = False
             else:
-                self._min_bb_block_bkg_duration -= 0.5
+                if self._min_bb_block_bkg_duration >1.024:
+                    self._min_bb_block_bkg_duration -= 0.5
+                else:
+                    raise ValueError("TimeSelection failed because min bkg bin duration is too small")
         # neg_bkg
         bkg_neg = []
         start_flag = False
