@@ -91,12 +91,9 @@ def default(force):
     logging.info(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
 
     for g in grb_list.grbs:
-        if not check_exclude(g.name) or force:
+        if check_exclude(g.name) or force:
             logging.info(f"Starting Morgoth for {g.name}")
-            try:
-                run_morgoth(g)
-            except (RuntimeError, FitFailed, IndexError):
-                pass
+            run_morgoth(g)
         else:
             logging.info(f"Skipping Morgoth for {g.name}")
 
