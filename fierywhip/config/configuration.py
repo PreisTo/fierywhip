@@ -32,19 +32,17 @@ class FierywhipConfig:
             if flag:
                 path = path.split("&")
                 if len(path) == 1:
-                    new = level1(self._config.copy(), path, update_vals[key])
+                    new = level1(new.copy(), path, update_vals[key])
                 elif len(path) == 2:
-                    new = level2(self._config.copy(), path, update_vals[key])
+                    new = level2(new.copy(), path, update_vals[key])
                 elif len(path) == 3:
-                    new = level3(self._config.copy(), path, update_vals[key])
+                    new = level3(new.copy(), path, update_vals[key])
                 elif len(path) == 4:
-                    new = level4(self._config.copy(), path, update_vals[key])
+                    new = level4(new.copy(), path, update_vals[key])
 
                 logging.info(f"Updated {path} with {update_vals[key]}")
-
             else:
                 logging.info("The key %s was not found in the config, creating it", key)
-                new = self._config.copy()
                 new[key] = update_vals[key]
         self._config = new
 
