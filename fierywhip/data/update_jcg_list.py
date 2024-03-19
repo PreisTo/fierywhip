@@ -58,7 +58,7 @@ def update_full_jcg_list(
     else:
         df = None
 
-    comm.Barrir()
+    comm.Barrier()
     df = comm.bcast(df, root=0)
     size_per_rank = int(len(df) / size)
     rank_start = size_per_rank * rank
