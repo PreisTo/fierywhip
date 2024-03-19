@@ -19,7 +19,7 @@ try:
         rank = comm.Get_rank()
         size = comm.Get_size()
     else:
-    logging.error(f"No mpi4py available!!!")
+        logging.error(f"No mpi4py available!!!")
 except Exception as e:
     logging.error(f"No mpi4py available - {e}")
 
