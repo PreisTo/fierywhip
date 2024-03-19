@@ -286,7 +286,6 @@ class GRB:
             self._position = SkyCoord(
                 ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
             )
-        logging.info(self._position)
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()

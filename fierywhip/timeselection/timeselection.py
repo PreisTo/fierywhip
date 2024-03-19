@@ -55,7 +55,7 @@ class TimeSelectionNew(TimeSelection):
         self._trigger_zone_active_start = kwargs.get("trigger_zone_active_start", fierywhip_config.config.timeselection.trigger_zone_active_start)
         self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop",  fierywhip_config.config.timeselection.trigger_zone_active_stop)
         self._max_factor = kwargs.get("max_factor",  fierywhip_config.config.timeselection.max_factor)
-        self._sig_reduce_factor = kwargs.get("sig_reduce_factor",fierywhip_config.config.timeselection.sig_reduce_factur )
+        self._sig_reduce_factor = kwargs.get("sig_reduce_factor",fierywhip_config.config.timeselection.sig_reduce_factor )
         self._min_trigger_duration = kwargs.get("min_trigger_duartion", fierywhip_config.config.timeselection.min_trigger_duration)
         self._max_trigger_duration = kwargs.get("max_trigger_duration", fierywhip_config.config.timeselection.max_trigger_duration)
 
