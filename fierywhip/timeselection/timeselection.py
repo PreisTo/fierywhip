@@ -46,18 +46,43 @@ class TimeSelectionNew(TimeSelection):
         self._fine = kwargs.get("fine", True)
         self._name = kwargs.get("name", "grb")
         self._p0 = kwargs.get("p0", 0.1)
-        self._min_bkg_time = kwargs.get("min_bkg_time", fierywhip_config.config.timeselection.min_bkg_time)
-        self._min_bb_block_bkg_duration = kwargs.get("min_bb_block_bkg_duration", fierywhip_config.config.timeselection.min_bb_block_bkg_duration)
+        self._min_bkg_time = kwargs.get(
+            "min_bkg_time", fierywhip_config.config.timeselection.min_bkg_time
+        )
+        self._min_bb_block_bkg_duration = kwargs.get(
+            "min_bb_block_bkg_duration",
+            fierywhip_config.config.timeselection.min_bb_block_bkg_duration,
+        )
         self._trigger_zone_background_start = kwargs.get(
-                "trigger_zone_background_start", fierywhip_config.config.timeselection.trigger_zone_bkg_start)
+            "trigger_zone_background_start",
+            fierywhip_config.config.timeselection.trigger_zone_bkg_start,
+        )
         self._trigger_zone_background_stop = kwargs.get(
-            "trigger_zone_background_stop", fierywhip_config.config.timeselection.trigger_zone_bkg_stop)
-        self._trigger_zone_active_start = kwargs.get("trigger_zone_active_start", fierywhip_config.config.timeselection.trigger_zone_active_start)
-        self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop",  fierywhip_config.config.timeselection.trigger_zone_active_stop)
-        self._max_factor = kwargs.get("max_factor",  fierywhip_config.config.timeselection.max_factor)
-        self._sig_reduce_factor = kwargs.get("sig_reduce_factor",fierywhip_config.config.timeselection.sig_reduce_factor )
-        self._min_trigger_duration = kwargs.get("min_trigger_duartion", fierywhip_config.config.timeselection.min_trigger_duration)
-        self._max_trigger_duration = kwargs.get("max_trigger_duration", fierywhip_config.config.timeselection.max_trigger_duration)
+            "trigger_zone_background_stop",
+            fierywhip_config.config.timeselection.trigger_zone_bkg_stop,
+        )
+        self._trigger_zone_active_start = kwargs.get(
+            "trigger_zone_active_start",
+            fierywhip_config.config.timeselection.trigger_zone_active_start,
+        )
+        self._trigger_zone_active_stop = kwargs.get(
+            "trigger_zone_active_stop",
+            fierywhip_config.config.timeselection.trigger_zone_active_stop,
+        )
+        self._max_factor = kwargs.get(
+            "max_factor", fierywhip_config.config.timeselection.max_factor
+        )
+        self._sig_reduce_factor = kwargs.get(
+            "sig_reduce_factor", fierywhip_config.config.timeselection.sig_reduce_factor
+        )
+        self._min_trigger_duration = kwargs.get(
+            "min_trigger_duartion",
+            fierywhip_config.config.timeselection.min_trigger_duration,
+        )
+        self._max_trigger_duration = kwargs.get(
+            "max_trigger_duration",
+            fierywhip_config.config.timeselection.max_trigger_duration,
+        )
 
         logging.info(f"Starting the TimeSelectionNew with following kwargs: {kwargs}")
 
@@ -228,22 +253,30 @@ class TimeSelectionNew(TimeSelection):
         obs_significance = np.zeros((len(self._tstart), 8))
         obs_full, bkg_full = self._tr.observed_and_background()
         n5_skipped = False
-        logging.info("Checking if n5 is used for timeselection, if so replacing it")
-        for k, v in avgs_sorted[-3:]:
-            if k != "n5":
+        if fierywhip_config.config.timeselection.replace_n5:
+            logging.info("Checking if n5 is used for timeselection, if so replacing it")
+            for k, v in avgs_sorted[-3:]:
+                if k != "n5":
+                    logging.debug(f"Using {k}")
+                    obs_significance += self._tr._rates[:, name2id(k), :].reshape(
+                        len(self._tstart), 8
+                    )
+                else:
+                    logging.debug("skipping n5")
+                    n5_skipped = True
+            if n5_skipped:
+                k, v = avgs_sorted[-4]
+                logging.info(f"Using {k} instead of n5")
+                obs_significance += self._tr._rates[:, name2id(k), :].reshape(
+                    len(self._tstart), 8
+                )
+        else:
+            for k, v in avgs_sorted[-3:]:
                 logging.debug(f"Using {k}")
                 obs_significance += self._tr._rates[:, name2id(k), :].reshape(
                     len(self._tstart), 8
                 )
-            else:
-                logging.debug("skipping n5")
-                n5_skipped = True
-        if n5_skipped:
-            k, v = avgs_sorted[-4]
-            logging.info(f"Using {k} instead of n5")
-            obs_significance += self._tr._rates[:, name2id(k), :].reshape(
-                len(self._tstart), 8
-            )
+
         rates, bkg, sig = self._create_additional_timeseries(obs_significance)
 
         obs_significance = rates
