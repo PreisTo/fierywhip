@@ -166,4 +166,8 @@ def update_full_jcg_list(
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("DEBUG")
-    update_full_jcg_list(testing=True)
+    update_full_jcg_list()
+    if rank == 0:
+        path = pkg_resources.resource_filename("fierywhip", "data/full_jcg_list.csv")
+        df = pd.read_csv(path, index_col=0)
+        df[df["seen_by_fermi"]].to_csv(path)
