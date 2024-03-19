@@ -81,4 +81,5 @@ def default_complete() -> dict:
     structure = default_fit_settings(structure)
     structure = default_exporting(structure)
     structure = default_tte_stuff(structure)
+    structure = default_eff_correction(structure)
     return structure

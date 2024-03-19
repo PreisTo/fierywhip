@@ -55,7 +55,7 @@ class RunMorgoth:
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
         self._max_trigger_duration = kwargs.get(
-            "max_trigger_duration",
+            "max_trigger_duration",11)
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         self.timeselection()
@@ -326,7 +326,7 @@ class RunEffAreaMorgoth(RunMorgoth):
     def __init__(
         self,
         grb: GRB = None,
-        use_eff_area: bool = fierywhip_config.config.eff_area_correction.use_ef_area,
+        use_eff_area: bool = fierywhip_config.config.eff_area_correction.use_eff_corr,
         det_sel_mode: str = fierywhip_config.config.det_sel.mode,
         **kwargs,
     ):
