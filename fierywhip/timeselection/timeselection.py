@@ -6,6 +6,7 @@ from astropy.stats import bayesian_blocks
 from morgoth.utils.trig_reader import TrigReader
 from threeML.utils.statistics.stats_tools import Significance
 from fierywhip.utils.detector_utils import name2id
+from fierywhip.config.configuration import fierywhip_config
 from gbm_drm_gen import DRMGenTrig
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.io.balrog_like import BALROGLike
@@ -45,20 +46,18 @@ class TimeSelectionNew(TimeSelection):
         self._fine = kwargs.get("fine", True)
         self._name = kwargs.get("name", "grb")
         self._p0 = kwargs.get("p0", 0.1)
-        self._min_bkg_time = kwargs.get("min_bkg_time", 30)
-        self._min_bb_block_bkg_duration = kwargs.get("min_bb_block_bkg_duration", 8)
+        self._min_bkg_time = kwargs.get("min_bkg_time", fierywhip_config.config.timeselection.min_bkg_time)
+        self._min_bb_block_bkg_duration = kwargs.get("min_bb_block_bkg_duration", fierywhip_config.config.timeselection.min_bb_block_bkg_duration)
         self._trigger_zone_background_start = kwargs.get(
-            "trigger_zone_background_start", -5
-        )
+                "trigger_zone_background_start", fierywhip_config.config.timeselection.trigger_zone_bkg_start)
         self._trigger_zone_background_stop = kwargs.get(
-            "trigger_zone_background_stop", 10
-        )
-        self._trigger_zone_active_start = kwargs.get("trigger_zone_active_start", -10)
-        self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop", 60)
-        self._max_factor = kwargs.get("max_factor", 1.2)
-        self._sig_reduce_factor = kwargs.get("sig_reduce_factor", 0.8)
-        self._min_trigger_duration = kwargs.get("min_trigger_duartion", 0.064)
-        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
+            "trigger_zone_background_stop", fierywhip_config.config.timeselection.trigger_zone_bkg_stop)
+        self._trigger_zone_active_start = kwargs.get("trigger_zone_active_start", fierywhip_config.config.timeselection.trigger_zone_active_start)
+        self._trigger_zone_active_stop = kwargs.get("trigger_zone_active_stop",  fierywhip_config.config.timeselection.trigger_zone_active_stop)
+        self._max_factor = kwargs.get("max_factor",  fierywhip_config.config.timeselection.max_factor)
+        self._sig_reduce_factor = kwargs.get("sig_reduce_factor",fierywhip_config.config.timeselection.sig_reduce_factur )
+        self._min_trigger_duration = kwargs.get("min_trigger_duartion", fierywhip_config.config.timeselection.min_trigger_duration)
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", fierywhip_config.config.timeselection.max_trigger_duration)
 
         logging.info(f"Starting the TimeSelectionNew with following kwargs: {kwargs}")
 

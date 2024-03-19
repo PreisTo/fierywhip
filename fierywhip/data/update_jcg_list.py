@@ -23,7 +23,7 @@ def update_full_jcg_list(
         logging.info(
             "Updating Full JCG List from https://www.mpe.mpg.de/~jcg/grbgen.html"
         )
-        logging.info("This may take several minutes (~20min)!")
+        logging.info("This may take several minutes")
 
         df = pd.read_html(
             "https://www.mpe.mpg.de/~jcg/grbgen.html", header=0, index_col=0
@@ -58,7 +58,7 @@ def update_full_jcg_list(
     else:
         df = None
 
-    comm.Barrir()
+    comm.Barrier()
     df = comm.bcast(df, root=0)
     size_per_rank = int(len(df) / size)
     rank_start = size_per_rank * rank
@@ -128,7 +128,7 @@ def update_full_jcg_list(
             else:
                 found = False
                 counter = 0
-                adds = [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5]
+                adds = [0, -1, 1,-2,2]
                 while not found and counter < len(adds):
                     perc = str(int(round(sod / day, 0) + adds[counter])).zfill(3)
                     name = f"bn{date.strftime('%y%m%d')}{perc}"
