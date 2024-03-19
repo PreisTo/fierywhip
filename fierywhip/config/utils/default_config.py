@@ -8,6 +8,13 @@ def default_timeselection(structure: dict) -> dict:
     structure["timeselection"]["max_trigger_duration"] = 11
     structure["timeselection"]["min_trigger_duration"] = 0.064
     structure["timeselection"]["min_bkg_time"] = 45
+    structure["timeselection"]["min_bb_block_bkg_duration"] = 8
+    structure["timeselection"]["trigger_zone_bkg_start"] = -5
+    structure["timeselection"]["trigger_zone_bkg_stop"] = 10
+    structure["timeselection"]["trigger_zone_active_start"] = -10
+    structure["timeselection"]["trigger_zone_active_stop"] = 60
+    structure["timeselection"]["max_factor"] = 1.2
+    structure["timeselection"]["sig_reduce_factor"] = 0.8
     return structure
 
 
