@@ -53,7 +53,7 @@ if str(long_grb).lower() == "true":
         time_selection_yaml_file=time_selection_yaml_file,
         grb_file=grb_file,
         det_sel_mode=det_sel_mode,
-        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_area,
+        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_corr,
         spectrum=spectrum,
     )
 else:
@@ -66,7 +66,7 @@ else:
         time_selection_yaml_file=time_selection_yaml_file,
         grb_file=grb_file,
         det_sel_mode=det_sel_mode,
-        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_area,
+        use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_corr,
         spectrum=spectrum,
     )
 multinest_fit.fit()
