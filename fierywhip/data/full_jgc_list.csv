@@ -1,0 +1,1191 @@
+GRBa,GRB X-ray position,Error,Instrument,IPNb,XAb,OTb,RAb,IAUC,zc,position,sod,seen_by_fermi,name
+240205B,23h25m54s -55° 08',3,Swift,y,y,y,y?,,0.824,"<SkyCoord (ICRS): (ra, dec) in deg
+    (351.475, -55.13333333)>",79986.78,True,bn240205926
+240204A,06h56m44s +01° 02',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (104.18333333, 1.03333333)>",54458.68,True,bn240204630
+240123A,13h17m16s +60° 38',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (199.31666667, 60.63333333)>",39946.86,True,bn240123467
+240115B,12h47m24s -35° 32',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (191.85, -35.53333333)>",60355.09,True,bn240115698
+240112C,18h02m35s +24° 29',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (270.64583333, 24.48333333)>",63444.97,True,bn240112734
+240107A,19h52m03s -68° 14',30,MAXI,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (298.0125, -68.23333333)>",63444.97,True,bn240107739
+231230A,16h20m47s +58° 07',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.19583333, 58.11666667)>",5348.73,True,bn231230062
+231220A,01h49m17s +77° 54',5,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (27.32083333, 77.9)>",58217.4,True,bn231220674
+231215A,00h39m00s +57° 39',3,Swift,y,y,y,,,y?,"<SkyCoord (ICRS): (ra, dec) in deg
+    (9.75, 57.65)>",35245.27,True,bn231215408
+231214A,20h22m57s -72° 26',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (305.7375, -72.43333333)>",73468.31,True,bn231214850
+231205A,13h31m45s +17° 56',58*2.4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (202.9375, 17.93333333)>",8711.41,True,bn231205101
+231129C,00h47m38s -81° 38',4,MAXI,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (11.90833333, -81.63333333)>",69018.11,True,bn231129799
+231118A,00h19m22s -48° 02',3,Swift,y,y,y,y,,0.8304,"<SkyCoord (ICRS): (ra, dec) in deg
+    (4.84166667, -48.03333333)>",62193.2,True,bn231118720
+231106A,07h33m48s +29° 13',0.1,TESS,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (113.45, 29.21666667)>",62193.2,True,bn231106725
+231104A,01h35m09s +83° 37',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (23.7875, 83.61666667)>",6459.91,True,bn231104075
+231028A,14h16m07s +20° 54',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (214.02916667, 20.9)>",14949.55,True,bn231028173
+231020A,20h57m58s -29° 15',138*2,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (314.49166667, -29.25)>",68218.3,True,bn231020790
+231018A,00h04m29s +47° 25',752*38,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (1.12083333, 47.41666667)>",45010.66,True,bn231018521
+231017A,05h44m46s +56° 40',6,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (86.19166667, 56.66666667)>",29103.3,True,bn231017337
+230913A,17h49m23s +74° 29',5,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (267.34583333, 74.48333333)>",28572.16,True,bn230913331
+230906A,05h19m02s -47° 53',12*2,IPN,y,?,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (79.75833333, -47.88333333)>",46507.15,True,bn230906538
+230903A,00h39m42s -40° 55',3,Swift,y,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (9.925, -40.91666667)>",62576.24,True,bn230903724
+230826A,05h32m03s +66° 07',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (83.0125, 66.11666667)>",70367.07,True,bn230826814
+230818A,19h03m32s +40° 53',3,Swift,y,y,y,n,,2.42,"<SkyCoord (ICRS): (ra, dec) in deg
+    (285.88333333, 40.88333333)>",84454.35,True,bn230818977
+230815A,12h18m54s -58° 03',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (184.725, -58.05)>",38995.94,True,bn230815451
+230812B,17h48m25s +11° 39',3,Swift,y,y,y,y,,0.360,"<SkyCoord (ICRS): (ra, dec) in deg
+    (267.10416667, 11.65)>",68292.05,True,bn230812790
+230805B,13h50m59s +31° 11',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (207.74583333, 31.18333333)>",41031.07,True,bn230805475
+230803A,10h02m02s -64° 59',168*3,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (150.50833333, -64.98333333)>",5228.15,True,bn230803061
+230802A,05h04m53s +19° 34',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (76.22083333, 19.56666667)>",24626.16,True,bn230802285
+230728A,22h54m09s +28° 09',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (343.5375, 28.15)>",10203.22,True,bn230728118
+230723B,16h41m31s -05° 20',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (250.37916667, -5.33333333)>",42152.88,True,bn230723488
+230723A,01h31m38s -67° 04',126*2,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (22.90833333, -67.06666667)>",16723.47,True,bn230723194
+230707A,11h32m48s -16° 25',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (173.2, -16.41666667)>",12171.96,True,bn230707141
+230606A,11h07m08s +36° 30',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (166.78333333, 36.5)>",12171.96,True,bn230606146
+230510B,00h02m46s +27° 32',10,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (0.69166667, 27.53333333)>",76894.01,True,bn230510890
+230510A,21h12m37s +34° 27',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (318.15416667, 34.45)>",43588.58,True,bn230510503
+230506C,08h57m30s +45° 08',3,Swift,y,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (134.375, 45.13333333)>",61759.35,True,bn230506715
+230506B,21h47m58s +44° 32',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (326.99166667, 44.53333333)>",61759.35,True,bn230506715
+230421A,02h46m49s +01° 07',5,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (41.70416667, 1.11666667)>",34966.37,True,bn230421405
+230405B,18h05m52s -47° 04',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (271.46666667, -47.06666667)>",71883.5,True,bn230405832
+230328B,19h23m57s +80° 01',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.9875, 80.01666667)>",53688.54,True,bn230328621
+230307A,04h03m17s -75° 23',10*4,IPN,y,y,y,y,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (60.82083333, -75.38333333)>",56646.67,True,bn230307656
+230304B,07h21m46s -02° 07',24*6.5,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (110.44166667, -2.11666667)>",52549.14,True,bn230304608
+230228A,01h13m37s +44° 29',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (18.40416667, 44.48333333)>",21050.25,True,bn230228244
+230209B,05h57m28s +29° 12',144*7,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (89.36666667, 29.2)>",81156.89,True,bn230209939
+230204B,13h10m15s -22° 02',60,MAXI,y,y,y,,,2.142,"<SkyCoord (ICRS): (ra, dec) in deg
+    (197.5625, -22.03333333)>",81156.89,True,bn230204944
+230111A,21h20m45s -30° 29',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (320.1875, -30.48333333)>",68862.9,True,bn230111797
+221231A,22h25m02s +25° 08',5,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (336.25833333, 25.13333333)>",78365.13,True,bn221231907
+221226B,01h31m40s -41° 33',3,Swift,y,y,y,,,2.694,"<SkyCoord (ICRS): (ra, dec) in deg
+    (22.91666667, -41.55)>",81680.06,True,bn221226945
+221216A,21h44m05s -34° 24',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (326.02083333, -34.4)>",40880.95,True,bn221216473
+221215A,10h20m13s +46° 52',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (155.05416667, 46.86666667)>",15267.97,True,bn221215177
+221209A,15h26m34s +49° 51',137*15,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (231.64166667, 49.85)>",21024.85,True,bn221209243
+221206B,16h44m37s +42° 40',4,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (251.15416667, 42.66666667)>",44567.36,True,bn221206516
+221201A,17h47m44s -68° 16',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (266.93333333, -68.26666667)>",44705.68,True,bn221201517
+221121A,10h52m25s +69° 21',114*9,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (163.10416667, 69.35)>",23689.74,True,bn221121274
+221024A,11h18m52s +33° 02',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (169.71666667, 33.03333333)>",46827.12,True,bn221024542
+221022A,07h53m22s -05° 07',5,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (118.34166667, -5.11666667)>",70413.55,True,bn221022815
+221016A,02h35m48s -34° 37',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (38.95, -34.61666667)>",85164.19,True,bn221016986
+221009A,19h13m03s +19° 48',3,Swift,y,y,y,y,,0.151,"<SkyCoord (ICRS): (ra, dec) in deg
+    (288.2625, 19.8)>",51017.99,True,bn221009595
+220927A,06h03m52s -22° 57',306*20,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (90.96666667, -22.95)>",20180.95,True,bn220927234
+220910A,00h34m56s -01° 45',61*19,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (8.73333333, -1.75)>",20180.95,True,bn220910239
+220909A,14h24m11s -08° 51',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (216.04583333, -8.85)>",24733.82,True,bn220909286
+220907A,17h55m29s -20° 19',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (268.87083333, -20.31666667)>",50725.76,True,bn220907587
+220905A,23h00m48s -35° 24',180,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (345.2, -35.4)>",41323.7,True,bn220905478
+220903A,11h55m11s -29° 42',236*38,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (178.79583333, -29.7)>",44178.17,True,bn220903511
+220826A,13h45m44s -44° 03',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (206.43333333, -44.05)>",42921.74,True,bn220826497
+220715B,16h59m33s -33° 36',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (254.8875, -33.6)>",80682.17,True,bn220715934
+220714B,03h08m17s -19° 20',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (47.07083333, -19.33333333)>",50284.55,True,bn220714582
+220711B,17h27m58s +24° 40',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (261.99166667, 24.66666667)>",65788.69,True,bn220711761
+220618A,02h35m52s +55° 13',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (38.96666667, 55.21666667)>",33029.92,True,bn220618382
+220525A,00h53m28s +16° 24',480*25,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (13.36666667, 16.4)>",654.24,True,bn220525008
+220521A,18h20m47s +10° 23',3,Swift,y,y,y,,,5.6,"<SkyCoord (ICRS): (ra, dec) in deg
+    (275.19583333, 10.38333333)>",84021.44,True,bn220521972
+220514A,09h50m44s +13° 10',3,INTEGRAL,y,,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (147.68333333, 13.16666667)>",44670.53,True,bn220514517
+220511A,19h09m47s +17° 44',7,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (287.44583333, 17.73333333)>",49316.87,True,bn220511571
+220501A,05h42m18s +14° 02',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (85.575, 14.03333333)>",71511.22,True,bn220501828
+220426A,22h34m46s -23° 00',96*14,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (338.69166667, -23.)>",24591.23,True,bn220426285
+220408B,06h10m09s -49° 37',240*48,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (92.5375, -49.61666667)>",26884.65,True,bn220408311
+220408A,13h29m36s +47° 04',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (202.4, 47.06666667)>",20764.22,True,bn220408240
+220403C,01h10m17s -56° 14',18*4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (17.57083333, -56.23333333)>",36602.66,True,bn220403424
+220403B,12h44m06s +89° 10',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (191.025, 89.16666667)>",74562.65,True,bn220403863
+220325A,17h57m56s -07° 02',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (269.48333333, -7.03333333)>",62183.05,True,bn220325725
+220320A,06h16m36s -55° 55',7*3,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (94.15, -55.91666667)>",62183.05,True,bn220320725
+220311A,10h31m54s +66° 05',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (157.975, 66.08333333)>",59598.4,True,bn220311690
+220310C,19h20m17s +40° 15',5,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.07083333, 40.25)>",80631.43,True,bn220310933
+220308A,17h48m25s +11° 39',225*25,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (267.10416667, 11.65)>",80631.43,True,bn220308938
+220306B,00h21m31s +71° 21',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (5.37916667, 71.35)>",65737.47,True,bn220306761
+220305B,11h44m27s -32° 33',729*4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (176.1125, -32.55)>",41600.48,True,bn220305481
+220305A,07h10m20s -37° 42',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (107.58333333, -37.7)>",58388.61,True,bn220305676
+220219B,16h03m39s +31° 14',0.1,ZTF,y,y,y,y,,0.293,"<SkyCoord (ICRS): (ra, dec) in deg
+    (240.9125, 31.23333333)>",58388.61,True,bn220219681
+220219A,02h48m58s +10° 35',786*3,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (42.24166667, 10.58333333)>",40894.1,True,bn220219473
+220210A,23h03m07s +61° 50',2,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (345.77916667, 61.83333333)>",86198.37,True,bn220210998
+220118A,12h49m06s +22° 55',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (192.275, 22.91666667)>",66038.09,True,bn220118764
+220117C,19h05m50s +16° 47',2,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (286.45833333, 16.78333333)>",66038.09,True,bn220117769
+220117A,06h06m19s -28° 25',3,Swift,y,y,,,,4.961,"<SkyCoord (ICRS): (ra, dec) in deg
+    (91.57916667, -28.41666667)>",58731.54,True,bn220117685
+220107A,11h19m03s +34° 08',10,Swift,y,y,y,,,1.246,"<SkyCoord (ICRS): (ra, dec) in deg
+    (169.7625, 34.13333333)>",53131.93,True,bn220107615
+220101A,00h05m31s +31° 45',3,Swift,y,y,y,y,,4.618,"<SkyCoord (ICRS): (ra, dec) in deg
+    (1.37916667, 31.75)>",18611.51,True,bn220101215
+211221A,05h15m45s +00° 56',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (78.9375, 0.93333333)>",74920.82,True,bn211221867
+211219A,03h54m37s -34° 37',82*6,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (58.65416667, -34.61666667)>",53722.57,True,bn211219622
+211211A,14h09m05s +27° 53',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (212.27083333, 27.88333333)>",47399.6,True,bn211211549
+211207A,09h58m30s -24° 21',3,Swift,,y,y,,,2.272,"<SkyCoord (ICRS): (ra, dec) in deg
+    (149.625, -24.35)>",75176.77,True,bn211207875
+211204C,22h35m48s +52° 10',270*4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (338.95, 52.16666667)>",77820.55,True,bn211204901
+211130A,01h24m35s -27° 50',126*6.5,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (21.14583333, -27.83333333)>",54987.03,True,bn211130636
+211129A,18h18m14s +31° 47',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (274.55833333, 31.78333333)>",35466.23,True,bn211129410
+211120A,21h00m33s +42° 51',23*0.7,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (315.1375, 42.85)>",47386.84,True,bn211120548
+211115A,08h11m30s -25° 40',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (122.875, -25.66666667)>",47386.84,True,bn211115553
+211106A,22h54m34s -53° 14',7,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (343.64166667, -53.23333333)>",16651.23,True,bn211106198
+211019A,07h07m57s -38° 47',43*2,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.9875, -38.78333333)>",21571.19,True,bn211019250
+210927B,17h32m05s +73° 47',76*2,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (263.02083333, 73.78333333)>",21571.19,True,bn210927255
+210925B,03h15m16s -52° 52',138*2.5,IPN,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (48.81666667, -52.86666667)>",4808.68,True,bn210925056
+210905A,20h36m15s -44° 26',3,Swift,y,y,,y,,6.318,"<SkyCoord (ICRS): (ra, dec) in deg
+    (309.0625, -44.43333333)>",761.32,True,bn210905014
+210824A,15h28m32s +11° 08',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (232.13333333, 11.13333333)>",15001.64,True,bn210824174
+210822A,20h17m54s +05° 16',3,Swift,y,y,y,y,,1.736,"<SkyCoord (ICRS): (ra, dec) in deg
+    (304.475, 5.26666667)>",33498.16,True,bn210822393
+210807C,09h34m12s -51° 25',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (143.55, -51.41666667)>",82628.49,True,bn210807955
+210731A,20h01m15s -28° 02',3,Swift,y,y,y,,,1.2525,"<SkyCoord (ICRS): (ra, dec) in deg
+    (300.3125, -28.03333333)>",80468.53,True,bn210731931
+210730A,09h58m22s +69° 42',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (149.59166667, 69.7)>",17849.21,True,bn210730207
+210727A,12h36m55s -59° 56',548*22,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (189.22916667, -59.93333333)>",35446.74,True,bn210727410
+210725B,12h51m44s +17° 07',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (192.93333333, 17.11666667)>",43248.02,True,bn210725506
+210725A,14h21m27s -01° 11',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.3625, -1.18333333)>",13622.93,True,bn210725158
+210723A,08h06m54s -32° 50',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (121.725, -32.83333333)>",53170.91,True,bn210723615
+210722A,01h48m06s -06° 21',3,Swift,y,y,y,,,1.145,"<SkyCoord (ICRS): (ra, dec) in deg
+    (27.025, -6.35)>",75282.02,True,bn210722871
+210712A,06h29m21s -35° 24',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (97.3375, -35.4)>",34991.9,True,bn210712405
+210708A,11h34m48s -49° 11',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (173.7, -49.18333333)>",8737.08,True,bn210708106
+210707A,12h50m11s -63° 17',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (192.54583333, -63.28333333)>",80720.47,True,bn210707939
+210706A,20h48m03s +13° 18',5,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (312.0125, 13.3)>",29869.86,True,bn210706346
+210619B,21h18m51s +33° 52',3,Swift,y,y,y,,,1.937,"<SkyCoord (ICRS): (ra, dec) in deg
+    (319.7125, 33.86666667)>",86365.41,True,bn210619999
+210618A,15h43m17s +46° 03',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (235.82083333, 46.05)>",6217.0,True,bn210618072
+210610B,16h15m45s +14° 23',3,Swift,y,y,y,,,1.13,"<SkyCoord (ICRS): (ra, dec) in deg
+    (243.9375, 14.38333333)>",71487.51,True,bn210610827
+210610A,13h37m08s +14° 29',3,Swift,y,y,y,,,3.54,"<SkyCoord (ICRS): (ra, dec) in deg
+    (204.28333333, 14.48333333)>",54223.38,True,bn210610628
+210605A,01h26m26s -45° 05',540*8,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (21.60833333, -45.08333333)>",54223.38,True,bn210605633
+210531A,09h22m22s +08° 17',378*60,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (140.59166667, 8.28333333)>",43201.65,True,bn210531500
+210524A,22h54m15s -46° 40',408*4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (343.5625, -46.66666667)>",17999.09,True,bn210524208
+210511B,20h51m39s +58° 23',456*6,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (312.9125, 58.38333333)>",41199.26,True,bn210511477
+210506A,17h48m25s +11° 39',2580*222,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (267.10416667, 11.65)>",41199.26,True,bn210506482
+210421B,18h03m16s +56° 50',5,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (270.81666667, 56.83333333)>",39284.81,True,bn210421455
+210413B,12h10m14s +55° 58',3,Swift,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (182.55833333, 55.96666667)>",39284.81,True,bn210413460
+210410A,17h59m01s +45° 22',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (269.75416667, 45.36666667)>",3196.52,True,bn210410037
+210406A,08h49m56s +76° 32',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (132.48333333, 76.53333333)>",61888.92,True,bn210406716
+210402A,13h13m02s +44° 31',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (198.25833333, 44.51666667)>",79456.98,True,bn210402920
+210318B,17h36m55s -35° 49',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (264.22916667, -35.81666667)>",79456.98,True,bn210318925
+210308A,04h28m21s +37° 25',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (67.0875, 37.41666667)>",23876.85,True,bn210308276
+210306B,22h07m23s +10° 10',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (331.84583333, 10.16666667)>",34334.27,True,bn210306397
+210306A,08h39m52s +60° 12',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (129.96666667, 60.2)>",14037.06,True,bn210306162
+210305A,21h19m15s +34° 33',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (319.8125, 34.55)>",68584.45,True,bn210305794
+210226A,08h16m33s +57° 35',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (124.1375, 57.58333333)>",17037.23,True,bn210226197
+210217A,06h30m26s +68° 43',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (97.60833333, 68.71666667)>",84342.3,True,bn210217981
+210211A,17h57m44s -46° 18',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (269.43333333, -46.3)>",31398.34,True,bn210211363
+210210A,17h31m15s +14° 39',3,Swift,y,y,y,,,0.715,"<SkyCoord (ICRS): (ra, dec) in deg
+    (262.8125, 14.65)>",7227.91,True,bn210210089
+210204A,07h48m19s +11° 25',0.01,ZTF,y,y,y,y,,0.876,"<SkyCoord (ICRS): (ra, dec) in deg
+    (117.07916667, 11.41666667)>",23365.66,True,bn210204270
+210104A,06h54m49s +64° 40',3,Swift,y,y,y,,,0.46,"<SkyCoord (ICRS): (ra, dec) in deg
+    (103.70416667, 64.66666667)>",41219.1,True,bn210104477
+210102C,15h42m57s -37° 13',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (235.7375, -37.21666667)>",74291.37,True,bn210102861
+201223A,08h51m24s +71° 10',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (132.85, 71.16666667)>",64706.97,True,bn201223749
+201221A,14h17m55s -45° 25',3,Swift,y,y,y,,,5.70,"<SkyCoord (ICRS): (ra, dec) in deg
+    (214.47916667, -45.41666667)>",25741.42,True,bn201221303
+201218A,19h13m59s +28° 21',26*7,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (288.49583333, 28.35)>",15255.9,True,bn201218177
+201216C,01h05m26s +16° 32',3,Swift,y,y,y,,,1.10,"<SkyCoord (ICRS): (ra, dec) in deg
+    (16.35833333, 16.53333333)>",83251.72,True,bn201216963
+201105A,16h22m26s +12° 44',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.60833333, 12.73333333)>",19867.76,True,bn201105230
+201029A,15h18m24s +44° 28',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (229.6, 44.46666667)>",73190.1,True,bn201029847
+201026A,13h06m39s +83° 46',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (196.6625, 83.76666667)>",81454.18,True,bn201026943
+201021C,00h50m12s -55° 50',3,Swift,y,y,y,,,1.070,"<SkyCoord (ICRS): (ra, dec) in deg
+    (12.55, -55.83333333)>",73638.66,True,bn201021852
+201020A,17h24m59s +31° 25',3,Swift,y,y,y,,,2.903,"<SkyCoord (ICRS): (ra, dec) in deg
+    (261.24583333, 31.41666667)>",20846.16,True,bn201020241
+201017A,02h26m32s +66° 40',3,Swift,y,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (36.63333333, 66.66666667)>",35191.26,True,bn201017407
+201015A,23h37m22s +53° 24',3,Swift,y,y,y,y,,0.426,"<SkyCoord (ICRS): (ra, dec) in deg
+    (354.34166667, 53.4)>",82213.22,True,bn201015957
+201001A,07h20m17s -02° 13',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (110.07083333, -2.21666667)>",35931.64,True,bn201001416
+200917A,15h43m01s -04° 42',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (235.75416667, -4.7)>",13948.3,True,bn200917166
+200914A,16h58m03s -36° 17',2.6,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (254.5125, -36.28333333)>",46111.21,True,bn200914534
+200906A,18h09m10s +67° 51',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (272.29166667, 67.85)>",47464.07,True,bn200906550
+200903A,10h57m15s +50° 30',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (164.3125, 50.5)>",2662.43,True,bn200903031
+200901A,04h07m02s -59° 53',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (61.75833333, -59.88333333)>",13651.56,True,bn200901158
+200829A,16h44m51s +72° 20',3,Swift,y,y,y,,,1.25ph,"<SkyCoord (ICRS): (ra, dec) in deg
+    (251.2125, 72.33333333)>",50374.45,True,bn200829582
+200826B,10h12m42s +57° 35',12*33,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (153.175, 57.58333333)>",79782.72,True,bn200826923
+200809B,01h03m46s -73° 50',4,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (15.94166667, -73.83333333)>",56487.13,True,bn200809654
+200729A,12h17m30s +45° 35',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (184.375, 45.58333333)>",70685.09,True,bn200729823
+200716C,13h04m03s +29° 38',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (196.0125, 29.63333333)>",82661.42,True,bn200716957
+200711A,19h03m54s -00° 08',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (285.975, -0.13333333)>",39876.49,True,bn200711461
+200701A,08h14m13s -14° 30',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (123.55416667, -14.5)>",46019.07,True,bn200701538
+200630A,06h05m31s -60° 47',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (91.37916667, -60.78333333)>",6574.47,True,bn200630076
+200612A,20h10m43s -45° 21',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (302.67916667, -45.35)>",16777.14,True,bn200612199
+200529A,15h55m00s -11° 03',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (238.75, -11.05)>",3395.77,True,bn200529039
+200528A,11h46m33s +58° 09',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (176.6375, 58.15)>",37643.84,True,bn200528436
+200517A,01h08m55s -50° 45',60,MAXI,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (17.22916667, -50.75)>",37643.84,True,bn200517441
+200512A,00h29m35s -02° 12',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (7.39583333, -2.2)>",73995.93,True,bn200512861
+200416A,22h22m46s -07° 32',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (335.69166667, -7.53333333)>",25517.17,True,bn200416295
+200409A,04h02m13s -50° 15',3,Swift,y,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (60.55416667, -50.25)>",11999.77,True,bn200409144
+200303A,14h10m47s +51° 22',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (212.69583333, 51.36666667)>",9297.45,True,bn200303107
+200228B,16h48m06s +16° 58',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (252.025, 16.96666667)>",40481.15,True,bn200228469
+200227A,03h45m45s +09° 29',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (56.4375, 9.48333333)>",26408.0,True,bn200227306
+200224A,16h35m11s +41° 41',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (248.79583333, 41.68333333)>",12289.3,True,bn200224147
+200216B,10h41m51s +19° 27',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (160.4625, 19.45)>",48753.85,True,bn200216564
+200215A,02h16m29s +12° 47',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (34.12083333, 12.78333333)>",52771.97,True,bn200215611
+200120A,09h08m32s -70° 25',72*11,IPN,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (137.13333333, -70.41666667)>",83095.34,True,bn200120962
+200111A,07h11m29s +32° 33',258*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (107.87083333, 32.55)>",54668.11,True,bn200111633
+200109A,20h28m41s +53° 00',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (307.17083333, 53.)>",6376.21,True,bn200109074
+200107B,07h08m16s -83° 43',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (107.06666667, -83.71666667)>",69988.7,True,bn200107810
+200105A,21h15m45s -36° 19',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (318.9375, -36.31666667)>",78928.99,True,bn200105914
+191227A,21h16m41s -16° 42',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (319.17083333, -16.7)>",5977.57,True,bn191227069
+191101A,16h47m23s +43° 45',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (251.84583333, 43.75)>",76083.35,True,bn191101886
+191031C,07h43m27s -62° 20',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (115.8625, -62.33333333)>",67434.9,True,bn191031780
+191031A,15h33m53s +06° 09',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (233.47083333, 6.15)>",2193.69,True,bn191031025
+191011A,02h58m54s -27° 51',3,Swift,y,y,y,,,1.722,"<SkyCoord (ICRS): (ra, dec) in deg
+    (44.725, -27.85)>",16556.43,True,bn191011192
+190829A,02h58m10s -08° 58',3,Swift,,y,y,y,,0.0785,"<SkyCoord (ICRS): (ra, dec) in deg
+    (44.54166667, -8.96666667)>",71804.6,True,bn190829830
+190828B,16h47m16s +27° 14',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (251.81666667, 27.23333333)>",46799.42,True,bn190828542
+190824A,14h21m19s -41° 54',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.32916667, -41.9)>",53199.57,True,bn190824616
+190821A,16h40m18s -34° 01',3,Swift,y,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (250.075, -34.01666667)>",61803.87,True,bn190821716
+190805B,14h07m25s +19° 46',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (211.85416667, 19.76666667)>",17160.97,True,bn190805199
+190727B,08h25m55s -13° 16',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.47916667, -13.26666667)>",73097.0,True,bn190727846
+190719C,16h00m50s +12° 59',3,Swift,y,y,y,,,2.469,"<SkyCoord (ICRS): (ra, dec) in deg
+    (240.20833333, 12.98333333)>",53914.39,True,bn190719624
+190613B,20h21m41s -04° 40',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (305.42083333, -4.66666667)>",38822.05,True,bn190613449
+190613A,12h10m14s +67° 14',3,Swift,y,y,y,,,2.78?,"<SkyCoord (ICRS): (ra, dec) in deg
+    (182.55833333, 67.23333333)>",14838.31,True,bn190613172
+190519A,07h39m03s -38° 49',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (114.7625, -38.81666667)>",26739.43,True,bn190519309
+190515B,06h35m22s +52° 18',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (98.84166667, 52.3)>",57861.31,True,bn190515675
+190512A,05h29m46s -07° 34',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (82.44166667, -7.56666667)>",52809.1,True,bn190512611
+190511A,08h25m45s -20° 14',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.4375, -20.23333333)>",26088.28,True,bn190511302
+190422A,12h08m30s -60° 14',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (182.125, -60.23333333)>",82529.21,True,bn190422957
+190415A,01h52m13s +20° 16',246*39,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (28.05416667, 20.26666667)>",14989.96,True,bn190415173
+190404A,00h48m21s +27° 29',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (12.0875, 27.48333333)>",14989.96,True,bn190404178
+190331A,01h54m18s +27° 37',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (28.575, 27.61666667)>",8077.5,True,bn190331093
+190324A,03h18m18s -47° 14',3,Swift,y,y,y,,,1.1715,"<SkyCoord (ICRS): (ra, dec) in deg
+    (49.575, -47.23333333)>",81841.63,True,bn190324947
+190320A,07h51m15s -45° 53',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (117.8125, -45.88333333)>",4476.6,True,bn190320052
+190311A,14h08m24s +53° 31',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (212.1, 53.51666667)>",51813.67,True,bn190311600
+190304A,01h07m38s -80° 42',65*10,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (16.90833333, -80.7)>",51813.67,True,bn190304605
+190220B,16h09m54s -21° 08',3,INTEGRAL,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (242.475, -21.13333333)>",72943.63,True,bn190220844
+190202A,11h06m03s +09° 23',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (166.5125, 9.38333333)>",5970.35,True,bn190202069
+190129A,00h45m44s -31° 48',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (11.43333333, -31.8)>",5970.35,True,bn190129074
+190123A,03h32m55s +45° 29',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (53.22916667, 45.48333333)>",44353.19,True,bn190123513
+190114C,03h38m02s -26° 56',3,Swift,y,y,y,y,,0.425,"<SkyCoord (ICRS): (ra, dec) in deg
+    (54.50833333, -26.93333333)>",75423.19,True,bn190114873
+190110A,18h27m32s -53° 41',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (276.88333333, -53.68333333)>",62688.3,True,bn190110726
+190109B,03h42m23s +63° 35',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (55.59583333, 63.58333333)>",42969.2,True,bn190109497
+190109A,02h12m52s +38° 07',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (33.21666667, 38.11666667)>",18761.78,True,bn190109217
+181228A,03h19m19s +13° 12',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (49.82916667, 13.2)>",10397.62,True,bn181228120
+181225A,23h12m17s -09° 29',8,AGILE,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (348.07083333, -9.48333333)>",42250.53,True,bn181225489
+181222A,18h03m54s -38° 42',60,MAXI,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (270.975, -38.7)>",24092.64,True,bn181222279
+181125A,17h53m39s -02° 37',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (268.4125, -2.61666667)>",32079.91,True,bn181125371
+181027A,15h01m32s +30° 53',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (225.38333333, 30.88333333)>",6539.39,True,bn181027076
+181020A,00h55m52s -47° 23',3,Swift,y,y,y,,,2.938,"<SkyCoord (ICRS): (ra, dec) in deg
+    (13.96666667, -47.38333333)>",68433.51,True,bn181020792
+181010A,03h30m14s -23° 02',3,Swift,y,y,y,,,1.39,"<SkyCoord (ICRS): (ra, dec) in deg
+    (52.55833333, -23.03333333)>",21351.71,True,bn181010247
+180923A,02h33m13s +06° 18',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (38.30416667, 6.3)>",21351.71,True,bn180923252
+180914B,22h09m48s +24° 53',20,AGILE,y,y,y,,,1.096,"<SkyCoord (ICRS): (ra, dec) in deg
+    (332.45, 24.88333333)>",66182.22,True,bn180914771
+180828A,17h54m48s -25° 48',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (268.7, -25.8)>",68254.78,True,bn180828790
+180818B,06h56m56s +39° 20',3,Swift,y,y,y?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (104.23333333, 39.33333333)>",45018.55,True,bn180818520
+180812A,16h23m33s +74° 40',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.8875, 74.66666667)>",30150.23,True,bn180812349
+180809A,19h51m10s -34° 40',8,MAXI,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (297.79166667, -34.66666667)>",30150.23,True,bn180809354
+180728A,16h54m17s -54° 02',3,Swift,y,y,y,,,0.117,"<SkyCoord (ICRS): (ra, dec) in deg
+    (253.57083333, -54.03333333)>",62940.71,True,bn180728728
+180720C,17h42m30s -26° 35',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (265.625, -26.58333333)>",80637.64,True,bn180720933
+180720B,00h02m07s -02° 56',3,Swift,y,y,y,y,,0.654,"<SkyCoord (ICRS): (ra, dec) in deg
+    (0.52916667, -2.93333333)>",51704.59,True,bn180720598
+180706A,12h06m40s +66° 02',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (181.66666667, 66.03333333)>",30280.41,True,bn180706351
+180630A,03h15m14s -87° 29',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (48.80833333, -87.48333333)>",40311.8,True,bn180630467
+180620B,23h50m04s -57° 57',3,Swift,y,y,y,,,1.1175,"<SkyCoord (ICRS): (ra, dec) in deg
+    (357.51666667, -57.95)>",57037.16,True,bn180620660
+180611A,03h05m53s -48° 50',672*54,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (46.47083333, -48.83333333)>",57037.16,True,bn180611665
+180605A,03h10m02s -48° 39',140*29,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (47.50833333, -48.65)>",57037.16,True,bn180605665
+180427A,18h04m03s +68° 27',173*37,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (271.0125, 68.45)>",57037.16,True,bn180427665
+180418A,11h20m27s +24° 57',3,Swift,y,y,y,,,1.55phh,"<SkyCoord (ICRS): (ra, dec) in deg
+    (170.1125, 24.95)>",24246.07,True,bn180418281
+180411A,23h47m19s +66° 47',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (356.82916667, 66.78333333)>",44863.71,True,bn180411519
+180410A,06h23m56s +12° 48',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (95.98333333, 12.8)>",28979.23,True,bn180410336
+180409A,11h43m22s +36° 18',49*19,IPN,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.84166667, 36.3)>",28979.23,True,bn180409340
+180404B,03h33m32s -50° 12',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (53.38333333, -50.2)>",7904.07,True,bn180404091
+180314A,06h37m06s -24° 29',3,Swift,y,y,y,,,1.445,"<SkyCoord (ICRS): (ra, dec) in deg
+    (99.275, -24.48333333)>",2611.38,True,bn180314030
+180205A,08h27m17s +11° 33',3,Swift,y,y,y,,,1.409,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.82083333, 11.55)>",15925.39,True,bn180205184
+180116A,14h22m37s +18° 58',8*7,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.65416667, 18.96666667)>",15925.39,True,bn180116189
+180113C,11h41m12s -63° 16',160*14,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.3, -63.26666667)>",15925.39,True,bn180113189
+180113B,00h26m47s +24° 01',384*35,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (6.69583333, 24.01666667)>",15925.39,True,bn180113189
+180113A,01h16m52s +68° 41',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (19.21666667, 68.68333333)>",10026.66,True,bn180113116
+180102A,13h32m28s +62° 09',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (203.11666667, 62.15)>",56984.29,True,bn180102660
+171222A,09h53m10s +35° 37',3,Swift,y,y,y,,,2.409,"<SkyCoord (ICRS): (ra, dec) in deg
+    (148.29166667, 35.61666667)>",59099.8,True,bn171222684
+171120A,10h55m09s +22° 27',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (163.7875, 22.45)>",48002.49,True,bn171120556
+171119A,09h01m16s -50° 17',250*8,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (135.31666667, -50.28333333)>",48002.49,True,bn171119561
+171112A,01h20m18s -59° 38',60,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (20.075, -59.63333333)>",75017.15,True,bn171112868
+171022A,14h21m25s +12° 51',1314*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.35416667, 12.85)>",75017.15,True,bn171022873
+171010B,02h16m30s -54° 25',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (34.125, -54.41666667)>",75017.15,True,bn171010873
+171007A,09h02m10s +42° 51',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (135.54166667, 42.85)>",43058.27,True,bn171007498
+170921B,08h49m30s +57° 03',2250*14,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (132.375, 57.05)>",43058.27,True,bn170921503
+170921A,01h47m24s +30° 52',3,Swift,y,y,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (26.85, 30.86666667)>",52128.5,True,bn170921608
+170912B,14h21m52s -62° 02',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.46666667, -62.03333333)>",23626.72,True,bn170912273
+170911A,04h48m23s +30° 55',23*19,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (72.09583333, 30.91666667)>",23062.79,True,bn170911267
+170906B,15h28m53s -28° 15',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (232.22083333, -28.25)>",3345.73,True,bn170906039
+170906A,13h35m58s -47° 07',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (203.99166667, -47.11666667)>",2591.62,True,bn170906030
+170903A,16h58m03s +34° 59',3,Swift,y,y,,n,,0.886h,"<SkyCoord (ICRS): (ra, dec) in deg
+    (254.5125, 34.98333333)>",46147.21,True,bn170903534
+170816A,23h23m22s +12° 51',139*19,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (350.84166667, 12.85)>",46147.21,True,bn170816539
+170813A,13h24m13s -05° 28',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (201.05416667, -5.46666667)>",4396.48,True,bn170813051
+170810A,12h31m48s +03° 39',3,Swift,y,y,y,y,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (187.95, 3.65)>",79301.06,True,bn170810918
+170803A,11h39m48s -16° 19',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (174.95, -16.31666667)>",63026.92,True,bn170803729
+170728B,15h52m11s +70° 09',3,Swift,y,y,y,n,,1.27h,"<SkyCoord (ICRS): (ra, dec) in deg
+    (238.04583333, 70.15)>",82999.43,True,bn170728961
+170711A,03h03m09s +47° 51',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (45.7875, 47.85)>",80425.38,True,bn170711931
+170708A,22h23m20s +19° 48',276*17,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (335.83333333, 19.8)>",80425.38,True,bn170708936
+170705A,12h46m49s +18° 18',3,Swift,y,y,y,,,2.010,"<SkyCoord (ICRS): (ra, dec) in deg
+    (191.70416667, 18.3)>",9947.08,True,bn170705115
+170629A,08h40m04s -46° 35',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (130.01666667, -46.58333333)>",46413.15,True,bn170629537
+170626A,11h01m39s +56° 28',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (165.4125, 56.46666667)>",34643.12,True,bn170626401
+170607A,00h29m22s +09° 14',3,Swift,y,y,y,,,0.557,"<SkyCoord (ICRS): (ra, dec) in deg
+    (7.34166667, 9.23333333)>",84093.71,True,bn170607971
+170511A,20h02m31s +33° 19',17,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (300.62916667, 33.31666667)>",84093.71,True,bn170511978
+170419B,04h01m59s -15° 06',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (60.49583333, -15.1)>",77626.05,True,bn170419898
+170405A,14h39m14s -25° 15',3,Swift,y,y,y,,,3.510,"<SkyCoord (ICRS): (ra, dec) in deg
+    (219.80833333, -25.25)>",67188.43,True,bn170405777
+170318B,18h57m07s +06° 16',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (284.27916667, 6.26666667)>",55672.55,True,bn170318644
+170307A,00h54m08s +09° 32',3,Swift,y,,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (13.53333333, 9.53333333)>",73461.28,True,bn170307851
+170305A,02h38m38s +09° 54',29*190,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (39.65833333, 9.9)>",73461.28,True,bn170305855
+170222A,19h31m49s +28° 13',48*9,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (292.95416667, 28.21666667)>",73461.28,True,bn170222855
+170219A,03h39m22s +50° 04',85*8,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (54.84166667, 50.06666667)>",73461.28,True,bn170219855
+170210A,07h08m32s -46° 48',197*10,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (107.13333333, -46.8)>",10056.58,True,bn170210116
+170208B,08h28m37s -09° 02',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (127.15416667, -9.03333333)>",81218.91,True,bn170208940
+170208A,11h06m15s -46° 47',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (166.5625, -46.78333333)>",65476.32,True,bn170208758
+170131A,22h45m55s +64° 00',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (341.47916667, 64.)>",65476.32,True,bn170131763
+170126A,17h34m19s -64° 45',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (263.57916667, -64.75)>",41442.28,True,bn170126480
+170113A,04h06m36s -71° 55',3,Swift,y,y,y,,,1.968,"<SkyCoord (ICRS): (ra, dec) in deg
+    (61.65, -71.91666667)>",36245.48,True,bn170113420
+161218A,16h21m02s -04° 07',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.25833333, -4.11666667)>",13656.14,True,bn161218163
+161202A,23h47m35s +19° 38',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (356.89583333, 19.63333333)>",83572.7,True,bn161202972
+161129A,21h04m46s +32° 07',3,Swift,y,y,y,,,0.645,"<SkyCoord (ICRS): (ra, dec) in deg
+    (316.19166667, 32.11666667)>",25899.88,True,bn161129300
+161117A,21h28m17s -29° 38',3,Swift,y,y,y,,,1.549,"<SkyCoord (ICRS): (ra, dec) in deg
+    (322.07083333, -29.63333333)>",5736.68,True,bn161117066
+161022A,08h35m52s +54° 22',3,Swift,y,y,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (128.96666667, 54.36666667)>",9820.14,True,bn161022114
+161020A,10h44m08s -54° 46',2,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (161.03333333, -54.76666667)>",9820.14,True,bn161020119
+161017A,09h31m04s +43° 08',3,Swift,y,y,y,n,,2.013,"<SkyCoord (ICRS): (ra, dec) in deg
+    (142.76666667, 43.13333333)>",64311.16,True,bn161017745
+161014A,22h10m31s +07° 29',3,Swift,y,y,y,n,,2.823,"<SkyCoord (ICRS): (ra, dec) in deg
+    (332.62916667, 7.48333333)>",45082.7,True,bn161014522
+161004B,07h28m38s -39° 54',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (112.15833333, -39.9)>",83279.29,True,bn161004964
+160917A,19h42m41s +46° 24',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (295.67083333, 46.4)>",41419.34,True,bn160917479
+160912A,20h06m04s +57° 33',3,Swift,y,y,y,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (301.51666667, 57.55)>",58063.14,True,bn160912674
+160905A,10h48m57s -50° 48',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (162.2375, -50.8)>",40738.38,True,bn160905471
+160821A,11h24m59s +42° 21',3,Swift,y,,y,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (171.24583333, 42.35)>",74070.16,True,bn160821857
+160815A,19h14m11s +84° 19',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (288.54583333, 84.31666667)>",42311.64,True,bn160815490
+160804A,14h46m33s +10° 00',3,Swift,y,y,y,,,0.736,"<SkyCoord (ICRS): (ra, dec) in deg
+    (221.6375, 10.)>",42311.64,True,bn160804495
+160802A,01h52m07s +71° 22',53*36,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (28.02916667, 71.36666667)>",42311.64,True,bn160802495
+160629A,00h19m17s +76° 59',3.1,INTEGRAL,y,y,y,,,3.332,"<SkyCoord (ICRS): (ra, dec) in deg
+    (4.82083333, 76.98333333)>",80388.44,True,bn160629930
+160625A,11h47m45s -65° 07',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (176.9375, -65.11666667)>",81631.46,True,bn160625945
+160519A,04h44m27s +31° 12',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (71.1125, 31.2)>",1053.53,True,bn160519012
+160424A,21h17m55s -60° 24',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (319.47916667, -60.4)>",42547.34,True,bn160424492
+160419A,01h05m42s -27° 21',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (16.425, -27.35)>",54997.41,True,bn160419637
+160325A,01h02m23s -72° 42',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (15.59583333, -72.7)>",25203.61,True,bn160325291
+160223B,06h19m54s +33° 24',3.2,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (94.975, 33.4)>",35951.45,True,bn160223416
+160223A,09h50m20s +09° 22',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (147.58333333, 9.36666667)>",6265.27,True,bn160223072
+160221A,15h28m19s -28° 27',3.2,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (232.07916667, -28.45)>",85790.32,True,bn160221993
+160220A,15h47m42s -18° 33',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (236.925, -18.55)>",5125.7,True,bn160220059
+160216A,20h46m49s -71° 33',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (311.70416667, -71.55)>",69031.44,True,bn160216801
+160107A,19h58m40s +06° 25',13*11,MAXI,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (299.66666667, 6.41666667)>",69031.44,True,bn160107804
+160104A,05h07m13s +11° 21',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (76.80416667, 11.35)>",41050.84,True,bn160104475
+160101A,14h38m55s -13° 49',9,MAXI,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (219.72916667, -13.81666667)>",41050.84,True,bn160101480
+151231A,04h38m07s -61° 01',123*11.6,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (69.52916667, -61.01666667)>",41050.84,True,bn151231480
+151228B,22h57m46s +08° 05',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (344.44166667, 8.08333333)>",82034.94,True,bn151228949
+151227B,19h21m08s +35° 25',78*10.4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.28333333, 35.41666667)>",82034.94,True,bn151227954
+151205A,15h17m08s +35° 46',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (229.28333333, 35.76666667)>",56760.93,True,bn151205657
+151122A,19h58m49s -19° 54',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (299.70416667, -19.9)>",56760.93,True,bn151122662
+151120A,10h28m58s -32° 31',2.8,INTEGRAL,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (157.24166667, -32.51666667)>",30176.17,True,bn151120349
+151111A,03h47m19s -44° 10',3,Swift,y,y,y,,,3.5ph,"<SkyCoord (ICRS): (ra, dec) in deg
+    (56.82916667, -44.16666667)>",30803.41,True,bn151111356
+151027A,18h09m58s +61° 23',3,Swift,y,y,y,y,,0.81,"<SkyCoord (ICRS): (ra, dec) in deg
+    (272.49166667, 61.38333333)>",14304.15,True,bn151027166
+151006A,09h49m48s +70° 31',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (147.45, 70.51666667)>",35701.88,True,bn151006413
+151001A,15h34m55s +15° 35',3,Swift,,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (233.72916667, 15.58333333)>",54262.93,True,bn151001628
+150922A,19h37m31s -05° 29',75*9,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (294.37916667, -5.48333333)>",54262.93,True,bn150922633
+150912A,16h33m44s -20° 59',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (248.43333333, -20.98333333)>",38258.11,True,bn150912443
+150831B,18h04m05s -27° 15',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (271.02083333, -27.25)>",80367.26,True,bn150831930
+150821A,22h47m37s -57° 52',3,Swift,y,y,y,,,0.755,"<SkyCoord (ICRS): (ra, dec) in deg
+    (341.90416667, -57.86666667)>",35040.97,True,bn150821406
+150819B,03h57m33s +39° 42',84*3.4,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (59.3875, 39.7)>",35040.97,True,bn150819411
+150817A,16h38m34s -12° 04',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (249.64166667, -12.06666667)>",7513.38,True,bn150817087
+150811B,12h25m23s -14° 07',342*32,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (186.34583333, -14.11666667)>",7513.38,True,bn150811092
+150727A,13h35m58s -18° 21',3,Swift,y,y,y,,,0.313,"<SkyCoord (ICRS): (ra, dec) in deg
+    (203.99166667, -18.35)>",68522.43,True,bn150727793
+150711A,14h46m31s -35° 28',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (221.62916667, -35.46666667)>",66183.68,True,bn150711766
+150626A,07h25m22s -37° 46',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (111.34166667, -37.76666667)>",7969.52,True,bn150626092
+150607A,09h20m06s +68° 27',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (140.025, 68.45)>",28509.57,True,bn150607330
+150530A,21h50m06s +57° 34',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (327.525, 57.56666667)>",42138.22,True,bn150530488
+150527A,19h15m50s +04° 12',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (288.95833333, 4.2)>",24535.8,True,bn150527283
+150513A,03h16m14s -22° 55',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (49.05833333, -22.91666667)>",73879.73,True,bn150513856
+150430A,21h45m58s -27° 56',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (326.49166667, -27.93333333)>",73879.73,True,bn150430860
+150403A,20h46m01s -62° 42',3,Swift,y,y,y,,,2.06,"<SkyCoord (ICRS): (ra, dec) in deg
+    (311.50416667, -62.7)>",78856.8,True,bn150403913
+150330A,22h04m07s +52° 18',8.6*277,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (331.02916667, 52.3)>",78856.8,True,bn150330918
+150323C,12h50m27s +50° 12',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (192.6125, 50.2)>",61521.49,True,bn150323712
+150323B,17h21m47s +38° 19',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (260.44583333, 38.31666667)>",61521.49,True,bn150323712
+150314A,08h26m38s +63° 50',3,Swift,y,y,y,y,,1.758,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.65833333, 63.83333333)>",17692.86,True,bn150314205
+150309A,18h27m57s +86° 26',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (276.9875, 86.43333333)>",82790.66,True,bn150309958
+150301B,05h56m38s -57° 59',3,Swift,y,y,y,,,1.5169,"<SkyCoord (ICRS): (ra, dec) in deg
+    (89.15833333, -57.98333333)>",70684.02,True,bn150301818
+150219A,18h05m04s -41° 36',3.3,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (271.26666667, -41.6)>",45074.92,True,bn150219522
+150204A,10h40m58s -64° 03',1.5,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (160.24166667, -64.05)>",45074.92,True,bn150204527
+150203A,06h33m39s +06° 58',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (98.4125, 6.96666667)>",14947.5,True,bn150203173
+150201A,00h47m20s -37° 37',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (11.83333333, -37.61666667)>",49619.7,True,bn150201574
+150126A,23h22m00s -12° 22',34*28,MAXI,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (350.5, -12.36666667)>",49619.7,True,bn150126579
+150118C,10h40m18s -27° 25',60*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (160.075, -27.41666667)>",49619.7,True,bn150118579
+150110B,19h17m26s +32° 31',3,Swift,y,y,,y,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (289.35833333, 32.51666667)>",79710.03,True,bn150110923
+150110A,08h46m33s -48° 53',140*100,MAXI,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (131.6375, -48.88333333)>",79710.03,True,bn150110923
+141229A,19h18m43s -35° 38',66,MAXI,y,y?,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (289.67916667, -35.63333333)>",79710.03,True,bn141229928
+141225A,09h15m00s +33° 48',3,Swift,y,y,y,,,0.915,"<SkyCoord (ICRS): (ra, dec) in deg
+    (138.75, 33.8)>",82867.03,True,bn141225959
+141221A,13h13m05s +08° 13',3,Swift,y,y,y,,,1.452,"<SkyCoord (ICRS): (ra, dec) in deg
+    (198.27083333, 8.21666667)>",29230.95,True,bn141221338
+141220A,13h00m12s +32° 09',3,Swift,y,y,y,,,1.3195,"<SkyCoord (ICRS): (ra, dec) in deg
+    (195.05, 32.15)>",21772.65,True,bn141220252
+141215A,11h56m13s -52° 45',66*10,IPN,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (179.05416667, -52.75)>",21772.65,True,bn141215257
+141202A,09h32m17s +54° 10',192*10,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (143.07083333, 54.16666667)>",21772.65,True,bn141202257
+141118A,10h27m30s +19° 05',300*10,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (156.875, 19.08333333)>",21772.65,True,bn141118257
+141102A,13h54m27s -47° 06',4,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (208.6125, -47.1)>",21772.65,True,bn141102257
+141031A,08h34m24s -59° 08',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (128.6, -59.13333333)>",26306.69,True,bn141031304
+141022A,16h07m36s -72° 08',3,Swift,y,y,y?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (241.9, -72.13333333)>",5262.77,True,bn141022061
+141011A,17h11m45s -09° 41',42*6,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (257.9375, -9.68333333)>",5262.77,True,bn141011066
+141005A,19h24m26s +36° 04',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (291.10833333, 36.06666667)>",18786.55,True,bn141005217
+141004A,05h06m56s +12° 49',3,Swift,y,y,y,,,0.573,"<SkyCoord (ICRS): (ra, dec) in deg
+    (76.73333333, 12.81666667)>",84055.8,True,bn141004973
+140919A,14h46m13s -32° 09',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (221.55416667, -32.15)>",54915.51,True,bn140919636
+140907A,03h12m35s +46° 36',3,Swift,y,y,y,,,1.21,"<SkyCoord (ICRS): (ra, dec) in deg
+    (48.14583333, 46.6)>",58028.84,True,bn140907672
+140901B,07h28m44s -29° 13',3,Swift,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (112.18333333, -29.21666667)>",58028.84,True,bn140901677
+140901A,01h03m16s -32° 45',99*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (15.81666667, -32.75)>",58028.84,True,bn140901677
+140828A,09h28m03s +14° 35',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (142.0125, 14.58333333)>",24854.04,True,bn140828288
+140818B,18h04m35s +01° 22',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (271.14583333, 1.36666667)>",67456.51,True,bn140818781
+140818A,13h18m03s +06° 48',60,MAXI,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (199.5125, 6.8)>",67456.51,True,bn140818781
+140817A,08h29m01s +58° 11',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (127.25416667, 58.18333333)>",25321.35,True,bn140817293
+140716A,07h12m32s -60° 09',1.5,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (108.13333333, -60.15)>",25321.35,True,bn140716298
+140713A,18h44m27s +59° 37',3,Swift,y,y,,y,,0.935h,"<SkyCoord (ICRS): (ra, dec) in deg
+    (281.1125, 59.61666667)>",67425.11,True,bn140713780
+140710B,13h38m40s -58° 33',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (204.66666667, -58.55)>",77854.58,True,bn140710901
+140709B,09h44m17s +63° 30',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.07083333, 63.5)>",54945.0,True,bn140709637
+140709A,20h18m33s +51° 13',3,Swift,,y,y?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (304.6375, 51.21666667)>",4421.16,True,bn140709051
+140706A,03h17m13s -38° 04',3,Swift,,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (49.30416667, -38.06666667)>",70413.17,True,bn140706815
+140703A,00h51m58s +45° 06',3,Swift,y,y,y,y,,3.14,"<SkyCoord (ICRS): (ra, dec) in deg
+    (12.99166667, 45.1)>",2237.06,True,bn140703026
+140621A,04h53m07s +14° 39',43*17,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (73.27916667, 14.65)>",2237.06,True,bn140621031
+140610A,19h05m02s +03° 54',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (286.25833333, 3.9)>",59489.44,True,bn140610689
+140528A,18h42m55s -58° 45',57*24,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (280.72916667, -58.75)>",59489.44,True,bn140528694
+140521A,21h20m03s +67° 36',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (320.0125, 67.6)>",63258.48,True,bn140521732
+140512A,19h17m29s -15° 06',3,Swift,y,y,y,,,0.725,"<SkyCoord (ICRS): (ra, dec) in deg
+    (289.37083333, -15.1)>",70309.21,True,bn140512814
+140506A,18h27m10s -55° 34',3,Swift,y,y,y,,,0.889,"<SkyCoord (ICRS): (ra, dec) in deg
+    (276.79166667, -55.56666667)>",76056.82,True,bn140506880
+140502A,21h16m37s +49° 01',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (319.15416667, 49.01666667)>",30620.48,True,bn140502354
+140423A,13h09m10s +49° 49',3,Swift,y,y,y,,,3.26,"<SkyCoord (ICRS): (ra, dec) in deg
+    (197.29166667, 49.81666667)>",30713.26,True,bn140423356
+140416A,02h21m36s +43° 54',1548*10,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (35.4, 43.9)>",30713.26,True,bn140416360
+140408A,19h22m44s -12° 35',3,Swift,,y,?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.68333333, -12.58333333)>",47754.79,True,bn140408553
+140330A,21h52m16s -57° 45',118*17,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (328.06666667, -57.75)>",47754.79,True,bn140330558
+140329A,09h44m59s -32° 06',53*12,IPN,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.24583333, -32.1)>",47754.79,True,bn140329558
+140323A,23h47m33s -79° 55',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (356.8875, -79.91666667)>",37391.91,True,bn140323433
+140311B,16h49m10s +52° 45',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (252.29166667, 52.75)>",76469.72,True,bn140311885
+140306A,01h51m46s +48° 59',59*20,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (27.94166667, 48.98333333)>",76469.72,True,bn140306890
+140304A,02h02m40s +33° 29',3,Swift,y,y,y,y,,5.283,"<SkyCoord (ICRS): (ra, dec) in deg
+    (30.66666667, 33.48333333)>",48151.09,True,bn140304557
+140302A,16h55m22s -12° 52',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (253.84166667, -12.86666667)>",29578.81,True,bn140302342
+140226A,14h45m58s +15° 00',0.1,iPTF,y,y,y,,,1.98,"<SkyCoord (ICRS): (ra, dec) in deg
+    (221.49166667, 15.)>",29578.81,True,bn140226347
+140219A,10h25m46s +07° 28',334*22,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (156.44166667, 7.46666667)>",29578.81,True,bn140219347
+140213A,07h00m52s -73° 08',3,Swift,y,y,y,,,1.2076,"<SkyCoord (ICRS): (ra, dec) in deg
+    (105.21666667, -73.13333333)>",69697.73,True,bn140213807
+140209A,05h25m20s +32° 29',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (81.33333333, 32.48333333)>",27057.88,True,bn140209313
+140206A,09h41m24s +66° 45',3,Swift,y,y,y,,,2.73,"<SkyCoord (ICRS): (ra, dec) in deg
+    (145.35, 66.75)>",26240.16,True,bn140206304
+140118A,22h04m01s -17° 57',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (331.00416667, -17.95)>",5522.73,True,bn140118064
+140108A,21h40m43s +58° 46',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (325.17916667, 58.76666667)>",62322.52,True,bn140108721
+140102A,14h07m37s +01° 20',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (211.90416667, 1.33333333)>",76657.64,True,bn140102887
+131229A,05h40m57s -04° 26',3,Swift,y,y,,,,1.0phh,"<SkyCoord (ICRS): (ra, dec) in deg
+    (85.2375, -4.43333333)>",23964.22,True,bn131229277
+131202A,22h56m13s -21° 39',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (344.05416667, -21.65)>",54729.32,True,bn131202633
+131128A,23h41m18s +31° 17',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (355.325, 31.28333333)>",54384.57,True,bn131128629
+131105A,04h44m03s -62° 59',3,Swift,y,y,y,,,1.686,"<SkyCoord (ICRS): (ra, dec) in deg
+    (71.0125, -62.98333333)>",7484.76,True,bn131105087
+131031A,01h58m28s -01° 36',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (29.61666667, -1.6)>",41612.82,True,bn131031482
+131024B,09h37m37s +44° 14',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (144.40416667, 44.23333333)>",77731.4,True,bn131024900
+131004A,19h44m36s -02° 58',3,Swift,y,y,y,,,0.717,"<SkyCoord (ICRS): (ra, dec) in deg
+    (296.15, -2.96666667)>",78063.44,True,bn131004904
+131002A,16h53m06s +82° 03',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (253.275, 82.05)>",24861.28,True,bn131002288
+130925A,02h44m44s -26° 08',3,Swift,y,y,y,,,0.347,"<SkyCoord (ICRS): (ra, dec) in deg
+    (41.18333333, -26.13333333)>",14183.29,True,bn130925164
+130907A,14h23m31s +45° 37',3,Swift,y,y,y,y,,1.238,"<SkyCoord (ICRS): (ra, dec) in deg
+    (215.87916667, 45.61666667)>",77956.79,True,bn130907907
+130903A,05h28m33s -00° 07',2.6,INTEGRAL,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (82.1375, -0.11666667)>",2852.32,True,bn130903033
+130816A,13h08m40s -58° 57',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (197.16666667, -58.95)>",6415.7,True,bn130816074
+130804A,20h14m37s -79° 35',948*3,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (303.65416667, -79.58333333)>",6415.7,True,bn130804079
+130803A,14h40m58s -02° 28',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (220.24166667, -2.46666667)>",36172.49,True,bn130803419
+130727A,22h03m12s -65° 34',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (330.8, -65.56666667)>",60319.52,True,bn130727698
+130708A,14h29m15s +15° 46',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (217.3125, 15.76666667)>",60319.52,True,bn130708703
+130627A,12h17m47s -37° 05',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (184.44583333, -37.08333333)>",32103.45,True,bn130627372
+130623A,01h22m53s -77° 47',3,Swift,,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (20.72083333, -77.78333333)>",32103.45,True,bn130623377
+130612A,17h19m13s +16° 42',3,Swift,y,y,y,,,2.006,"<SkyCoord (ICRS): (ra, dec) in deg
+    (259.80416667, 16.7)>",12142.16,True,bn130612141
+130610A,14h57m40s +28° 11',3,Swift,y,y,y,,,2.092,"<SkyCoord (ICRS): (ra, dec) in deg
+    (224.41666667, 28.18333333)>",11533.34,True,bn130610133
+130609B,03h35m01s -40° 09',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (53.75416667, -40.15)>",77920.41,True,bn130609902
+130609A,10h10m42s +24° 06',3,Swift,y,y,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (152.675, 24.1)>",11108.64,True,bn130609129
+130528A,09h15m39s +87° 17',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (138.9125, 87.28333333)>",60083.91,True,bn130528695
+130514B,09h50m26s -18° 58',3,INTEGRAL,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (147.60833333, -18.96666667)>",48394.63,True,bn130514560
+130502A,09h14m19s -00° 09',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (138.57916667, -0.15)>",64230.45,True,bn130502743
+130427A,11h32m33s +27° 41',3,Swift,y,y,y,y,,0.3399,"<SkyCoord (ICRS): (ra, dec) in deg
+    (173.1375, 27.68333333)>",28077.51,True,bn130427324
+130420B,12h12m29s +54° 23',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (183.12083333, 54.38333333)>",46591.07,True,bn130420539
+130420A,13h04m24s +59° 25',3,Swift,y,y,y,,,1.297,"<SkyCoord (ICRS): (ra, dec) in deg
+    (196.1, 59.41666667)>",26909.53,True,bn130420313
+130327B,14h32m22s -69° 31',10,AGILE,y,y?,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (218.09166667, -69.51666667)>",26909.53,True,bn130327316
+130306A,18h37m55s -11° 41',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (279.47916667, -11.68333333)>",85861.7,True,bn130306991
+130305A,07h47m04s +52° 01',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (116.76666667, 52.01666667)>",85861.7,True,bn130305999
+130216B,03h55m30s +02° 02',2,Swift,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (58.875, 2.03333333)>",85861.7,True,bn130216999
+130216A,04h31m36s +14° 40',3,Swift,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (67.9, 14.66666667)>",80124.62,True,bn130216927
+130215A,02h53m55s +13° 22',3,Swift,y,,y,,,0.597,"<SkyCoord (ICRS): (ra, dec) in deg
+    (43.47916667, 13.36666667)>",5490.19,True,bn130215063
+130206A,09h21m30s -58° 10',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (140.375, -58.16666667)>",70588.59,True,bn130206817
+121217A,10h14m54s -62° 18',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (153.725, -62.3)>",26267.89,True,bn121217309
+121211A,13h02m11s +30° 10',3,Swift,y,y,y,,,1.023,"<SkyCoord (ICRS): (ra, dec) in deg
+    (195.54583333, 30.16666667)>",49622.79,True,bn121211574
+121202A,17h07m16s +23° 57',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (256.81666667, 23.95)>",15605.03,True,bn121202181
+121128A,20h02m20s +54° 19',3,Swift,y,y,y,,,2.20,"<SkyCoord (ICRS): (ra, dec) in deg
+    (300.58333333, 54.31666667)>",18337.21,True,bn121128212
+121127A,11h45m45s -52° 25',29*9,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (176.4375, -52.41666667)>",18337.21,True,bn121127217
+121125A,15h14m05s +55° 19',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (228.52083333, 55.31666667)>",30747.27,True,bn121125356
+121123A,20h29m27s -11° 52',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (307.3625, -11.86666667)>",36161.29,True,bn121123421
+121118A,19h57m31s +65° 39',300*66,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (299.37916667, 65.65)>",36161.29,True,bn121118424
+121031A,11h23m05s -03° 31',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (170.77083333, -3.51666667)>",82230.68,True,bn121031949
+121011A,17h20m48s +41° 08',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (260.2, 41.13333333)>",40530.41,True,bn121011469
+120922A,15h39m01s -20° 11',3,Swift,y,y,y,,,3.1ph,"<SkyCoord (ICRS): (ra, dec) in deg
+    (234.75416667, -20.18333333)>",81028.65,True,bn120922939
+120919B,20h10m32s -37° 29',94*5,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (302.63333333, -37.48333333)>",81028.65,True,bn120919943
+120913B,14h14m35s -14° 32',3,Swift,y,,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (213.64583333, -14.53333333)>",86158.09,True,bn120913997
+120913A,09h45m45s +26° 59',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.4375, 26.98333333)>",73101.9,True,bn120913846
+120911B,11h28m35s -37° 42',129*11,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (172.14583333, -37.7)>",73101.9,True,bn120911851
+120911A,23h51m51s +63° 06',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (357.9625, 63.1)>",25713.75,True,bn120911298
+120909A,18h22m44s -59° 26',3,Swift,y,y,y,,,3.93,"<SkyCoord (ICRS): (ra, dec) in deg
+    (275.68333333, -59.43333333)>",6123.23,True,bn120909070
+120908A,15h23m06s -25° 30',60,MAXI,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (230.775, -25.5)>",6123.23,True,bn120908076
+120907A,04h58m58s -09° 18',3,Swift,,y,y,,,0.970,"<SkyCoord (ICRS): (ra, dec) in deg
+    (74.74166667, -9.3)>",1463.08,True,bn120907017
+120811C,13h18m50s +62° 17',3,Swift,y,y,y,,,2.671,"<SkyCoord (ICRS): (ra, dec) in deg
+    (199.70833333, 62.28333333)>",56092.17,True,bn120811649
+120729A,00h52m13s +49° 56',3,Swift,,y,y,n,,0.80,"<SkyCoord (ICRS): (ra, dec) in deg
+    (13.05416667, 49.93333333)>",39374.07,True,bn120729456
+120728A,09h08m24s -54° 26',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (137.1, -54.43333333)>",80711.03,True,bn120728934
+120716A,20h52m21s +09° 33',121*30,IPN,y,y,y,,,2.486,"<SkyCoord (ICRS): (ra, dec) in deg
+    (313.0875, 9.55)>",80711.03,True,bn120716939
+120712A,11h18m25s -20° 04',3,Swift,,y,y,,,4.1745,"<SkyCoord (ICRS): (ra, dec) in deg
+    (169.60416667, -20.06666667)>",49347.38,True,bn120712571
+120711A,06h18m49s -71° 01',3,Swift,y,y,y,,,1.405,"<SkyCoord (ICRS): (ra, dec) in deg
+    (94.70416667, -71.01666667)>",9895.29,True,bn120711115
+120703A,22h37m26s -29° 44',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (339.35833333, -29.73333333)>",62722.19,True,bn120703726
+120521B,13h08m03s -52° 45',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (197.0125, -52.75)>",32872.39,True,bn120521380
+120426A,07h26m09s -65° 38',108*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (111.5375, -65.63333333)>",32872.39,True,bn120426385
+120403B,03h39m14s -89° 02',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (54.80833333, -89.03333333)>",74036.48,True,bn120403857
+120326A,18h15m42s +69° 17',3,Swift,y,y,y,y,,1.798,"<SkyCoord (ICRS): (ra, dec) in deg
+    (273.925, 69.28333333)>",4829.28,True,bn120326056
+120302A,08h09m48s +29° 40',3,Swift,,y?,y?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (122.45, 29.66666667)>",4829.28,True,bn120302061
+120226A,20h11m43s +48° 40',366*12,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (302.92916667, 48.66666667)>",4829.28,True,bn120226061
+120212A,02h52m25s -18° 01',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (43.10416667, -18.01666667)>",33082.74,True,bn120212383
+120119A,08h00m07s -09° 04',3,Swift,y,y,y,n,,1.728,"<SkyCoord (ICRS): (ra, dec) in deg
+    (120.02916667, -9.06666667)>",14670.21,True,bn120119170
+120118B,08h19m28s -07° 11',3,Swift,,y,y?,,,2.943,"<SkyCoord (ICRS): (ra, dec) in deg
+    (124.86666667, -7.18333333)>",61221.19,True,bn120118709
+120114A,21h11m37s +57° 02',3,Swift,,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (317.90416667, 57.03333333)>",61221.19,True,bn120114714
+120102A,18h24m48s +24° 44',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (276.2, 24.73333333)>",8155.01,True,bn120102095
+111228A,10h00m19s +18° 18',3,Swift,y,y,y,,,0.714,"<SkyCoord (ICRS): (ra, dec) in deg
+    (150.07916667, 18.3)>",56683.6,True,bn111228657
+111208A,19h20m52s +40° 40',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.21666667, 40.66666667)>",56683.6,True,bn111208661
+111201A,12h41m56s +33° 00',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (190.48333333, 33.)>",56683.6,True,bn111201661
+111107A,08h37m56s -66° 30',3,Swift,y,y,y,,,2.893,"<SkyCoord (ICRS): (ra, dec) in deg
+    (129.48333333, -66.5)>",3024.0,True,bn111107035
+111103A,21h28m29s -10° 33',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (322.12083333, -10.55)>",38113.48,True,bn111103441
+110921A,19h36m19s +36° 23',3,Swift,y,y,y?,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (294.07916667, 36.38333333)>",49880.16,True,bn110921577
+110903A,13h08m09s +59° 00',3,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (197.0375, 59.)>",9595.12,True,bn110903111
+110818A,21h09m32s -63° 58',3,Swift,,y,y,,,3.36,"<SkyCoord (ICRS): (ra, dec) in deg
+    (317.38333333, -63.96666667)>",74269.2,True,bn110818860
+110731A,18h42m05s -28° 33',3,Swift,y,y,y,,,2.83,"<SkyCoord (ICRS): (ra, dec) in deg
+    (280.52083333, -28.55)>",40170.45,True,bn110731465
+110709A,15h55m35s +40° 54',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (238.89583333, 40.9)>",55467.37,True,bn110709642
+110625A,19h07m00s +06° 45',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (286.75, 6.75)>",76108.42,True,bn110625881
+110610A,20h32m36s +74° 49',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (308.15, 74.81666667)>",55292.55,True,bn110610640
+110412A,08h53m58s +13° 31',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (133.49166667, 13.51666667)>",27215.71,True,bn110412315
+110319B,21h44m18s -56° 46',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (326.075, -56.76666667)>",27215.71,True,bn110319320
+110318A,22h33m06s -15° 17',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (338.275, -15.28333333)>",47659.6,True,bn110318552
+110213A,02h52m01s +49° 17',3,Swift,y,y,y,,,1.46,"<SkyCoord (ICRS): (ra, dec) in deg
+    (43.00416667, 49.28333333)>",19031.27,True,bn110213220
+110207A,00h50m10s -10° 48',3,Swift,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (12.54166667, -10.8)>",40639.75,True,bn110207470
+110201A,09h08m16s +88° 36',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (137.06666667, 88.6)>",34508.89,True,bn110201399
+110128A,12h55m30s +28° 05',3,Swift,y,y,y,,,2.339,"<SkyCoord (ICRS): (ra, dec) in deg
+    (193.875, 28.08333333)>",6273.0,True,bn110128073
+110119A,23h14m14s +05° 59',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (348.55833333, 5.98333333)>",80458.37,True,bn110119931
+110112B,00h42m24s +64° 24',3,INTEGRAL,y,,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (10.6, 64.4)>",80695.28,True,bn110112934
+110107A,19h59m34s +41° 53',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (299.89166667, 41.88333333)>",76551.8,True,bn110107886
+110106B,08h56m47s +47° 00',3,Swift,y,y,y,n,,0.618,"<SkyCoord (ICRS): (ra, dec) in deg
+    (134.19583333, 47.)>",77177.01,True,bn110106893
+110102A,16h23m31s +07° 37',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.87916667, 7.61666667)>",67945.47,True,bn110102788
+101219B,00h49m02s -34° 32',3,Swift,y,y,y,y?,,0.55,"<SkyCoord (ICRS): (ra, dec) in deg
+    (12.25833333, -34.53333333)>",59273.51,True,bn101219686
+101213A,16h05m09s +21° 55',3,Swift,y,y,,,,0.414,"<SkyCoord (ICRS): (ra, dec) in deg
+    (241.2875, 21.91666667)>",38960.8,True,bn101213451
+101112A,19h28m54s +39° 21',2.6,INTEGRAL,y,y,y,y?,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (292.225, 39.35)>",79826.21,True,bn101112924
+101024A,04h25m54s -77° 15',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (66.475, -77.25)>",41969.82,True,bn101024486
+101023A,21h11m49s -65° 24',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (317.95416667, -65.4)>",82204.73,True,bn101023951
+101011A,03h13m12s -65° 59',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (48.3, -65.98333333)>",61116.53,True,bn101011707
+101008A,21h55m34s +37° 04',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (328.89166667, 37.06666667)>",60195.61,True,bn101008697
+100924A,00h02m41s +07° 01',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (0.67083333, 7.01666667)>",14288.32,True,bn100924165
+100915B,05h41m31s +25° 05',3,INTEGRAL,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (85.37916667, 25.08333333)>",20979.66,True,bn100915243
+100906A,01h54m50s +55° 37',3,Swift,y,y,y,,,1.727,"<SkyCoord (ICRS): (ra, dec) in deg
+    (28.70833333, 55.61666667)>",49767.41,True,bn100906576
+100814A,01h29m55s -17° 59',3,Swift,y,y,y,y,,1.44,"<SkyCoord (ICRS): (ra, dec) in deg
+    (22.47916667, -17.98333333)>",13808.81,True,bn100814160
+100802A,00h09m50s +47° 45',3,Swift,,y,y,,,<3.1,"<SkyCoord (ICRS): (ra, dec) in deg
+    (2.45833333, 47.75)>",20736.16,True,bn100802240
+100728B,02h56m13s +00° 17',3,Swift,y,y,y,,,2.106,"<SkyCoord (ICRS): (ra, dec) in deg
+    (44.05416667, 0.28333333)>",37914.97,True,bn100728439
+100728A,05h08m16s -14° 20',3,Swift,y,y,y,,,1.567,"<SkyCoord (ICRS): (ra, dec) in deg
+    (77.06666667, -14.33333333)>",8250.61,True,bn100728095
+100727A,10h16m40s -21° 22',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (154.16666667, -21.36666667)>",20537.78,True,bn100727238
+100725B,19h20m06s +76° 57',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.025, 76.95)>",41074.49,True,bn100725475
+100707A,23h52m05s -08° 39',3,IPN,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (358.02083333, -8.65)>",41074.49,True,bn100707480
+100704A,08h54m33s -24° 13',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (133.6375, -24.21666667)>",12906.1,True,bn100704149
+100619A,05h38m28s -27° 00',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (84.61666667, -27.)>",1267.24,True,bn100619015
+100615A,11h48m50s -19° 30',3,Swift,y,y,,,,1.398,"<SkyCoord (ICRS): (ra, dec) in deg
+    (177.20833333, -19.5)>",7143.99,True,bn100615083
+100528A,20h44m29s +27° 49',5,AGILE,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (311.12083333, 27.81666667)>",6487.0,True,bn100528075
+100522A,00h27m56s +09° 25',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (6.98333333, 9.41666667)>",13552.29,True,bn100522157
+100504A,17h02m17s -35° 36',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (255.57083333, -35.6)>",69655.53,True,bn100504806
+100427A,05h56m41s -03° 28',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (89.17083333, -3.46666667)>",69655.53,True,bn100427811
+100401A,19h23m15s -08° 15',2,Swift,y,n,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (290.8125, -8.25)>",69655.53,True,bn100401811
+100212A,23h45m51s +49° 30',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (356.4625, 49.5)>",50842.02,True,bn100212588
+100111A,16h28m09s +15° 33',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (247.0375, 15.55)>",15169.03,True,bn100111176
+091221,03h43m01s +23° 13',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (55.75416667, 23.21666667)>",75177.22,True,bn091221870
+091208B,01h57m39s +16° 53',3,Swift,y,y,y,,,1.063,"<SkyCoord (ICRS): (ra, dec) in deg
+    (29.4125, 16.88333333)>",35397.96,True,bn091208410
+091127,02h26m17s -18° 57',3,Swift,y,y,y,n,,0.49,"<SkyCoord (ICRS): (ra, dec) in deg
+    (36.57083333, -18.95)>",84345.48,True,bn091127976
+091112,17h11m00s -36° 44',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (257.75, -36.73333333)>",63675.82,True,bn091112737
+091102,04h50m29s -72° 32',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (72.62083333, -72.53333333)>",52478.35,True,bn091102607
+091026,18h26m20s -86° 07',3,Swift,y,y,n,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (276.58333333, -86.11666667)>",47493.02,True,bn091026550
+091024,22h36m50s +56° 52',3,Swift,y,y,y,,,1.092,"<SkyCoord (ICRS): (ra, dec) in deg
+    (339.20833333, 56.86666667)>",32789.36,True,bn091024380
+091020,11h42m52s +50° 58',3,Swift,y,y,y,y,,1.71,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.71666667, 50.96666667)>",77803.82,True,bn091020900
+091010,19h54m40s -22° 32',3,AGILE,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (298.66666667, -22.53333333)>",9789.32,True,bn091010113
+090927,22h55m49s -70° 59',3,Swift,y,y,y,,,1.37,"<SkyCoord (ICRS): (ra, dec) in deg
+    (343.95416667, -70.98333333)>",36436.92,True,bn090927422
+090926B,03h05m16s -39° 01',3,Swift,y,y,y,,,1.24,"<SkyCoord (ICRS): (ra, dec) in deg
+    (46.31666667, -39.01666667)>",78948.41,True,bn090926914
+090915,15h51m58s +15° 29',3,Swift,,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (237.99166667, 15.48333333)>",78948.41,True,bn090915919
+090912,12h32m22s +61° 31',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (188.09166667, 61.51666667)>",57029.86,True,bn090912660
+090904B,17h36m46s -25° 13',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (264.19166667, -25.21666667)>",5058.11,True,bn090904058
+090817,04h15m58s +44° 08',3,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (63.99166667, 44.13333333)>",3086.21,True,bn090817036
+090813,15h08m04s +88° 34',3,Swift,y,y,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (227.01666667, 88.56666667)>",15042.59,True,bn090813174
+090712,04h40m25s +22° 33',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (70.10416667, 22.55)>",13865.17,True,bn090712160
+090709B,06h14m22s +64° 05',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (93.59166667, 64.08333333)>",54462.87,True,bn090709630
+090708,10h18m31s +26° 38',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (154.62916667, 26.63333333)>",13095.26,True,bn090708152
+090704,13h52m49s +22° 47',1.7,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (208.20416667, 22.78333333)>",13095.26,True,bn090704157
+090625B,00h09m03s -65° 47',3,INTEGRAL,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (2.2625, -65.78333333)>",48382.51,True,bn090625560
+090621,00h43m57s +61° 58',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (10.9875, 61.96666667)>",15763.15,True,bn090621185
+090618,19h36m05s +78° 21',3,Swift,y,y,y,y,,0.54,"<SkyCoord (ICRS): (ra, dec) in deg
+    (294.02083333, 78.35)>",30509.85,True,bn090618353
+090531B,16h48m15s -36° 01',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (252.0625, -36.01666667)>",66956.49,True,bn090531775
+090519,09h29m10s +00° 11',3,Swift,,y,y,,,3.85,"<SkyCoord (ICRS): (ra, dec) in deg
+    (142.29166667, 0.18333333)>",76125.87,True,bn090519881
+090518,07h59m44s +00° 46',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (119.93333333, 0.76666667)>",6884.52,True,bn090518080
+090516,09h13m05s -11° 51',3,Swift,y,y,y,,,4.109,"<SkyCoord (ICRS): (ra, dec) in deg
+    (138.27083333, -11.85)>",30478.35,True,bn090516353
+090509,16h05m37s -28° 24',3,Swift,y,n,y,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (241.40416667, -28.4)>",18605.72,True,bn090509215
+090424,12h38m09s +16° 50',3,Swift,y,y,y,y,,0.544,"<SkyCoord (ICRS): (ra, dec) in deg
+    (189.5375, 16.83333333)>",51129.33,True,bn090424592
+090423,09h55m35s +18° 07',3,Swift,y,y,y,y,,8.26,"<SkyCoord (ICRS): (ra, dec) in deg
+    (148.89583333, 18.11666667)>",28519.34,True,bn090423330
+090422,19h39m01s +40° 23',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (294.75416667, 40.38333333)>",12916.6,True,bn090422150
+090129,17h56m22s -32° 50',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (269.09166667, -32.83333333)>",76035.42,True,bn090129880
+090117,10h56m01s -58° 15',3,AGILE,y,y,,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (164.00416667, -58.25)>",55321.05,True,bn090117640
+090113,02h08m18s +33° 27',3,Swift,,y,y,,,1.7493,"<SkyCoord (ICRS): (ra, dec) in deg
+    (32.075, 33.45)>",67240.84,True,bn090113778
+090107B,18h59m15s +59° 36',3,INTEGRAL,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (284.8125, 59.6)>",58842.77,True,bn090107681
+090102,08h33m02s +33° 05',3,Swift,y,y,y,n,,1.547,"<SkyCoord (ICRS): (ra, dec) in deg
+    (128.25833333, 33.08333333)>",10530.85,True,bn090102122
+081222,01h31m00s -34° 08',3,Swift,y,y,y,,,2.77,"<SkyCoord (ICRS): (ra, dec) in deg
+    (22.75, -34.13333333)>",17639.97,True,bn081222204
+081221,01h03m13s -24° 32',3,Swift,y,y,y,y,,2.26,"<SkyCoord (ICRS): (ra, dec) in deg
+    (15.80416667, -24.53333333)>",58871.84,True,bn081221681
+081126,21h34m10s +48° 43',3,Swift,y,y,y,n,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (323.54166667, 48.71666667)>",77650.28,True,bn081126899
+081121,05h57m03s -60° 38',3,Swift,y,y,y,,,2.512,"<SkyCoord (ICRS): (ra, dec) in deg
+    (89.2625, -60.63333333)>",74127.75,True,bn081121858
+081109,22h03m09s -54° 43',3,Swift,,y,y,n,,0.9787,"<SkyCoord (ICRS): (ra, dec) in deg
+    (330.7875, -54.71666667)>",25326.61,True,bn081109293
+081102,22h04m44s +53° 00',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (331.18333333, 53.)>",63861.6,True,bn081102739
+081025,16h21m12s +60° 28',3,Swift,y,,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (245.3, 60.46666667)>",30196.18,True,bn081025349
+081024,01h51m36s +61° 21',3,Swift,,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (27.9, 61.35)>",21189.01,True,bn081024245
+081012,02h00m52s -17° 38',3,Swift,y,y,,,,,"<SkyCoord (ICRS): (ra, dec) in deg
+    (30.21666667, -17.63333333)>",47423.9,True,bn081012549
+081007,22h39m54s -40° 08',3,Swift,y,y,y,y,,0.5295,"<SkyCoord (ICRS): (ra, dec) in deg
+    (339.975, -40.13333333)>",19432.74,True,bn081007224
+080928,06h20m20s -55° 10',3,Swift,y,y,y,,,1.692,"<SkyCoord (ICRS): (ra, dec) in deg
+    (95.08333333, -55.16666667)>",54092.86,True,bn080928628
+080916,22h25m12s -57° 01',3',Swift,y,y,y,,,0.689,"<SkyCoord (ICRS): (ra, dec) in deg
+    (336.3, -57.01666667)>",35120.61,True,bn080916406
+080905B,20h06m53s -62° 34',3',Swift,y,y,y,,,2.374,"<SkyCoord (ICRS): (ra, dec) in deg
+    (301.72083333, -62.56666667)>",60945.4,True,bn080905705
