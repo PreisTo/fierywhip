@@ -336,6 +336,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             fig = self._bayes.results.corner_plot()
             fig.savefig(os.path.join(base_dir, self._grb_name, "cc_plots.png"))
 
+            df = self._bayes.results.get_data_frame(error_type="hpd")
+            df.to_csv(os.path.joi(base_dir, self._grb_name, "parameters.csv"))
+
 
 mapping = {"0": "first", "1": "second", "2": "third", "3": "fourth"}
 
