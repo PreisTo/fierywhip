@@ -33,7 +33,6 @@ def default_data_loading(structure: dict) -> dict:
     structure["swift"] = True
     structure["full_list"] = True
     structure["grb_list"] = {"create_objects": True}
-    structure["grb_list"] = {}
     structure["grb_list"]["check_finished"] = True
     structure["grb_list"]["run_det_sel"] = True
     structure["grb_list"]["testing"] = False
