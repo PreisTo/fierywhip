@@ -16,7 +16,7 @@ class FierywhipConfig:
     def __init__(self, structure):
         self._config = OmegaConf.create(structure)
 
-    def update_config(self, update_vals: dict):
+    def update_config(self, update_vals: dict, correct_structure=True):
         """
         Update given config with a dict of new vals. Key of new vals only needs to
         be the last key, assuming unique key names
@@ -26,26 +26,42 @@ class FierywhipConfig:
 
         :returns: config
         """
-        new = self._config.copy()
-        for key in update_vals.keys():
-            flag, path = recursive_key_finder(self._config, key)
-            if flag:
-                path = path.split("&")
-                logging.debug(f"This is the len of the path {len(path)}")
-                if len(path) == 0:
-                    new = level1(new.copy(), path, update_vals[key])
-                elif len(path) == 1:
-                    new = level2(new.copy(), path, update_vals[key])
-                elif len(path) == 2:
-                    new = level3(new.copy(), path, update_vals[key])
-                elif len(path) == 3:
-                    new = level4(new.copy(), path, update_vals[key])
+        if not correct_structure:
+            new = self._config.copy()
+            for key in update_vals.keys():
+                flag, path = recursive_key_finder(self._config, key)
+                if flag:
+                    path = path.split("&")
+                    logging.debug(f"This is the len of the path {len(path)}")
+                    if len(path) == 0:
+                        new = level1(new.copy(), path, update_vals[key])
+                    elif len(path) == 1:
+                        new = level2(new.copy(), path, update_vals[key])
+                    elif len(path) == 2:
+                        new = level3(new.copy(), path, update_vals[key])
+                    elif len(path) == 3:
+                        new = level4(new.copy(), path, update_vals[key])
 
-                logging.info(f"Updated {path} with {update_vals[key]}")
-            else:
-                logging.info("The key %s was not found in the config, creating it", key)
-                new[key] = update_vals[key]
-        self._config = new
+                    logging.info(f"Updated {path} with {update_vals[key]}")
+                else:
+                    logging.info(
+                        "The key %s was not found in the config, creating it", key
+                    )
+                    new[key] = update_vals[key]
+            self._config = new
+        else:
+            new = self._config.copy()
+            for k1 in update_vals.keys():
+                if isinstance(update_vals[k1], dict):
+                    for k2 in update_vals[k1].keys():
+                        if isinstance(update_vals[k1][k2], dict):
+                            for k3 in update_vals[k1][k2].keys():
+                                new[k1][k2][k3] = update_vals[k1][k2][k3]
+                        else:
+                            new[k1][k2] = update_vals[k1][k2]
+                else:
+                    new[k1] = update_vals[k1]
+            self._config = new
 
     @property
     def config(self):
