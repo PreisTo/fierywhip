@@ -15,6 +15,7 @@ def default_timeselection(structure: dict) -> dict:
     structure["timeselection"]["trigger_zone_active_stop"] = 60
     structure["timeselection"]["max_factor"] = 1.2
     structure["timeselection"]["sig_reduce_factor"] = 0.8
+    structure["timeselection"]["replace_n5"] = True
     return structure
 
 
