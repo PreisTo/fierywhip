@@ -8,7 +8,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from gbmgeometry.utils.gbm_time import GBMTime
 from gbmgeometry.position_interpolator import PositionInterpolator
-from gbmgeomtry.gbm_frame import GBMFrame
+from gbmgeometry.gbm_frame import GBMFrame
 import os
 from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file
@@ -75,10 +75,11 @@ class GRBList:
         self._testing = testing
         if rank == 0:
             namess, rass, decss = self._load_swift_bursts()
-            names_all = namess
-            ras_all = rass
-            decs_all = decss
-            types_all = ["swift"] * len(decs_all)
+            namesf, rasf, decsf = self._load_others(skip=namess)
+            names_all = namess + namesf
+            ras_all = rass + rasf
+            decs_all = decss + decsf
+            types_all = ["swift"] * len(decss) + ["other"] * len(decsf)
             self._table = pd.DataFrame(
                 {"name": names_all, "ra": ras_all, "dec": decs_all, "type": types_all},
                 index=None,
@@ -90,10 +91,8 @@ class GRBList:
             self._table.reset_index(inplace=True)
         else:
             self._table = None
-            self._check_already_run = None
 
         self._table = comm.bcast(self._table, root=0)
-        self._check_already_run = comm.bcast(self._check_already_run, root=0)
         if fierywhip_config.config.grb_list.create_objects:
             self._create_grb_objects()
 
@@ -168,107 +167,23 @@ class GRBList:
             logging.info("Done loading Swift List")
         return names, ras, decs
 
-    def _load_ipn_bursts(
-        self, table_path=pkg_resources.resource_filename("fierywhip", "data/ipn.csv")
-    ):
-        names = []
-        ras = []
-        decs = []
-        types = []
-        if fierywhip_config.config.ipn.small:
-            self._ipn_table = pd.read_csv(table_path, sep=" ", index_col=False)
-            for i, b in self._ipn_table.iterrows():
-                names.append(f"GRB{str(b['name']).strip('bn')}")
-                ras.append(float(b["ra"]))
-                decs.append(float(b["dec"]))
-                types.append("ipn")
-            logging.info("Done loading IPN list")
-        return names, ras, decs, types
-
-    def _load_ipn_arcs(
+    def _load_others(
         self,
-        table_path=pkg_resources.resource_filename(
-            "fierywhip", "data/ipn_all_data.csv"
+        full_list=pkg_resources.resource_filename(
+            "fierywhip", "data/full_jcg_list.csv"
         ),
+        skip=[],
     ):
-        table = pd.read_csv(table_path)
-        names = []
-        total_seconds = 24 * 3600
-        year = table["YEAR"].astype(str)
-        month = np.array([month_lu[i.strip(" ")[1:-1]] for i in table["MONTH"]])
-        day = table["DAY"].astype(str)
-        sod = table["SOD"].astype(int)
-        sod = round(sod / total_seconds * 1000, 0)
-        sod = sod.astype(int)
-        for y, m, d, s in zip(year, month, day, sod):
-            names.append(
-                f"GRB{y[2:]}{str(m).zfill(2)}{str(d).zfill(2)}{str(s).zfill(3)}"
-            )
-        table["name"] = np.array(names)
-        base_url = "https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/triggers/"
-        folder_trigdat = "/current/glg_trigdat_all_bn"
-        non_exist = []
-        if rank == 0:
-            check_per_rank = len(table) // size
+        names, ras, decs = [], [], []
+        if fierywhip_config.config.full_list:
+            self._full_list = pd.read_csv(full_list, index_col=0)
+            for n in self._full_list["name"]:
+                if n not in skip:
+                    row = self._full_list[self._full_list["name"] == n]
+                    names.append(n.strip("bn"))
+                    ras.append(row["ra"])
+                    decs.append(row["dec"])
 
-        else:
-            check_per_rank = None
-        check_per_rank = comm.bcast(check_per_rank, root=0)
-        start = rank * check_per_rank
-        stop = (rank + 1) * check_per_rank
-        if rank == size - 1:
-            stop = len(table)
-        versions_to_check = 3
-        for i in trange(start, stop, 1):
-            name = table.iloc[i]["name"]
-            year = table.iloc[i]["YEAR"]
-            url = f"{base_url}{year}/bn{name.strip('GRB')}{folder_trigdat}{name.strip('GRB')}_v0"
-            exists = False
-            for v in range(versions_to_check):
-                url_version = f"{url}{v}.fit"
-                try:
-                    response = urlopen(url_version)
-                    exists = True
-                    break
-                except HTTPError:
-                    pass
-            if not exists:
-                non_exist.append(i)
-        logging.debug(f"Rank {rank} finished")
-        res = comm.gather(non_exist, root=0)
-        if rank == 0:
-            drop_list = []
-            for r in res:
-                drop_list.extend(r)
-
-        else:
-            drop_list = None
-        drop_list = comm.bcast(drop_list, root=0)
-        if rank == 0:
-            logging.debug(f"Before removing: {len(table)}")
-            table.drop(non_exist, inplace=True)
-            logging.debug(f"After removing: {len(table)}")
-        else:
-            table = None
-        table = comm.bcast(table, root=0)
-        for el in table.iterrows():
-            # get the relevant numbers
-
-            ra1 = el["IPN RA1"]
-            ra2 = el["IPN RA2"]
-
-            dec1 = el["IPN DEC1"]
-            dec2 = el["IPN DEC2"]
-
-            r1 = el["IPN R1"]
-            r2 = el["IPN R2"]
-
-            dr1 = el["IPN DR1"]
-            dr2 = el["IPN DR2"]
-
-        names = []
-        ras = []
-        decs = []
         return names, ras, decs
 
     def _check_already_run(
@@ -355,7 +270,7 @@ class GRB:
                 name = str(i.loc[0])
                 if len(name) == 8:
                     name = "0" + name
-                if name == self._name.strip("GRB"):
+                if name == self._name.strip("GRB") or name == self._name.strip("bn"):
                     logging.info(f"Found a match!")
                     self._ra_icrs = str(i.loc[5])
                     self._dec_icrs = str(i.loc[6])
@@ -371,6 +286,7 @@ class GRB:
             self._position = SkyCoord(
                 ra=self._ra_icrs, dec=self._dec_icrs, unit=ra_dec_units, frame="icrs"
             )
+        logging.info(self._position)
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()

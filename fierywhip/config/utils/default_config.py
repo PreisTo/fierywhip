@@ -24,6 +24,7 @@ def default_data_loading(structure: dict) -> dict:
     structure["ipn"]["small"] = False
     structure["ipn"]["full"] = False
     structure["swift"] = True
+    structure["full_list"] = True
     structure["grb_list"] = {"create_objects": True}
     structure["grb_list"] = {}
     structure["grb_list"]["check_finished"] = True

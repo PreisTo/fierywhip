@@ -58,7 +58,7 @@ def update_full_jcg_list(
     else:
         df = None
 
-    comm.Barrier()
+    comm.Barrir()
     df = comm.bcast(df, root=0)
     size_per_rank = int(len(df) / size)
     rank_start = size_per_rank * rank
@@ -95,7 +95,7 @@ def update_full_jcg_list(
                 pass
             if sod > 0:
                 df.at[g, "sod"] = sod
-            df.at[g, "fermi_in_game"] = fermi
+            df.at[g, "seen_by_fermi"] = fermi
     comm.Barrier()
     dfl = comm.gather(df, root=0)
     if rank == 0:
