@@ -219,7 +219,6 @@ class RunMorgoth:
             except (HTTPError, URLError):
                 i += 1
                 flag = True
-
         tf = GBMTriggerFile(
             None,
             GBMTime.from_MET(trig_reader._trigtime).utc.replace(" ", "T") + "Z",
@@ -257,6 +256,15 @@ class RunMorgoth:
             "separation",
             "runtime_fit",
             "runtime_ts",
+            "active_time_start",
+            "active_time_stop",
+            "bkg_neg_start",
+            "bkg_neg_stop",
+            "bkg_pos_start",
+            "bkg_pos_stop",
+            "grb_gbm_frame_lon",
+            "grb_gbm_frame_lat",
+
         ]
 
         if os.path.exists(result_csv):
@@ -267,6 +275,11 @@ class RunMorgoth:
                     result_df[k] = vals
         else:
             result_df = pd.DataFrame(columns=template)
+
+        at_start,at_stop = time_splitter(self._grb.active_time)
+        bkg_neg_start,bkg_neg_stop = time_splitter(self._grb.bkg_time[0])
+        bkg_pos_start,bkg_pos_stop = time_splitter(self._grb.bkg_time[1])
+
         row = [
             self._grb.name,
             result_reader.ra[0],
@@ -287,6 +300,14 @@ class RunMorgoth:
             .deg,
             self._runtime_fit,
             self._runtime_ts,
+            at_start,
+            at_stop,
+            bkg_neg_start,
+            bkg_neg_stop,
+            bkg_pos_start,
+            bkg_pos_stop,
+            self._grb.grb_gbm_position.lon.deg,
+            self._grb.grb_gbm_position.lat.deg,
         ]
         result_df.loc[len(result_df)] = row
         if os.path.exists(result_csv):

@@ -7,6 +7,8 @@ import astropy.units as u
 import pandas as pd
 from datetime import datetime, timedelta
 from gbmgeometry.utils.gbm_time import GBMTime
+from gbmgeometry.position_interpolator import PositionInterpolator
+from gbmgeomtry.gbm_frame import GBMFrame
 import os
 from fierywhip.io.downloading import download_tte_file, download_cspec_file
 from gbmbkgpy.io.downloading import download_trigdata_file
@@ -381,11 +383,18 @@ class GRB:
             self.download_files()
 
     @property
-    def position(self):
+    def position(self) -> SkyCoord:
         """
         :returns: SkyCoord of GRB
         """
         return self._position
+
+    @property
+    def grb_gbm_position(self) -> SkyCoord:
+        """
+        :returns: SkyCoord of GRB
+        """
+        return self._grb_gbm_position
 
     @property
     def name(self):
@@ -519,6 +528,11 @@ class GRB:
             self._long_grb = True
         else:
             self._long_grb = False
+
+        pi = PositionInterpolator.from_trigdat(self._trigdat)
+        self._grb_gbm_position = self._position.transform_to(
+            GBMFrame(**pi.quaternion_dict(start))
+        )
 
     def save_timeselection(self, path=None):
         if self._active_time is None:
