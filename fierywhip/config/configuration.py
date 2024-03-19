@@ -31,6 +31,7 @@ class FierywhipConfig:
             flag, path = recursive_key_finder(self._config, key)
             if flag:
                 path = path.split("&")
+                loggin.debug(f"This is the len of the path {len(path)}")
                 if len(path) == 1:
                     new = level1(new.copy(), path, update_vals[key])
                 elif len(path) == 2:
