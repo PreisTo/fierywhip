@@ -46,7 +46,7 @@ class FierywhipConfig:
                 logging.info("The key %s was not found in the config, creating it", key)
                 new = self._config.copy()
                 new[key] = update_vals[key]
-        self._config = OmegaConf.create(new)
+        self._config = new
 
     @property
     def config(self):
