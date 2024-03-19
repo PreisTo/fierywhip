@@ -178,9 +178,9 @@ class GRBList:
         if fierywhip_config.config.full_list:
             self._full_list = pd.read_csv(full_list, index_col=0)
             for n in self._full_list["name"]:
-                if f"{n.strip('bn')}" not in skip:
+                if f"GRB{n.strip('bn')}" not in skip:
                     row = self._full_list[self._full_list["name"] == n]
-                    names.append(f"{n.strip('bn')}")
+                    names.append(f"GRB{n.strip('bn')}")
                     ras.append(row["ra"])
                     decs.append(row["dec"])
 
