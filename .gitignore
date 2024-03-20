@@ -1,4 +1,6 @@
 fierywhip/config/config.yml
+fierywhip/bin/morgoth_config.yml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
