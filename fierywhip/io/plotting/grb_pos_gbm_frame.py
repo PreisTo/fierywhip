@@ -10,15 +10,8 @@ from gbmgeometry.utils.plotting import skyplot, SphericalCircle
 import astropy.units as u
 import os
 
-"""
-Small Script creating a mollweide plot showing the detectors fov (60 deg)
-as well as all the grbs in the sample
 
-Creates also an histogram displaying the distribution of grbs seen by a
-given number of dets
-"""
-
-dets = {
+DETS = {
     "n0": {
         "lon": 45.89,
         "lat": 90 - 20.58,
@@ -68,6 +61,53 @@ dets = {
         "lat": 90 - 90.42,
     },
 }
+
+
+class PlotGRBinGBMFrame:
+    def __init__(self, lons, lats, vals=None, show_dets=False, fov=10):
+        """ """
+        self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "hammer"})
+        self._fov = fov
+        lons[lons > 180] -= 360
+        lats[lats > 90] -= 180
+        lons[lons <= -180] += 360
+        lats[lats <= -90] += 180
+        lons = np.deg2rad(lons)
+        lats = np.deg2rad(lats)
+        if vals is not None:
+            sc = self._ax.scatter(lons, lats, c=vals)
+            plt.colorbar(sc)
+        else:
+            self._ax.scatter(lons, lats)
+        if show_dets:
+            self._add_dets()
+
+    def _add_dets(self):
+        for d in DETS.keys():
+            lon_d = np.deg2rad(DETS[d]["lon"])
+            lat_d = np.deg2rad(DETS[d]["lat"])
+            if lon_d > np.pi:
+                lon_d -= 2 * np.pi
+            if lat_d > np.pi / 2:
+                lat_d -= np.pi
+            phi = np.linspace(0, 2.0 * np.pi, 100)
+            r = np.radians(self._fov)
+            x = lon + r * np.cos(phi)
+            y = lat + r * np.sin(phi)
+            self._ax.plot(x, y, color="r", linestyle="--")
+            self._ax.text(lon, lat, d, color="red")
+
+    @property
+    def fig(self):
+        return self._fig
+
+    @property
+    def ax(self):
+        return self._ax
+
+    @classmethod
+    def from_grb_list(cls, grb_list):
+        raise NotImplementedError
 
 
 if __name__ == "__main__":
