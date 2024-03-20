@@ -152,6 +152,7 @@ class TimeSelectionNew(TimeSelection):
         while flag:
             mask = self._bb_width > self._min_bb_block_bkg_duration
             if np.sum(mask) == 0:
+                logging.debug(np.sum(mask))
                 too_small_bin = True
 
             self._neg_bins = (
@@ -168,6 +169,7 @@ class TimeSelectionNew(TimeSelection):
                 flag = False
             else:
                 if self._min_bb_block_bkg_duration > 0.512 and too_small_bin:
+                    logging.debug(f"Decreasing min bkg bb block duration")
                     self._min_bb_block_bkg_duration -= 0.512
                     too_small_bin = False
                 else:
@@ -178,6 +180,10 @@ class TimeSelectionNew(TimeSelection):
                                 "This may have negative effect on the TimeSelection"
                             )
                             self._trigger_zone_background_stop -= 0.512
+                        else:
+                            msg = "Failed due to "
+                            msg += f"trigger_zone_background_stop {self._trigger_zone_background_stop}"
+                            raise TimeSelectionError(msg)
                     if len(self._bb_indices_self[mask][self._pos_bins]) == 0:
                         if self._trigger_zone_background_start + 0.512 > -1.024:
                             logging.warning("Decreasing bkg neg stop time!")
@@ -185,6 +191,10 @@ class TimeSelectionNew(TimeSelection):
                                 "This may have negative effect on the TimeSelection"
                             )
                             self._trigger_zone_background_start += 0.512
+                        else:
+                            msg = "Failed due to "
+                            msg += f"trigger_zone_background_start {self._trigger_zone_background_start}"
+                            raise TimeSelectionError(msg)
 
         # neg_bkg
         bkg_neg = []
@@ -525,3 +535,10 @@ class TimeSelectionNew(TimeSelection):
     @property
     def trigreader(self):
         return self._tr
+
+
+class TimeSelectionError(ValueError):
+    def __init__(self, msg=None):
+        if msg is None:
+            msg = "TimeSelection failed"
+        super().__init__(msg)
