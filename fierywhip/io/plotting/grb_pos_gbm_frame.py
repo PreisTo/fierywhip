@@ -64,10 +64,12 @@ DETS = {
 
 
 class PlotGRBinGBMFrame:
-    def __init__(self, lons, lats, vals=None, show_dets=False, fov=10):
+    def __init__(self, lons, lats, vals=None, show_dets=False, fov=30, title=None):
         """ """
-        self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "mollweide"})
+        self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "hammer"})
         self._fov = fov
+        lons = np.array(lons)
+        lats = np.array(lats)
         lons[lons > 180] -= 360
         lats[lats > 90] -= 180
         lons[lons <= -180] += 360
@@ -75,12 +77,16 @@ class PlotGRBinGBMFrame:
         lons = np.deg2rad(lons)
         lats = np.deg2rad(lats)
         if vals is not None:
+            vals = np.array(vals)
             sc = self._ax.scatter(lons, lats, c=vals)
             plt.colorbar(sc)
         else:
             self._ax.scatter(lons, lats)
         if show_dets:
             self._add_dets()
+        self._ax.grid()
+        if title is not None:
+            self._ax.set_title(title)
 
     def _add_dets(self):
         for d in DETS.keys():
