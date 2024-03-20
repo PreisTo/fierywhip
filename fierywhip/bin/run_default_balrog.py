@@ -27,9 +27,9 @@ def check_grb_fit_result(grb_name):
         "trigdat_v00_loc_results.fits",
     )
     if os.path.exists(path) and os.path.isfile(path):
-        return False
-    else:
         return True
+    else:
+        return False
 
 
 def check_exclude(grb: str) -> bool:
@@ -56,13 +56,13 @@ def check_exclude(grb: str) -> bool:
         already_run = None
 
     if already_run is not None:
-        if grb not in list(already_run["grb"]) and grb not in excludes:
-            if not check_grb_fit_result(grb):
+        if grb in list(already_run["grb"]) or grb in excludes:
+            if check_grb_fit_result(grb):
                 return False
-
-    if already_run is None:
-        return False
-
+            if grb in excludes:
+                return False
+        else:
+            return True
     return True
 
 
@@ -157,7 +157,7 @@ def argv_parsing():
 
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
     grb_selection, force, morgoth_config = argv_parsing()
 
     fierywhip_config.update_config(morgoth_config)
