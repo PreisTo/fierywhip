@@ -6,6 +6,7 @@ from gbmgeometry.gbm_frame import GBMFrame
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 from gbmgeometry.utils.plotting import skyplot, SphericalCircle
 import astropy.units as u
 import os
@@ -64,10 +65,11 @@ DETS = {
 
 
 class PlotGRBinGBMFrame:
-    def __init__(self, lons, lats, vals=None, show_dets=False, fov=30, title=None):
+    def __init__(self, lons, lats, vals=None, show_dets=False, fov=30, title=None,cmap = "coolwarm",vmin = None,vmax = None):
         """ """
         self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "hammer"})
         self._fov = fov
+        self._cmap = cmap
         lons = np.array(lons)
         lats = np.array(lats)
         lons[lons > 180] -= 360
@@ -78,7 +80,11 @@ class PlotGRBinGBMFrame:
         lats = np.deg2rad(lats)
         if vals is not None:
             vals = np.array(vals)
-            sc = self._ax.scatter(lons, lats, c=vals)
+            if vmin is None:
+                vmin = np.min(vals)
+            if vmax is None:
+                vmax = np.max(vals)
+            sc = self._ax.scatter(lons, lats, c=vals,norm = colors.LogNorm(vmin=vmin,vmax=vmax),cmap = self._cmap)
             plt.colorbar(sc)
         else:
             self._ax.scatter(lons, lats)
@@ -101,8 +107,8 @@ class PlotGRBinGBMFrame:
             r = np.radians(self._fov)
             x = lon + r * np.cos(phi)
             y = lat + r * np.sin(phi)
-            self._ax.plot(x, y, color="r", linestyle="--")
-            self._ax.text(lon, lat, d, color="red")
+            self._ax.plot(x, y, color="r", linestyle="--",alpha = 0.2)
+            self._ax.text(lon, lat, d, color="red",alpha = 0.2)
 
     @property
     def fig(self):
