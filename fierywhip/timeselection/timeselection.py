@@ -151,8 +151,7 @@ class TimeSelectionNew(TimeSelection):
         too_small_bin = False
         while flag:
             mask = self._bb_width > self._min_bb_block_bkg_duration
-            if np.sum(mask) == 0:
-                logging.debug(np.sum(mask))
+            if np.sum(mask)*self._min_bb_block_bkg_duration < 2*self._min_bkg_time:
                 too_small_bin = True
 
             self._neg_bins = (
