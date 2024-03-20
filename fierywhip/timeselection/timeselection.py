@@ -148,12 +148,16 @@ class TimeSelectionNew(TimeSelection):
 
     def _select_background(self):
         flag = True
+        too_small_bin = False
         while flag:
             mask = self._bb_width > self._min_bb_block_bkg_duration
+            if np.sum(mask) == 0:
+                too_small_bin = True
+
             self._neg_bins = (
                 self._bb_times[:-1][mask] < self._trigger_zone_background_start
             )
-            # TODO make sure the neg background does not range into the trigger zone
+
             self._pos_bins = (
                 self._bb_times[:-1][mask] > self._trigger_zone_background_stop
             )
@@ -163,10 +167,25 @@ class TimeSelectionNew(TimeSelection):
             ):
                 flag = False
             else:
-                if self._min_bb_block_bkg_duration >1.024:
-                    self._min_bb_block_bkg_duration -= 0.5
+                if self._min_bb_block_bkg_duration > 0.512 and too_small_bin:
+                    self._min_bb_block_bkg_duration -= 0.512
+                    too_small_bin = False
                 else:
-                    raise ValueError("TimeSelection failed because min bkg bin duration is too small")
+                    if len(self._bb_indices_self[mask][self._pos_bins]) == 0:
+                        if self._trigger_zone_background_stop - 0.512 > 1.024:
+                            logging.warning("Decreasing bkg pos start time!")
+                            logging.warning(
+                                "This may have negative effect on the TimeSelection"
+                            )
+                            self._trigger_zone_background_stop -= 0.512
+                    if len(self._bb_indices_self[mask][self._pos_bins]) == 0:
+                        if self._trigger_zone_background_start + 0.512 > -1.024:
+                            logging.warning("Decreasing bkg neg stop time!")
+                            logging.warning(
+                                "This may have negative effect on the TimeSelection"
+                            )
+                            self._trigger_zone_background_start += 0.512
+
         # neg_bkg
         bkg_neg = []
         start_flag = False
