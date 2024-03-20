@@ -66,7 +66,7 @@ DETS = {
 class PlotGRBinGBMFrame:
     def __init__(self, lons, lats, vals=None, show_dets=False, fov=10):
         """ """
-        self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "hammer"})
+        self._fig, self._ax = plt.subplots(1, subplot_kw={"projection": "mollweide"})
         self._fov = fov
         lons[lons > 180] -= 360
         lats[lats > 90] -= 180
@@ -84,12 +84,13 @@ class PlotGRBinGBMFrame:
 
     def _add_dets(self):
         for d in DETS.keys():
-            lon_d = np.deg2rad(DETS[d]["lon"])
-            lat_d = np.deg2rad(DETS[d]["lat"])
-            if lon_d > np.pi:
-                lon_d -= 2 * np.pi
-            if lat_d > np.pi / 2:
-                lat_d -= np.pi
+            lon = np.deg2rad(DETS[d]["lon"])
+            lat = np.deg2rad(DETS[d]["lat"])
+            if lon > np.pi:
+                lon -= 2 * np.pi
+            if lat > np.pi / 2:
+                lat -= np.pi
+
             phi = np.linspace(0, 2.0 * np.pi, 100)
             r = np.radians(self._fov)
             x = lon + r * np.cos(phi)
