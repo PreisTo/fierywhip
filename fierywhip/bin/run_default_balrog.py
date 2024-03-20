@@ -93,7 +93,10 @@ def default(force):
     for g in grb_list.grbs:
         if check_exclude(g.name) or force:
             logging.info(f"Starting Morgoth for {g.name}")
-            run_morgoth(g)
+            try:
+                run_morgoth(g)
+            except FitFailed:
+                logging.info("Bkg Fit Failed")
         else:
             logging.info(f"Skipping Morgoth for {g.name}")
 
@@ -157,7 +160,7 @@ def argv_parsing():
 
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
     grb_selection, force, morgoth_config = argv_parsing()
 
     fierywhip_config.update_config(morgoth_config)
