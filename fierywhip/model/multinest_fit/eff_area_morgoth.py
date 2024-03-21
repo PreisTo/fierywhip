@@ -268,9 +268,15 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             # we define the spectral model
             cpl = Cutoff_powerlaw()
             cpl.K.max_value = 10**4
-            cpl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
-            cpl.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-            cpl.index.prior = Uniform_prior(lower_bound=fierywhip_config.config)
+            low, high = fierywhip_config.config.trigdat.cpl.k_prior_bounds
+            cpl.K.prior = Log_uniform_prior(lower_bound=low, upper_bound=high)
+            low, high = fierywhip_config.config.trigdat.cpl.xc_prior_bounds
+            cpl.xc.prior = Log_uniform_prior(lower_bound=low, upper_bound=high)
+            if fierywhip_config.config.trigdat.cpl.index_prior_bounds is not None:
+                low, high = fierywhip_config.config.trigdat.cpl.index_prior_bounds
+                cpl.index.prior = Uniform_prior(lower_bound=low, upper_bound=high)
+            else:
+                cpl.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
             self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=cpl))
 

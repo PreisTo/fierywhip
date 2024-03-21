@@ -78,7 +78,13 @@ def default_tte_stuff(structure: dict) -> dict:
 
 
 def default_trigdat_modelling(structure):
-    raise NotImplementedError
+    structure["trigdat"] = {}
+    cpl = {}
+    cpl["index_prior_bounds"] = None
+    cpl["xc_prior_bounds"] = [1, 10000]
+    cpl["k_prior_bounds"] = [1e-3, 10**4]
+    structure["trigdat"]["cpl"] = cpl
+    return structure
 
 
 def default_complete() -> dict:
