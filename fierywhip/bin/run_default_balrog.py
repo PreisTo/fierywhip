@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.utils.default_morgoth import RunMorgoth, RunEffAreaMorgoth
-from fierywhip.frameworks.grbs import GRBList, GRB
+from fierywhip.frameworks.grbs import GRBList, GRB,GRBInitError
+from fierywhip.timeselection.timeselection import TimeSelectionError
 from threeML.minimizer.minimization import FitFailed
 import pandas as pd
 import os
@@ -95,8 +96,8 @@ def default(force):
             logging.info(f"Starting Morgoth for {g.name}")
             try:
                 run_morgoth(g)
-            except FitFailed:
-                logging.info("Bkg Fit Failed")
+            except (FitFailed,TimeSelectionError):
+                logging.error(f"\n{g.name} FAILED!\n")
         else:
             logging.info(f"Skipping Morgoth for {g.name}")
 

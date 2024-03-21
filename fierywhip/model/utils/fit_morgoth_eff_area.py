@@ -11,18 +11,6 @@ from fierywhip.config.configuration import fierywhip_config
 
 warnings.simplefilter("ignore")
 
-try:
-    from mpi4py import MPI
-
-    if MPI.COMM_WORLD.Get_size > 1:
-        comm = MPI.COMM_WORLD
-        rank = comm.Get_rank()
-        size = comm.Get_size()
-    else:
-        logging.error(f"No mpi4py available!!!")
-except Exception as e:
-    logging.error(f"No mpi4py available - {e}")
-
 grb_name = sys.argv[1]
 version = sys.argv[2]
 trigdat_file = sys.argv[3]
