@@ -24,6 +24,7 @@ def default_fit_settings(structure: dict) -> dict:
     structure["live_points_trigdat"] = 1200
     structure["mpiexec_path"] = "/usr/bin/mpiexec"
     structure["multinest_nr_cores"] = 8
+    structure["long_grb_duration"] = 11
     return structure
 
 

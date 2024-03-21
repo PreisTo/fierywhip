@@ -124,7 +124,7 @@ class RunMorgoth:
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
         start, stop = time_splitter(self._tsbb._active_time)
-        if stop - start > 10:
+        if stop - start >fierywhip_config.config.long_grb_duration: 
             self._long_grb = True
         else:
             self._long_grb = False
