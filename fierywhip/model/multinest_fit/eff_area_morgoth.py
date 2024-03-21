@@ -10,6 +10,7 @@ from fierywhip.utils.detector_utils import name2id, detector_list, nai_list
 from fierywhip.frameworks.grbs import GRB
 from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
 from fierywhip.timeselection.split_active_time import calculate_active_time_splits
+from fierywhip.config.configuration import fierywhip_config
 import yaml
 import os
 import time
@@ -269,7 +270,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             cpl.K.max_value = 10**4
             cpl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
             cpl.xc.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-            cpl.index.set_uninformative_prior(Uniform_prior)
+            cpl.index.prior = Uniform_prior(lower_bound=fierywhip_config.config)
             # we define a point source model using the spectrum we just specified
             self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=cpl))
 
@@ -290,16 +291,6 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             # we define a point source model using the spectrum we just specified
             self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=pl))
 
-        elif spectrum == "sbpl":
-            sbpl = SmoothlyBrokenPowerLaw()
-            sbpl.K.min_value = 1e-5
-            sbpl.K.max_value = 1e4
-            sbpl.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1e4)
-            sbpl.alpha.set_uninformative_prior(Uniform_prior)
-            sbpl.beta.set_uninformative_prior(Uniform_prior)
-            sbpl.break_energy.min_value = 1
-            sbpl.break_energy.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=sbpl))
         else:
             raise Exception("Use valid model type: cpl, pl, sbpl, band")
 

@@ -76,6 +76,10 @@ def default_tte_stuff(structure: dict) -> dict:
     return structure
 
 
+def default_trigdat_modelling(structure):
+    raise NotImplementedError
+
+
 def default_complete() -> dict:
     """
     Creates and returns the full default dict
@@ -89,4 +93,5 @@ def default_complete() -> dict:
     structure = default_exporting(structure)
     structure = default_tte_stuff(structure)
     structure = default_eff_correction(structure)
+    structure = default_trigdat_modelling(structure)
     return structure
