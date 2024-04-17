@@ -83,6 +83,7 @@ def default_trigdat_modelling(structure):
     cpl["index_prior_bounds"] = None
     cpl["xc_prior_bounds"] = [1, 10000]
     cpl["k_prior_bounds"] = [1e-3, 10**4]
+    cpl["smart_ra_dec_init"] = False
     structure["trigdat"]["cpl"] = cpl
     return structure
 

@@ -181,8 +181,8 @@ class GRBList:
                 if f"GRB{n.strip('bn')}" not in skip:
                     row = self._full_list[self._full_list["name"] == n]
                     names.append(f"GRB{n.strip('bn')}")
-                    ra = row["ra"]
-                    dec = row["dec"]
+                    ra = row["ra"][0]
+                    dec = row["dec"][0]
                     coord = SkyCoord(ra=ra, dec=dec, unit=(u.deg, u.deg))
                     ras.append(round(coord.ra.deg, 3))
                     decs.append(round(coord.dec.deg, 3))

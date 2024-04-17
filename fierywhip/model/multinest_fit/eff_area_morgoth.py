@@ -4,6 +4,8 @@ from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_trig import DRMGenTrig
+from gbmgeometry.gbm import GBM
+from gbmgeometry.position_interpolator import PositionInterpolator
 from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name2id, detector_list, nai_list
@@ -278,7 +280,19 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             else:
                 cpl.index.set_uninformative_prior(Uniform_prior)
             # we define a point source model using the spectrum we just specified
-            self._model = Model(PointSource("first", 0.0, 0.0, spectral_shape=cpl))
+            if not fierywhip_config.config.trigdat.cpl.smart_ra_dec_init:
+                ra, dec = 0.0, 0.0
+            else:
+                highest_sig_det = self._grb.detector_selection.normalizing_det
+                pi = PositionInterpolator.from_trigdat(self._grb.trigdat)
+                gbm = GBM(quaternion=pi.quaternion(0), sc_pos=pi.sc_pos(0))
+                hsd_center = (
+                    gbm.detectors[highest_sig_det].get_center().transorm_to("icrs")
+                )
+                ra = hsd_center.ra.deg
+                dec = hsd_center.dec.deg
+
+            self._model = Model(PointSource("first", ra, dec, spectral_shape=cpl))
 
         elif spectrum == "band":
             band = Band()
