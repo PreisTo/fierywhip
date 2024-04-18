@@ -41,6 +41,7 @@ class GRBModel:
         fix_position=True,
         save_lc=False,
         use_eff_area=True,
+        **kwargs,
     ):
         self._use_eff_area = use_eff_area
         self.grb = grb
@@ -51,6 +52,7 @@ class GRBModel:
                 os.makedirs(self._base_dir)
         self._fix_position = fix_position
         self._save_lc = save_lc
+        self._smart_ra_dec = kwargs.get("smart_ra_dec", True)
         if model is not None:
             self._model = model
         else:
@@ -180,15 +182,24 @@ class GRBModel:
         cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
         cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
         cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
-
-        self._model = Model(
-            PointSource(
-                "GRB",
-                self.grb.position.ra.deg,
-                self.grb.position.dec.deg,
-                spectral_shape=cpl,
+        if self._smart_ra_dec:
+            self._model = Model(
+                PointSource(
+                    "GRB",
+                    self.grb.position.ra.deg,
+                    self.grb.position.dec.deg,
+                    spectral_shape=cpl,
+                )
             )
-        )
+        else:
+            self._model = Model(
+                PointSource(
+                    "GRB",
+                    0,
+                    0,
+                    spectral_shape=cpl,
+                )
+            )
 
     def fit(self):
         logging.info("Starting the Fit")
