@@ -63,7 +63,7 @@ class GRBModel:
             self.grb.run_timeselection()
         self.bkg_fitting()
         self._to_plugin()
-        self.fit()
+        #self.fit()
 
     def bkg_fitting(self):
         temp_timeseries = {}
@@ -233,7 +233,7 @@ class GRBModel:
             self._results = self._bayes.results
             self._results.data_list = self._data_list
             self._results.write_to(
-                os.path.join(self._base_dir, f"{self.grb.name}.fits")
+                os.path.join(self._base_dir, f"{self.grb.name}.fits"),overwrite = True
             )
             logging.info(f"Stored Fit result in {os.path.join(self._base_dir)}")
 
