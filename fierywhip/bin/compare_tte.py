@@ -20,14 +20,26 @@ size = comm.Get_size()
 
 class CustomEffAreaCorrections(GRBModel):
 
-    def __init__(self,grb,fix_position=False,use_eff_area=True,
+    def __init__(
+        self,
+        grb,
+        fix_position=False,
+        use_eff_area=True,
         base_dir=None,
         eff_area_dict=None,
-        smart_ra_dec=False):
+        smart_ra_dec=False,
+    ):
         self._eff_area_dict = eff_area_dict
-        super().__init__(grb,fix_position=fix_position,use_eff_area=use_eff_area,base_dir=base_dir,smart_ra_dec=smart_ra_dec)
+        super().__init__(
+            grb,
+            fix_position=fix_position,
+            use_eff_area=use_eff_area,
+            base_dir=base_dir,
+            smart_ra_dec=smart_ra_dec,
+        )
 
     def _to_plugin(self):
+        logging.info("ACTUALLY USING THE CORRECT ONE")
         if self._fix_position:
             free_position = False
         else:
@@ -65,7 +77,9 @@ class CustomEffAreaCorrections(GRBModel):
                     self._responses[d],
                     free_position=free_position,
                 )
-                loggin.info(f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}")
+                logging.info(
+                    f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}"
+                )
                 bl.fix_effective_area_correction(self._eff_area_dict[d])
                 balrog_likes.append(bl)
             else:
@@ -84,17 +98,20 @@ if __name__ == "__main__":
     name = "GRB130216790"  # "GRB190824616"
     ra = 58.875000  # 215.329
     dec = 2.033000  # -41.90
-    eff_area_dict = {"n0":1,"n1": 0.9929363050000001,
+    eff_area_dict = {
+        "n0": 1,
+        "n1": 0.9929363050000001,
         "n2": 0.9514813730000001,
         "n3": 1.0400485800000001,
         "n4": 0.9644063780000001,
-                "n5": 1.06590465,
-                 "n6": 0.979424989,
-                  "n7": 1.1175595400000002,
-                   "n8": 0.924959813,
-                    "n9": 0.94208006,
-                     "na": 0.9274396269999999,
-                      "nb": 0.902805862}
+        "n5": 1.06590465,
+        "n6": 0.979424989,
+        "n7": 1.1175595400000002,
+        "n8": 0.924959813,
+        "n9": 0.94208006,
+        "na": 0.9274396269999999,
+        "nb": 0.902805862,
+    }
     timeselection_path = os.path.join(
         "/data/tpeis/test_morgoth/triplets_standard/GBM_TRIGGER_DATA",
         name,
@@ -106,31 +123,6 @@ if __name__ == "__main__":
         grb.timeselection_from_yaml(timeselection_path)
     except FileNotFoundError:
         pass
-
-    model = GRBModel(
-        grb,
-        fix_position=False,
-        use_eff_area=False,
-        base_dir=os.path.join(
-            os.environ.get("GBMDATA"), "localizing", "comparison", name, "no_eff"
-        ),
-        smart_ra_dec=False,
-    )
-    res_file = os.path.join(
-        os.environ.get("GBMDATA"),
-        "localizing",
-        "comparison",
-        name,
-        "no_eff",
-        name,
-        f"{name}.fits",
-    )
-
-    #if not os.path.exists(res_file):
-    model.fit()
-    res = model.results
-    #else:
-    #    res = load_analysis_results(res_file)
 
     model_eff = CustomEffAreaCorrections(
         grb,
@@ -151,11 +143,37 @@ if __name__ == "__main__":
         name,
         f"{name}.fits",
     )
-    #if not os.path.exists(res_file):
+    # if not os.path.exists(res_file):
     model_eff.fit()
     res_eff = model_eff.results
-    #else:
+    # else:
     #    res_eff = load_analysis_results(res_file_eff)
+
+    model = GRBModel(
+        grb,
+        fix_position=False,
+        use_eff_area=False,
+        base_dir=os.path.join(
+            os.environ.get("GBMDATA"), "localizing", "comparison", name, "no_eff"
+        ),
+        smart_ra_dec=False,
+    )
+    res_file = os.path.join(
+        os.environ.get("GBMDATA"),
+        "localizing",
+        "comparison",
+        name,
+        "no_eff",
+        name,
+        f"{name}.fits",
+    )
+
+    # if not os.path.exists(res_file):
+    model.fit()
+    res = model.results
+    # else:
+    #    res = load_analysis_results(res_file)
+
     comm.Barrier()
     if rank == 0:
         res.display()
