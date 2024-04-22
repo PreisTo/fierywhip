@@ -27,7 +27,6 @@ class CustomEffAreaCorrections(GRBModel):
         self._eff_area_dict = eff_area_dict
         super().__init__(grb,fix_position=fix_position,use_eff_area=use_eff_area,base_dir=base_dir,smart_ra_dec=smart_ra_dec)
 
-
     def _to_plugin(self):
         if self._fix_position:
             free_position = False
@@ -66,9 +65,11 @@ class CustomEffAreaCorrections(GRBModel):
                     self._responses[d],
                     free_position=free_position,
                 )
-                if self._use_eff_area:
-                    bl.fix_effective_area_correction(self._eff_area_dict[d])
+                loggin.info(f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}")
+                bl.fix_effective_area_correction(self._eff_area_dict[d])
                 balrog_likes.append(bl)
+            else:
+                pass
         self._data_list = DataList(*balrog_likes)
         if self._save_lc:
             for d in self.grb.detector_selection.good_dets:
@@ -84,9 +85,9 @@ if __name__ == "__main__":
     ra = 58.875000  # 215.329
     dec = 2.033000  # -41.90
     eff_area_dict = {"n0":1,"n1": 0.9929363050000001,
-             "n2": 0.9514813730000001,
-              "n3": 1.0400485800000001,
-               "n4": 0.9644063780000001,
+        "n2": 0.9514813730000001,
+        "n3": 1.0400485800000001,
+        "n4": 0.9644063780000001,
                 "n5": 1.06590465,
                  "n6": 0.979424989,
                   "n7": 1.1175595400000002,
