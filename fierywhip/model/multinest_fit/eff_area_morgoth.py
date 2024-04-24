@@ -276,6 +276,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             cpl.xc.prior = Log_uniform_prior(lower_bound=low, upper_bound=high)
             if fierywhip_config.config.trigdat.cpl.index_prior_bounds is not None:
                 low, high = fierywhip_config.config.trigdat.cpl.index_prior_bounds
+                logging.info(f"Setting index priors bounds to {low} - {high}")
                 cpl.index.prior = Uniform_prior(lower_bound=low, upper_bound=high)
             else:
                 cpl.index.set_uninformative_prior(Uniform_prior)
@@ -291,6 +292,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 ra = hsd_center.ra.deg
                 dec = hsd_center.dec.deg
+                logging.info(
+                    f"Using smart ra dec: ra {round(ra,2)}\tdec {round(dec,2)}"
+                )
 
             self._model = Model(PointSource("first", ra, dec, spectral_shape=cpl))
 
