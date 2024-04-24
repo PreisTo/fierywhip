@@ -280,8 +280,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 cpl.index.prior = Uniform_prior(lower_bound=low, upper_bound=high)
             else:
                 cpl.index.set_uninformative_prior(Uniform_prior)
+                logging.info("Settinf uninformative index prior")
             # we define a point source model using the spectrum we just specified
             if not fierywhip_config.config.trigdat.cpl.smart_ra_dec_init:
+                logging.info(f"Setting initial position to 0,0")
                 ra, dec = 0.0, 0.0
             else:
                 highest_sig_det = self._grb.detector_selection.normalizing_det
