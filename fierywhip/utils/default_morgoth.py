@@ -19,6 +19,7 @@ from fierywhip.frameworks.grbs import GRB
 from fierywhip.utils.detector_utils import name2id
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
+from omegaconf import OmegaConf
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -54,8 +55,7 @@ class RunMorgoth:
         self._grb = grb
         self._trigdat_path = self._grb.trigdat
         self._spectrum = kwargs.get("spectrum", "cpl")
-        self._max_trigger_duration = kwargs.get(
-            "max_trigger_duration",11)
+        self._max_trigger_duration = kwargs.get("max_trigger_duration", 11)
         logging.info(f"Using spectrum {self._spectrum}")
         start_ts = datetime.now()
         self.timeselection()
@@ -124,7 +124,7 @@ class RunMorgoth:
         self._ts_yaml = os.path.join(base_dir, self._grb.name, "timeselection.yml")
         self._tsbb.save_yaml(self._ts_yaml)
         start, stop = time_splitter(self._tsbb._active_time)
-        if stop - start >fierywhip_config.config.long_grb_duration: 
+        if stop - start > fierywhip_config.config.long_grb_duration:
             self._long_grb = True
         else:
             self._long_grb = False
@@ -165,7 +165,6 @@ class RunMorgoth:
         path_to_python = morgoth_config["multinest"]["path_to_python"]
 
         fit_script_path = f"{morgoth.__file__[:-12]}/auto_loc/fit_script.py"
-
         env = os.environ
         if os.path.exists(
             os.path.join(
@@ -264,7 +263,6 @@ class RunMorgoth:
             "bkg_pos_stop",
             "grb_gbm_frame_lon",
             "grb_gbm_frame_lat",
-
         ]
 
         if os.path.exists(result_csv):
@@ -276,9 +274,9 @@ class RunMorgoth:
         else:
             result_df = pd.DataFrame(columns=template)
 
-        at_start,at_stop = time_splitter(self._grb.active_time)
-        bkg_neg_start,bkg_neg_stop = time_splitter(self._grb.bkg_time[0])
-        bkg_pos_start,bkg_pos_stop = time_splitter(self._grb.bkg_time[1])
+        at_start, at_stop = time_splitter(self._grb.active_time)
+        bkg_neg_start, bkg_neg_stop = time_splitter(self._grb.bkg_time[0])
+        bkg_pos_start, bkg_pos_stop = time_splitter(self._grb.bkg_time[1])
 
         row = [
             self._grb.name,
@@ -372,6 +370,11 @@ class RunEffAreaMorgoth(RunMorgoth):
             base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"
         )
         self._grb.save_grb(grb_obj_path)
+        self._config_tmp = os.path.join(
+            base_dir, self._grb.name, "trigdat", "v00", "fierywhip_config.yml"
+        )
+        if not os.path.exists(self._config_tmp):
+            OmegaConf.save(config=fierywhip_config.config, f=self._config_tmp)
 
         env = os.environ
         if os.path.exists(
@@ -387,7 +390,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         else:
             run_fit = True
             p = subprocess.check_output(
-                f"{path_to_mpiexec} -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._long_grb)}",
+                f"{path_to_mpiexec} -n {ncores} --bind-to core {path_to_python} {fit_script_path} {self._grb.name} v00 {self._trigdat_path} {self._bkg_yaml} {self._ts_yaml} {self._det_sel_mode} {self._use_eff_area} {grb_obj_path} {self._spectrum} {str(self._config_tmp)} {str(self._long_grb)}",
                 shell=True,
                 env=env,
                 stdin=subprocess.PIPE,

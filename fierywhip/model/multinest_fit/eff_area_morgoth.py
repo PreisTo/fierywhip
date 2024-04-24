@@ -2,20 +2,17 @@
 
 from morgoth.auto_loc.utils.fit import MultinestFitTrigdat
 from gbm_drm_gen.io.balrog_like import BALROGLike
-from gbm_drm_gen.io.balrog_drm import BALROG_DRM
-from gbm_drm_gen.drmgen_trig import DRMGenTrig
 from gbmgeometry.gbm import GBM
 from gbmgeometry.position_interpolator import PositionInterpolator
 from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
-from fierywhip.utils.detector_utils import name2id, detector_list, nai_list
+from fierywhip.utils.detector_utils import name2id
 from fierywhip.frameworks.grbs import GRB
 from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
 from fierywhip.timeselection.split_active_time import calculate_active_time_splits
-from fierywhip.config.configuration import fierywhip_config
+from fierywhip.config.configuration import FierywhipConfig
 import yaml
 import os
-import time
 from morgoth.utils.trig_reader import TrigReader
 from mpi4py import MPI
 import logging
@@ -55,6 +52,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         use_eff_area: bool = False,
         det_sel_mode: str = "default",
         grb_file: str = None,
+        config_path: str = None,
         **kwargs,
     ):
         if grb is not None:
@@ -67,7 +65,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         self._bkg_fit_yaml_file = bkg_fit_yaml_file
         self._time_selection_yaml_file = time_selection_yaml_file
         self._trigdat_file = trigdat_file
-
+        if config_path is not None:
+            self._fierywhip_config = FierywhipConfig.from_yaml(config_path)
+        else:
+            logging.warning("USING DEFAULT FIERYWHIP CONFIG!!!")
         self._use_eff_area = use_eff_area
         if self._use_eff_area:
             self._grb._get_effective_area_correction(
@@ -231,7 +232,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 )
                 success_restore = True
                 i = 0
-            except Exception as e:
+            except Exception:
                 import time
 
                 time.sleep(1)
@@ -270,20 +271,20 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             # we define the spectral model
             cpl = Cutoff_powerlaw()
             cpl.K.max_value = 10**4
-            low, high = fierywhip_config.config.trigdat.cpl.k_prior_bounds
+            low, high = self._fierywhip_config.config.trigdat.cpl.k_prior_bounds
             cpl.K.prior = Log_uniform_prior(lower_bound=low, upper_bound=high)
-            low, high = fierywhip_config.config.trigdat.cpl.xc_prior_bounds
+            low, high = self._fierywhip_config.config.trigdat.cpl.xc_prior_bounds
             cpl.xc.prior = Log_uniform_prior(lower_bound=low, upper_bound=high)
-            if fierywhip_config.config.trigdat.cpl.index_prior_bounds is not None:
-                low, high = fierywhip_config.config.trigdat.cpl.index_prior_bounds
+            if self._fierywhip_config.config.trigdat.cpl.index_prior_bounds is not None:
+                low, high = self._fierywhip_config.config.trigdat.cpl.index_prior_bounds
                 logging.info(f"Setting index priors bounds to {low} - {high}")
                 cpl.index.prior = Uniform_prior(lower_bound=low, upper_bound=high)
             else:
                 cpl.index.set_uninformative_prior(Uniform_prior)
                 logging.info("Settinf uninformative index prior")
             # we define a point source model using the spectrum we just specified
-            if not fierywhip_config.config.trigdat.cpl.smart_ra_dec_init:
-                logging.info(f"Setting initial position to 0,0")
+            if not self._fierywhip_config.config.trigdat.cpl.smart_ra_dec_init:
+                logging.info("Setting initial position to 0,0")
                 ra, dec = 0.0, 0.0
             else:
                 highest_sig_det = self._grb.detector_selection.normalizing_det
@@ -372,6 +373,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         use_eff_area: bool = False,
         det_sel_mode: str = "default",
         grb_file: str = None,
+        config_path: str = None,
         **kwargs,
     ):
         super().__init__(
@@ -384,6 +386,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
             use_eff_area,
             det_sel_mode,
             grb_file,
+            config_path,
             **kwargs,
         )
 
@@ -427,7 +430,7 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 )
                 success_restore = True
                 i = 0
-            except Exception as e:
+            except Exception:
                 import time
 
                 time.sleep(1)
@@ -442,10 +445,10 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         )
 
         trig_data = []
-        for l in range(len(self._active_times_float) - 1):
-            key = mapping[str(l)]
+        for x in range(len(self._active_times_float) - 1):
+            key = mapping[str(x)]
             trig_reader.set_active_time_interval(
-                f"{self._active_times_float[l]}-{self._active_times_float[l+1]}"
+                f"{self._active_times_float[x]}-{self._active_times_float[x+1]}"
             )
             for d in self._use_dets:
                 speclike = trig_reader.time_series[d].to_spectrumlike()
