@@ -95,6 +95,7 @@ class CustomEffAreaCorrections(GRBModel):
 
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel("INFO")
     name = "GRB130216790"  # "GRB190824616"
     ra = 58.875000  # 215.329
     dec = 2.033000  # -41.90
@@ -143,12 +144,13 @@ if __name__ == "__main__":
         name,
         f"{name}.fits",
     )
-    # if not os.path.exists(res_file):
-    model_eff.fit()
-    res_eff = model_eff.results
-    # else:
-    #    res_eff = load_analysis_results(res_file_eff)
+    if not os.path.exists(res_file_eff):
+        model_eff.fit()
+        res_eff = model_eff.results
+    else:
+        res_eff = load_analysis_results(res_file_eff)
 
+    comm.Barrier()
     model = GRBModel(
         grb,
         fix_position=False,
@@ -168,11 +170,11 @@ if __name__ == "__main__":
         f"{name}.fits",
     )
 
-    # if not os.path.exists(res_file):
-    model.fit()
-    res = model.results
-    # else:
-    #    res = load_analysis_results(res_file)
+    if not os.path.exists(res_file):
+        model.fit()
+        res = model.results
+    else:
+        res = load_analysis_results(res_file)
 
     comm.Barrier()
     if rank == 0:
