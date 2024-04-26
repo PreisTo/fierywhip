@@ -4,6 +4,10 @@ from fierywhip.frameworks.grbs import GRB
 from fierywhip.model.model import GRBModel
 from fierywhip.config.configuration import fierywhip_config
 from threeML.analysis_results import load_analysis_results
+from astromodels.functions import Cutoff_powerlaw, Cutoff_powerlaw_Ep
+from astromodels.functions.priors import Uniform_prior, Log_uniform_prior
+from astromodels.sources.point_source import PointSource
+from astromodels.core.model import Model
 from mpi4py import MPI
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -28,12 +32,15 @@ class CustomEffAreaCorrections(GRBModel):
         base_dir=None,
         eff_area_dict=None,
         smart_ra_dec=False,
+        fix_spectrum=None,
     ):
+        self._fix_sectrum = fix_spectrum
         self._eff_area_dict = eff_area_dict
+        self._fix_use_area = use_eff_area
         super().__init__(
             grb,
             fix_position=fix_position,
-            use_eff_area=use_eff_area,
+            use_eff_area=False,
             base_dir=base_dir,
             smart_ra_dec=smart_ra_dec,
         )
@@ -80,7 +87,10 @@ class CustomEffAreaCorrections(GRBModel):
                 logging.info(
                     f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}"
                 )
-                bl.fix_effective_area_correction(self._eff_area_dict[d])
+                if self._fix_use_area:
+                    bl.fix_effective_area_correction(self._eff_area_dict[d])
+                else:
+                    bl.fix_effective_area_correction(1)
                 balrog_likes.append(bl)
             else:
                 pass
@@ -93,12 +103,142 @@ class CustomEffAreaCorrections(GRBModel):
                     os.makedirs(plot_path)
                 fig.savefig(os.path.join(plot_path, f"{d}.pdf"))
 
+    def _setup_model(self):
+        """
+        setup the model using a cutoff powerlaw aka comptonized
+        using values from 10.3847/1538-4357/abf24d and morgoth (github.com/grburgess/morgoth)
+        """
+        if self._fix_sectrum is None:
+            cpl = Cutoff_powerlaw()
+            cpl.index.value = -1.1
+            cpl.K.value = 1
+            cpl.xc.value = 200
+            cpl.index.prior = Uniform_prior(lower_bound=-2.5, upper_bound=1)
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
+            cpl.xc.prior = Log_uniform_prior(lower_bound=10, upper_bound=10000)
+        else:
+            cpl = Cutoff_powerlaw_Ep()
+            cpl.index.value = self._fix_sectrum["index"]
+            cpl.index.free = False
+            cpl.piv.value = 100
+            cpl.K.value = self._fix_sectrum["K"]
+            cpl.K.free = False
+            cpl.xp.value = self._fix_sectrum["xc"]
+            cpl.xp.free = False
+
+        if self._smart_ra_dec:
+            self._model = Model(
+                PointSource(
+                    "GRB",
+                    self.grb.position.ra.deg,
+                    self.grb.position.dec.deg,
+                    spectral_shape=cpl,
+                )
+            )
+        else:
+            self._model = Model(
+                PointSource(
+                    "GRB",
+                    0,
+                    0,
+                    spectral_shape=cpl,
+                )
+            )
+
+
+def compare_free_spectrum(grb, eff_area_dict):
+    model_eff = CustomEffAreaCorrections(
+        grb,
+        fix_position=False,
+        use_eff_area=True,
+        base_dir=os.path.join(
+            os.environ.get("GBMDATA"), "localizing", "comparison", grb.name, "eff"
+        ),
+        eff_area_dict=eff_area_dict,
+        smart_ra_dec=False,
+    )
+    res_file_eff = os.path.join(
+        os.environ.get("GBMDATA"),
+        "localizing",
+        "comparison",
+        grb.name,
+        "eff",
+        grb.name,
+        f"{grb.name}.fits",
+    )
+    if not os.path.exists(res_file_eff):
+        model_eff.fit()
+        res_eff = model_eff.results
+    else:
+        res_eff = load_analysis_results(res_file_eff)
+
+    comm.Barrier()
+    model = GRBModel(
+        grb,
+        fix_position=False,
+        use_eff_area=False,
+        base_dir=os.path.join(
+            os.environ.get("GBMDATA"), "localizing", "comparison", grb.name, "no_eff"
+        ),
+        smart_ra_dec=False,
+    )
+    res_file = os.path.join(
+        os.environ.get("GBMDATA"),
+        "localizing",
+        "comparison",
+        grb.name,
+        "no_eff",
+        grb.name,
+        f"{grb.name}.fits",
+    )
+
+    if not os.path.exists(res_file):
+        model.fit()
+        res = model.results
+    else:
+        res = load_analysis_results(res_file)
+    return res, res_eff
+
+
+def compare_fix_spectrum(grb, eff_area_dict, spectrum):
+    base_dir = os.path.join(
+        os.environ.get("GBMDAT"), "localizing", "comparison", grb.name
+    )
+    model_no_eff = CustomEffAreaCorrections(
+        grb,
+        fix_position=False,
+        use_eff_area=False,
+        base_dir=os.path.join(base_dir, "no_eff"),
+        smart_ra_dec=False,
+        fix_spectrum=spectrum,
+    )
+    model_no_eff.fit()
+
+    comm.Barrier()
+
+    model_eff = CustomEffAreaCorrections(
+        grb,
+        fix_position=False,
+        use_eff_area=True,
+        base_dir=os.path.join(base_dir, "no_eff"),
+        smart_ra_dec=False,
+        fix_spectrum=spectrum,
+        eff_area_dict=eff_area_dict,
+    )
+    model_eff.fit()
+
+    res_no = model_no_eff.results
+    res = model_eff.results
+    return res_no, res
+
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
     name = "GRB130216790"  # "GRB190824616"
     ra = 58.875000  # 215.329
     dec = 2.033000  # -41.90
+
+    spectrum = {"index": -1.438956, "K": 3.498084e-2, "xc": 213.4112}
     eff_area_dict = {
         "n0": 1,
         "n1": 0.9929363050000001,
@@ -125,57 +265,8 @@ if __name__ == "__main__":
     except FileNotFoundError:
         pass
 
-    model_eff = CustomEffAreaCorrections(
-        grb,
-        fix_position=False,
-        use_eff_area=True,
-        base_dir=os.path.join(
-            os.environ.get("GBMDATA"), "localizing", "comparison", name, "eff"
-        ),
-        eff_area_dict=eff_area_dict,
-        smart_ra_dec=False,
-    )
-    res_file_eff = os.path.join(
-        os.environ.get("GBMDATA"),
-        "localizing",
-        "comparison",
-        name,
-        "eff",
-        name,
-        f"{name}.fits",
-    )
-    if not os.path.exists(res_file_eff):
-        model_eff.fit()
-        res_eff = model_eff.results
-    else:
-        res_eff = load_analysis_results(res_file_eff)
-
-    comm.Barrier()
-    model = GRBModel(
-        grb,
-        fix_position=False,
-        use_eff_area=False,
-        base_dir=os.path.join(
-            os.environ.get("GBMDATA"), "localizing", "comparison", name, "no_eff"
-        ),
-        smart_ra_dec=False,
-    )
-    res_file = os.path.join(
-        os.environ.get("GBMDATA"),
-        "localizing",
-        "comparison",
-        name,
-        "no_eff",
-        name,
-        f"{name}.fits",
-    )
-
-    if not os.path.exists(res_file):
-        model.fit()
-        res = model.results
-    else:
-        res = load_analysis_results(res_file)
-
+    # res, res_eff = compare_free_spectrum(grb, eff_area_dict)
+    res, res_eff = compare_fix_spectrum(grb, eff_area_dict, spectrum)
     comm.Barrier()
     if rank == 0:
         res.display()
