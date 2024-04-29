@@ -122,7 +122,8 @@ class CustomEffAreaCorrections(GRBModel):
             cpl.index.free = False
             cpl.piv.value = 100
             cpl.K.value = self._fix_sectrum["K"]
-            cpl.K.free = False
+            cpl.K.free = True
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=10e4)
             cpl.xp.value = self._fix_sectrum["xc"]
             cpl.xp.free = False
 
