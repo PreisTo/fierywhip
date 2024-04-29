@@ -291,7 +291,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 pi = PositionInterpolator.from_trigdat(self._grb.trigdat)
                 gbm = GBM(quaternion=pi.quaternion(0), sc_pos=pi.sc_pos(0))
                 hsd_center = (
-                    gbm.detectors[highest_sig_det].get_center().transorm_to("icrs")
+                    gbm.detectors[highest_sig_det].get_center().transform_to("icrs")
                 )
                 ra = hsd_center.ra.deg
                 dec = hsd_center.dec.deg
