@@ -83,11 +83,12 @@ class CustomEffAreaCorrections(GRBModel):
                     self._responses[d],
                     free_position=free_position,
                 )
-                logging.info(
-                    f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}"
-                )
                 if self._fix_use_area:
                     bl.fix_effective_area_correction(self._eff_area_dict[d])
+                    logging.info(
+                        f"Fixing eff area correction for {d} to be {self._eff_area_dict[d]}"
+                    )
+
                 else:
                     bl.fix_effective_area_correction(1)
                 balrog_likes.append(bl)
