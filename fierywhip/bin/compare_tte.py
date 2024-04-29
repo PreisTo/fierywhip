@@ -40,7 +40,6 @@ class CustomEffAreaCorrections(GRBModel):
         super().__init__(
             grb,
             fix_position=fix_position,
-            use_eff_area=False,
             base_dir=base_dir,
             smart_ra_dec=smart_ra_dec,
         )
@@ -202,7 +201,7 @@ def compare_free_spectrum(grb, eff_area_dict):
 
 def compare_fix_spectrum(grb, eff_area_dict, spectrum):
     base_dir = os.path.join(
-        os.environ.get("GBMDAT"), "localizing", "comparison", grb.name
+        os.environ.get("GBMDATA"), "localizing", "comparison", grb.name
     )
     model_no_eff = CustomEffAreaCorrections(
         grb,
