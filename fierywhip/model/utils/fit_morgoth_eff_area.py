@@ -27,7 +27,7 @@ else:
     long_grb = False
 # get fit object
 fierywhip_config = FierywhipConfig.from_yaml(config_path)
-
+logging.getLogger().setLevel("INFO")
 logging.info(f"Using spectrum {spectrum}")
 if str(long_grb).lower() == "true":
     logging.info(
