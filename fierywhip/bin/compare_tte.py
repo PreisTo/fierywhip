@@ -123,7 +123,7 @@ class CustomEffAreaCorrections(GRBModel):
             cpl.piv.value = 100
             cpl.K.value = self._fix_sectrum["K"]
             cpl.K.free = True
-            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=10e4)
+            cpl.K.prior = Log_uniform_prior(lower_bound=1e-4, upper_bound=1000)
             cpl.xp.value = self._fix_sectrum["xc"]
             cpl.xp.free = False
 
@@ -169,7 +169,8 @@ def compare_free_spectrum(grb, eff_area_dict):
     )
     if not os.path.exists(res_file_eff):
         model_eff.fit()
-        res_eff = model_eff.results
+        if rank == 0:
+            res_eff = model_eff.results
     else:
         res_eff = load_analysis_results(res_file_eff)
 
@@ -195,10 +196,14 @@ def compare_free_spectrum(grb, eff_area_dict):
 
     if not os.path.exists(res_file):
         model.fit()
-        res = model.results
+        if rank == 0:
+            res = model.results
     else:
         res = load_analysis_results(res_file)
-    return res, res_eff
+    if rank == 0:
+        return res, res_eff
+    else:
+        return None,None
 
 
 def compare_fix_spectrum(grb, eff_area_dict, spectrum):
@@ -221,25 +226,27 @@ def compare_fix_spectrum(grb, eff_area_dict, spectrum):
         grb,
         fix_position=False,
         use_eff_area=True,
-        base_dir=os.path.join(base_dir, "no_eff"),
+        base_dir=os.path.join(base_dir, "eff"),
         smart_ra_dec=False,
         fix_spectrum=spectrum,
         eff_area_dict=eff_area_dict,
     )
     model_eff.fit()
-
-    res_no = model_no_eff.results
-    res = model_eff.results
-    return res_no, res
+    if rank == 0:
+        res_no = model_no_eff.results
+        res = model_eff.results
+        return res_no, res
+    else:
+        return None,None
 
 
 if __name__ == "__main__":
     logging.getLogger().setLevel("INFO")
-    name = "GRB130216790"  # "GRB190824616"
-    ra = 58.875000  # 215.329
-    dec = 2.033000  # -41.90
+    name = "GRB231215408" #"GRB230328621" # "GRB130216790"  # "GRB190824616"
+    ra = 9.75 #290.986 #58.875000  # 215.329
+    dec = 57.64 #80.016 #2.033000  # -41.90
 
-    spectrum = {"index": -1.438956, "K": 3.498084e-2, "xc": 213.4112}
+    spectrum = {"index": -1.013, "K": 3.49e-2, "xc": 9879}
     eff_area_dict = {
         "n0": 1,
         "n1": 0.9929363050000001,
