@@ -77,14 +77,6 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 ).matrix
             )
         self._spectrum_model = kwargs.get("spectrum", "cpl")
-        super().__init__(
-            grb_name,
-            version,
-            trigdat_file,
-            bkg_fit_yaml_file,
-            time_selection_yaml_file,
-            spectrum=self._spectrum_model,
-        )
 
         if det_sel_mode != "default":
             logging.debug(f"Using det_sel_mode {det_sel_mode}")
@@ -201,6 +193,14 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
                 super().setup_essentials()
+        super().__init__(
+            grb_name,
+            version,
+            trigdat_file,
+            bkg_fit_yaml_file,
+            time_selection_yaml_file,
+            spectrum=self._spectrum_model,
+        )
 
     def setup_essentials(self):
         with open(self._bkg_fit_yaml_file, "r") as f:
