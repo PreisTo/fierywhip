@@ -87,6 +87,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         )
 
         if det_sel_mode != "default":
+            logging.debug(f"Using det_sel_mode {det_sel_mode}")
             if det_sel_mode == "max_sig_old":
                 self._grb._get_detector_selection(
                     max_number_nai=5, min_number_nai=5, mode=det_sel_mode
@@ -377,16 +378,16 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
         **kwargs,
     ):
         super().__init__(
-            grb,
-            grb_name,
-            version,
-            trigdat_file,
-            bkg_fit_yaml_file,
-            time_selection_yaml_file,
-            use_eff_area,
-            det_sel_mode,
-            grb_file,
-            config_path,
+            grb=grb,
+            grb_name=grb_name,
+            version=version,
+            trigdat_file=trigdat_file,
+            bkg_fit_yaml_file=bkg_fit_yaml_file,
+            time_selection_yaml_file=time_selection_yaml_file,
+            use_eff_area=use_eff_area,
+            det_sel_mode=det_sel_mode,
+            grb_file=grb_file,
+            config_path=config_path,
             **kwargs,
         )
 
