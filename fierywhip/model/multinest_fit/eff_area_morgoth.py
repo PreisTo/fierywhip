@@ -70,6 +70,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         else:
             logging.warning("USING DEFAULT FIERYWHIP CONFIG!!!")
         self._use_eff_area = use_eff_area
+        self._grb_name = grb_name
         if self._use_eff_area:
             self._grb._get_effective_area_correction(
                 NormalizationMatrix(
@@ -77,122 +78,136 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 ).matrix
             )
         self._spectrum_model = kwargs.get("spectrum", "cpl")
+        if not hasattr(self._grb, "_detector_selection"):
+            if det_sel_mode != "default":
+                logging.debug(f"Using det_sel_mode {det_sel_mode}")
+                if det_sel_mode == "max_sig_old":
+                    self._grb._get_detector_selection(
+                        max_number_nai=5, min_number_nai=5, mode=det_sel_mode
+                    )
+                    self._normalizing_det = self._grb.detector_selection.normalizing_det
+                    self._use_dets = self._grb.detector_selection.good_dets
+                    logging.debug(f"\n\n USING DETS {self._use_dets}")
+                    if rank == 0:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data = yaml.safe_load(f)
+                            self._bkg_fit_files = data["bkg_fit_files"]
+                        with open(bkg_fit_yaml_file, "w") as f:
+                            data["use_dets"] = list(map(name2id, self._use_dets))
+                            yaml.safe_dump(data, f)
+                    else:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data1 = yaml.safe_load(f)
+                            self._bkg_fit_files = data1["bkg_fit_files"]
 
-        if det_sel_mode != "default":
-            logging.debug(f"Using det_sel_mode {det_sel_mode}")
-            if det_sel_mode == "max_sig_old":
-                self._grb._get_detector_selection(
-                    max_number_nai=5, min_number_nai=5, mode=det_sel_mode
-                )
-                self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.good_dets
-                logging.debug(f"\n\n USING DETS {self._use_dets}")
-                if rank == 0:
+                elif det_sel_mode == "max_sig_and_lowest_old":
+                    self._grb._get_detector_selection(
+                        max_number_nai=6, min_number_nai=6, mode=det_sel_mode
+                    )
+                    self._normalizing_det = self._grb_.detector_selection.good_dets[0]
+                    self._use_dets = self._grb.detector_selection.good_dets
+                    logging.debug(f"\n\n USING DETS {self._use_dets}\n\n")
+                    if rank == 0:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data = yaml.safe_load(f)
+                            self._bkg_fit_files = data["bkg_fit_files"]
+                        with open(bkg_fit_yaml_file, "w") as f:
+                            data["use_dets"] = list(map(name2id, self._use_dets))
+                            yaml.safe_dump(data, f)
+                    else:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data1 = yaml.safe_load(f)
+                            self._bkg_fit_files = data1["bkg_fit_files"]
+
+                elif det_sel_mode == "max_sig_triplets":
+                    self._grb._get_detector_selection(
+                        max_number_nai=6, min_number_nai=6, mode=det_sel_mode
+                    )
+                    self._normalizing_det = self._grb.detector_selection.normalizing_det
+                    self._use_dets = self._grb.detector_selection.good_dets
+                    logging.debug(f"\n\n USING DETS {self._use_dets}")
+                    if rank == 0:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data = yaml.safe_load(f)
+                            self._bkg_fit_files = data["bkg_fit_files"]
+                        with open(bkg_fit_yaml_file, "w") as f:
+                            data["use_dets"] = list(map(name2id, self._use_dets))
+                            yaml.safe_dump(data, f)
+                    else:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data1 = yaml.safe_load(f)
+                            self._bkg_fit_files = data1["bkg_fit_files"]
+
+                elif det_sel_mode == "bgo_sides_no_bgo":
+                    logging.debug("Using pre-set detectors from bkg yaml file")
+                    self._grb._get_detector_selection(
+                        max_number_nai=6,
+                        min_number_nai=6,
+                        mode=det_sel_mode,
+                        bkg_yaml=bkg_fit_yaml_file,
+                    )
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
                         self._bkg_fit_files = data["bkg_fit_files"]
-                    with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name2id, self._use_dets))
-                        yaml.safe_dump(data, f)
-                else:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data1 = yaml.safe_load(f)
-                        self._bkg_fit_files = data1["bkg_fit_files"]
-
-            elif det_sel_mode == "max_sig_and_lowest_old":
-                self._grb._get_detector_selection(
-                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode
-                )
-                self._normalizing_det = self._grb_.detector_selection.good_dets[0]
-                self._use_dets = self._grb.detector_selection.good_dets
-                logging.debug(f"\n\n USING DETS {self._use_dets}\n\n")
-                if rank == 0:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data = yaml.safe_load(f)
-                        self._bkg_fit_files = data["bkg_fit_files"]
-                    with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name2id, self._use_dets))
-                        yaml.safe_dump(data, f)
-                else:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data1 = yaml.safe_load(f)
-                        self._bkg_fit_files = data1["bkg_fit_files"]
-
-            elif det_sel_mode == "max_sig_triplets":
-                self._grb._get_detector_selection(
-                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode
-                )
-                self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.good_dets
-                logging.debug(f"\n\n USING DETS {self._use_dets}")
-                if rank == 0:
+                    self._normalizing_det = self._grb.detector_selection.normalizing_det
+                    self._use_dets = self._grb.detector_selection.good_dets
+                elif det_sel_mode == "huntsville":
+                    self._grb._get_detector_selection(
+                        max_number_nai=6, min_number_nai=6, mode=det_sel_mode
+                    )
+                    self._normalizing_det = self._grb.detector_selection.normalizing_det
+                    self._use_dets = self._grb.detector_selection.good_dets
+                    logging.info("Set Dets according to huntsville simulation")
+                    if rank == 0:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data = yaml.safe_load(f)
+                            self._bkg_fit_files = data["bkg_fit_files"]
+                        with open(bkg_fit_yaml_file, "w") as f:
+                            data["use_dets"] = list(map(name2id, self._use_dets))
+                            yaml.safe_dump(data, f)
+                    else:
+                        with open(bkg_fit_yaml_file, "r") as f:
+                            data1 = yaml.safe_load(f)
+                            self._bkg_fit_files = data1["bkg_fit_files"]
+                elif det_sel_mode == "all":
+                    self._grb._get_detector_selection(mode=det_sel_mode)
                     with open(bkg_fit_yaml_file, "r") as f:
                         data = yaml.safe_load(f)
                         self._bkg_fit_files = data["bkg_fit_files"]
-                    with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name2id, self._use_dets))
-                        yaml.safe_dump(data, f)
-                else:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data1 = yaml.safe_load(f)
-                        self._bkg_fit_files = data1["bkg_fit_files"]
 
-            elif det_sel_mode == "bgo_sides_no_bgo":
-                logging.debug("Using pre-set detectors from bkg yaml file")
-                self._grb._get_detector_selection(
-                    max_number_nai=6,
-                    min_number_nai=6,
-                    mode=det_sel_mode,
-                    bkg_yaml=bkg_fit_yaml_file,
-                )
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data = yaml.safe_load(f)
-                    self._bkg_fit_files = data["bkg_fit_files"]
-                self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.good_dets
-            elif det_sel_mode == "huntsville":
-                self._grb._get_detector_selection(
-                    max_number_nai=6, min_number_nai=6, mode=det_sel_mode
-                )
-                self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.good_dets
-                logging.info("Set Dets according to huntsville simulation")
-                if rank == 0:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data = yaml.safe_load(f)
-                        self._bkg_fit_files = data["bkg_fit_files"]
-                    with open(bkg_fit_yaml_file, "w") as f:
-                        data["use_dets"] = list(map(name2id, self._use_dets))
-                        yaml.safe_dump(data, f)
+                    self._normalizing_det = self._grb.detector_selection.normalizing_det
+                    self._use_dets = self._grb.detector_selection.good_dets
+                    logging.info("Using all those beautiful scintillation dets")
                 else:
-                    with open(bkg_fit_yaml_file, "r") as f:
-                        data1 = yaml.safe_load(f)
-                        self._bkg_fit_files = data1["bkg_fit_files"]
-            elif det_sel_mode == "all":
-                self._grb._get_detector_selection(mode=det_sel_mode)
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data = yaml.safe_load(f)
-                    self._bkg_fit_files = data["bkg_fit_files"]
-
-                self._normalizing_det = self._grb.detector_selection.normalizing_det
-                self._use_dets = self._grb.detector_selection.good_dets
-                logging.info("Using all those beautiful scintillation dets")
+                    raise NotImplementedError("det_sel_mode not supported (yet)")
+                self.setup_essentials()
             else:
-                raise NotImplementedError("det_sel_mode not supported (yet)")
-            self.setup_essentials()
+                if self._use_eff_area:
+                    logging.error(
+                        "Currently doing this is absolutely useless and will likely worsen the results"
+                    )
+                    super().setup_essentials()
+                    # just use the first one as normalizing det
+                    self._normalizing_det = self._use_dets[0]
+                else:
+                    with open(bkg_fit_yaml_file, "r") as f:
+                        data = yaml.safe_load(f)
+                        self._bkg_fit_files = data["bkg_fit_files"]
+                    super().setup_essentials()
         else:
-            if self._use_eff_area:
-                logging.error(
-                    "Currently doing this is absolutely useless and will likely worsen the results"
-                )
-                super().setup_essentials()
-                # just use the first one as normalizing det
-                self._normalizing_det = self._use_dets[0]
-            else:
+            if rank == 0:
                 with open(bkg_fit_yaml_file, "r") as f:
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
-                super().setup_essentials()
+                with open(bkg_fit_yaml_file, "w") as f:
+                    data["use_dets"] = list(map(name2id, self._use_dets))
+                    yaml.safe_dump(data, f)
+            else:
+                with open(bkg_fit_yaml_file, "r") as f:
+                    data1 = yaml.safe_load(f)
+                    self._bkg_fit_files = data1["bkg_fit_files"]
+            self.setup_essentials()
+
         super().__init__(
             grb_name,
             version,
