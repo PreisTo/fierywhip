@@ -61,6 +61,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             self._grb = GRB.grb_from_file(grb_file)
         else:
             raise ValueError("need to provide either grb object or file to recreate")
+        self._grb_name = grb_name
         self._version = version
         self._bkg_fit_yaml_file = bkg_fit_yaml_file
         self._time_selection_yaml_file = time_selection_yaml_file
@@ -193,6 +194,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     data = yaml.safe_load(f)
                     self._bkg_fit_files = data["bkg_fit_files"]
                 super().setup_essentials()
+        logging.debug(f"These are the dets: {self._use_dets}")
         super().__init__(
             grb_name,
             version,
