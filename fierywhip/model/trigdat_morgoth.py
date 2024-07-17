@@ -8,7 +8,7 @@ from threeML.data_list import DataList
 from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name2id
 from fierywhip.frameworks.grbs import GRB
-from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
+from fierywhip.utils.balrog_like import BALROGLikeMultiple
 from fierywhip.timeselection.split_active_time import calculate_active_time_splits
 from fierywhip.config.configuration import FierywhipConfig
 import yaml
@@ -576,58 +576,6 @@ class MultinestFitTrigdatMultipleSelections(MultinestFitTrigdatEffArea):
                 self._model.link(
                     self._model.fourth.position.dec, self._model.first.position.dec
                 )
-
-        # elif spectrum == "band":
-        #     band = Band()
-        #     band.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1200)
-        #     band.alpha.set_uninformative_prior(Uniform_prior)
-        #     band.xp.prior = Log_uniform_prior(lower_bound=10, upper_bound=1e4)
-        #     band.beta.set_uninformative_prior(Uniform_prior)
-
-        #     self._model = Model(PointSource("GRB_band", 0.0, 0.0, spectral_shape=band))
-
-        # elif spectrum == "pl":
-        #     pl = Powerlaw()
-        #     pl.K.max_value = 10**4
-        #     pl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**4)
-        #     pl.index.set_uninformative_prior(Uniform_prior)
-        #     # we define a point source model using the spectrum we just specified
-        #     self._model = Model(PointSource("GRB_pl", 0.0, 0.0, spectral_shape=pl))
-
-        # elif spectrum == "sbpl":
-        #     sbpl = SmoothlyBrokenPowerLaw()
-        #     sbpl.K.min_value = 1e-5
-        #     sbpl.K.max_value = 1e4
-        #     sbpl.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=1e4)
-        #     sbpl.alpha.set_uninformative_prior(Uniform_prior)
-        #     sbpl.beta.set_uninformative_prior(Uniform_prior)
-        #     sbpl.break_energy.min_value = 1
-        #     sbpl.break_energy.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-        #     self._model = Model(PointSource("GRB_sbpl", 0.0, 0.0, spectral_shape=sbpl))
-
-        # elif spectrum == "solar_flare":
-        #     # broken powerlaw
-        #     bpl = Broken_powerlaw()
-        #     bpl.K.max_value = 10**5
-        #     bpl.K.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=10**5)
-        #     bpl.xb.prior = Log_uniform_prior(lower_bound=1, upper_bound=1e4)
-        #     bpl.alpha.set_uninformative_prior(Uniform_prior)
-        #     bpl.beta.set_uninformative_prior(Uniform_prior)
-
-        #     # thermal brems
-        #     tb = Thermal_bremsstrahlung_optical_thin()
-        #     tb.K.max_value = 1e5
-        #     tb.K.min_value = 1e-5
-        #     tb.K.prior = Log_uniform_prior(lower_bound=1e-5, upper_bound=10**5)
-        #     tb.kT.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=1e4)
-        #     tb.Epiv.prior = Log_uniform_prior(lower_bound=1e-3, upper_bound=1e4)
-
-        #     # combined
-        #     total = bpl + tb
-
-        #     self._model = Model(
-        #         PointSource("Solar_flare", 0.0, 0.0, spectral_shape=total)
-        #     )
         else:
             raise Exception("Use valid model type: cpl, pl, sbpl, band or solar_flare")
 

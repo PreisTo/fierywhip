@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-
+"""
+This file is the equivalent to morgoth/auto_loc/fit_script.py
+used to run BALROG fit with multiple cores
+"""
 import sys
 import warnings
 import logging
-from fierywhip.model.multinest_fit.eff_area_morgoth import (
+from fierywhip.model.trigdat_morgoth import (
     MultinestFitTrigdatMultipleSelections,
     MultinestFitTrigdatEffArea,
 )

@@ -8,7 +8,7 @@ from astromodels.functions.priors import Log_uniform_prior, Uniform_prior, Cosin
 class BALROGLikePositionPrior(BALROGLike):
     """
     BALROG Like but with a more constrained prior on the Position
-    Not for production use
+    Not for production use!
     """
 
     def __init__(

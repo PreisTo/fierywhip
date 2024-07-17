@@ -16,7 +16,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
-from fierywhip.detectors.detectors import DetectorSelection, DetectorSelectionError
+from fierywhip.detectors.detector_selection import DetectorSelection, DetectorSelectionError
 from fierywhip.utils.detector_utils import detector_list, nai_list
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter

@@ -15,7 +15,7 @@ from threeML.io.plotting.post_process_data_plots import (
 )
 import os
 from gbm_drm_gen.io.balrog_like import BALROGLike
-from fierywhip.model.utils.balrog_like import BALROGLikeMultiple
+from fierywhip.utils.balrog_like import BALROGLikeMultiple
 from gbm_drm_gen.io.balrog_drm import BALROG_DRM
 from gbm_drm_gen.drmgen_tte import DRMGenTTE
 from mpi4py import MPI
@@ -31,6 +31,7 @@ rank = comm.Get_rank()
 class GRBModel:
     """
     Class for modeling, setting up the data and fitting the GRB
+    For TTE Data!
     """
 
     def __init__(
