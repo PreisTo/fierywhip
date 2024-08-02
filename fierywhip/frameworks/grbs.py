@@ -16,7 +16,10 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 import yaml
 from mpi4py import MPI
-from fierywhip.detectors.detector_selection import DetectorSelection, DetectorSelectionError
+from fierywhip.detectors.detector_selection import (
+    DetectorSelection,
+    DetectorSelectionError,
+)
 from fierywhip.utils.detector_utils import detector_list, nai_list
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
@@ -292,6 +295,8 @@ class GRB:
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()
+        if "custom_effective_area_dict" in kwargs.keys():
+            self._set_effective_area_correction(kwargs["custom_effective_area_dict"])
         run_det_sel = kwargs.get("run_det_sel", True)
         if run_det_sel:
             try:
@@ -299,6 +304,57 @@ class GRB:
             except DetectorSelectionError:
                 raise GRBInitError
             self.download_files()
+
+    def save_grb_to_yml(self, path):
+        export_dict = {}
+        export_dict["name"] = str(self._name)
+        export_dict["gbm_time"] = float(self._time_gbm.met)
+        export_dict["active_time"] = self._active_time
+        export_dict["bkg_time"] = self._bkg_time
+        export_dict["ra"] = float(self._ra_icrs)
+        export_dict["dec"] = float(self._dec_icrs)
+
+        if self._effective_area_dict is not None:
+            export_dict["eff_area_dict"] = self._effective_area_dict
+
+        with open(path, "w+") as f:
+            yaml.safe_dump(export_dict, f, sort_keys=False)
+
+    @classmethod
+    def load_grb_from_yml(cls, path):
+        with open(path, "r") as f:
+            import_dict = yaml.safe_load(f)
+
+        name = import_dict["name"]
+        gbm_time = import_dict["gbm_time"]
+        ra = import_dict["ra"]
+        dec = import_dict["dec"]
+        active_time = import_dict["active_time"]
+        bkg_time = import_dict["bkg_time"]
+        grb_time = GBMTime.from_MET(float(gbm_time)).time.datetime
+
+        if "eff_area_dict" in import_dict.keys():
+            custom_effective_area_dict = import_dict["eff_area_dict"]
+            out = cls(
+                name=name,
+                grb_time=grb_time,
+                ra=ra,
+                dec=dec,
+                active_time=active_time,
+                bkg_time=bkg_time,
+                custom_effective_area_dict=custom_effective_area_dict,
+            )
+        else:
+            out = cls(
+                name=name,
+                grb_time=grb_time,
+                ra=ra,
+                dec=dec,
+                active_time=active_time,
+                bkg_time=bkg_time,
+            )
+
+        return out
 
     @property
     def position(self) -> SkyCoord:
@@ -513,10 +569,11 @@ class GRB:
                 eff_area_dict[gd] = 1
 
         self._effective_area_dict = eff_area_dict
-    def _set_effective_area_correction(self,eff_area_dict):
+
+    def _set_effective_area_correction(self, eff_area_dict):
         """setter function for the effective area dict"""
         self._effective_area_dict = eff_area_dict
-        
+
     def effective_area_correction(self, det):
         return self._effective_area_dict[det]
 
