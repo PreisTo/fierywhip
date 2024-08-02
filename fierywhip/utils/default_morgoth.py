@@ -333,6 +333,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         ), "grb needs to be of type fierywhip.frameworks.grbs.GRB"
         self._grb = grb
         self._use_eff_area = use_eff_area
+        self._custom_eff_area_dict = kwargs.get("custom_eff_area_dict", None)
         self._det_sel_mode = det_sel_mode
         super().__init__(grb, **kwargs)
         self.setup_use_dets()
@@ -364,7 +365,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         path_to_mpiexec = fierywhip_config.config.mpiexec_path
 
         fit_script_path = pkg_resources.resource_filename(
-            "fierywhip", "model/utils/fit_morgoth_eff_area.py"
+            "fierywhip", "model/utils/fit_script.py"
         )
         grb_obj_path = os.path.join(
             base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"

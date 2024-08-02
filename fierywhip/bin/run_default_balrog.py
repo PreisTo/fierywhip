@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from fierywhip.config.configuration import fierywhip_config
 from fierywhip.utils.default_morgoth import RunMorgoth, RunEffAreaMorgoth
-from fierywhip.frameworks.grbs import GRBList, GRB,GRBInitError
+from fierywhip.frameworks.grbs import GRBList, GRB, GRBInitError
 from fierywhip.timeselection.timeselection import TimeSelectionError
 from threeML.minimizer.minimization import FitFailed
 import pandas as pd
@@ -67,13 +67,14 @@ def check_exclude(grb: str) -> bool:
     return True
 
 
-def run_morgoth(grb):
+def run_morgoth(grb, custom_eff_area_dict=None):
     """
     Runs morgoth for a passed GRB object with the settings
     """
     rm = RunEffAreaMorgoth(
         grb,
         use_eff_area=fierywhip_config.config.eff_area_correction.use_eff_corr,
+        custom_eff_area_dict=custom_eff_area_dict,
         det_sel_mode=fierywhip_config.config.det_sel.mode,
         spectrum="cpl",
         max_trigger_duration=fierywhip_config.config.timeselection.max_trigger_duration,
@@ -81,7 +82,7 @@ def run_morgoth(grb):
     rm.run_fit()
 
 
-def default(force):
+def default(force, custom_eff_area_dict=None):
     """
     Default way to run morgoth/balrog for trigdat, when no explicit function
     supplied
@@ -96,13 +97,13 @@ def default(force):
             logging.info(f"Starting Morgoth for {g.name}")
             try:
                 run_morgoth(g)
-            except (FitFailed,TimeSelectionError):
+            except (FitFailed, TimeSelectionError):
                 logging.error(f"\n{g.name} FAILED!\n")
         else:
             logging.info(f"Skipping Morgoth for {g.name}")
 
 
-def run_selection(grb_selection, force):
+def run_selection(grb_selection, force, custom_eff_area_dict=None):
     """
     Run Morgoth for a selection of grbs
 
@@ -161,6 +162,8 @@ def argv_parsing():
 
 
 if __name__ == "__main__":
+    custom_eff_area_dict = None
+
     logging.getLogger().setLevel(logging.INFO)
     grb_selection, force, morgoth_config = argv_parsing()
 
@@ -168,6 +171,8 @@ if __name__ == "__main__":
     logging.info(fierywhip_config.config)
     if grb_selection is None:
         logging.info("No GRBs passed as argument - will do my usual thing")
-        default(force=force)
+        default(force=force, custom_eff_area_dict=custom_eff_area_dict)
     else:
-        run_selection(grb_selection, force=force)
+        run_selection(
+            grb_selection, force=force, custom_eff_area_dict=custom_eff_area_dict
+        )
