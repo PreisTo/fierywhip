@@ -62,6 +62,7 @@ class GRBList:
         run_det_sel=fierywhip_config.config.grb_list.run_det_sel,
         testing=fierywhip_config.config.grb_list.testing,
         reverse=fierywhip_config.config.grb_list.reverse,
+        **kwargs
     ):
         """
         :param check_finished:  looks up the localizing/results.yml if GRB is
@@ -305,57 +306,6 @@ class GRB:
                 raise GRBInitError
             self.download_files()
 
-    def save_grb_to_yml(self, path):
-        export_dict = {}
-        export_dict["name"] = str(self._name)
-        export_dict["gbm_time"] = float(self._time_gbm.met)
-        export_dict["active_time"] = self._active_time
-        export_dict["bkg_time"] = self._bkg_time
-        export_dict["ra"] = float(self._ra_icrs)
-        export_dict["dec"] = float(self._dec_icrs)
-
-        if self._effective_area_dict is not None:
-            export_dict["eff_area_dict"] = self._effective_area_dict
-
-        with open(path, "w+") as f:
-            yaml.safe_dump(export_dict, f, sort_keys=False)
-
-    @classmethod
-    def load_grb_from_yml(cls, path):
-        with open(path, "r") as f:
-            import_dict = yaml.safe_load(f)
-
-        name = import_dict["name"]
-        gbm_time = import_dict["gbm_time"]
-        ra = import_dict["ra"]
-        dec = import_dict["dec"]
-        active_time = import_dict["active_time"]
-        bkg_time = import_dict["bkg_time"]
-        grb_time = GBMTime.from_MET(float(gbm_time)).time.datetime
-
-        if "eff_area_dict" in import_dict.keys():
-            custom_effective_area_dict = import_dict["eff_area_dict"]
-            out = cls(
-                name=name,
-                grb_time=grb_time,
-                ra=ra,
-                dec=dec,
-                active_time=active_time,
-                bkg_time=bkg_time,
-                custom_effective_area_dict=custom_effective_area_dict,
-            )
-        else:
-            out = cls(
-                name=name,
-                grb_time=grb_time,
-                ra=ra,
-                dec=dec,
-                active_time=active_time,
-                bkg_time=bkg_time,
-            )
-
-        return out
-
     @property
     def position(self) -> SkyCoord:
         """
@@ -579,20 +529,19 @@ class GRB:
 
     def save_grb(self, path):
         export_dict = {}
-        export_dict["name"] = self._name
-        export_dict["position"] = {}
-        export_dict["position"]["ra"] = float(self._position.ra.deg)
-        export_dict["position"]["dec"] = float(self._position.dec.deg)
+        export_dict["name"] = str(self._name)
+        export_dict["gbm_time"] = float(self._time_gbm.met)
+        export_dict["ra"] = float(self._ra_icrs)
+        export_dict["dec"] = float(self._dec_icrs)
+
+        if self._effective_area_dict is not None:
+            export_dict["eff_area_dict"] = self._effective_area_dict
 
         if self._active_time is not None:
-            export_dict["time_selection"] = {}
-            export_dict["time_selection"]["active_time"] = str(self._active_time)
+            export_dict["active_time"] = str(self._active_time)
         if self._bkg_time is not None:
-            if "time_selection" not in export_dict.keys():
-                export_dict["time_selection"] = {}
-            export_dict["time_selection"]["background"] = self._bkg_time
+            export_dict["bkg_time"] = self._bkg_time
         export_dict["trigdat"] = str(self._trigdat)
-        export_dict["time"] = self._time.strftime("%y%m%d-%H:%M:%S.%f")
 
         with open(path, "w+") as f:
             yaml.safe_dump(export_dict, f)
@@ -601,20 +550,41 @@ class GRB:
     @classmethod
     def grb_from_file(cls, path):
         with open(path, "r") as f:
-            restored = yaml.safe_load(f)
-        name = restored["name"]
-        grb_time = datetime.strptime(restored["time"], "%y%m%d-%H:%M:%S.%f")
-        ra = restored["position"]["ra"]
-        dec = restored["position"]["dec"]
-        ra_dec_units = (u.deg, u.deg)
-        return cls(
-            name=name,
-            ra=ra,
-            dec=dec,
-            ra_dec_units=ra_dec_units,
-            grb_time=grb_time,
-            run_det_sel=False,
-        )
+            import_dict = yaml.safe_load(f)
+
+        name = import_dict["name"]
+        gbm_time = import_dict["gbm_time"]
+        ra = import_dict["ra"]
+        dec = import_dict["dec"]
+        active_time = import_dict["active_time"]
+        bkg_time = import_dict["bkg_time"]
+        grb_time = GBMTime.from_MET(float(gbm_time)).time.datetime
+        trigdat = import_dict["trigdat"]
+
+        if "eff_area_dict" in import_dict.keys():
+            custom_effective_area_dict = import_dict["eff_area_dict"]
+            out = cls(
+                name=name,
+                grb_time=grb_time,
+                ra=ra,
+                dec=dec,
+                active_time=active_time,
+                bkg_time=bkg_time,
+                custom_effective_area_dict=custom_effective_area_dict,
+                trigdat=trigdat,
+            )
+        else:
+            out = cls(
+                name=name,
+                grb_time=grb_time,
+                ra=ra,
+                dec=dec,
+                active_time=active_time,
+                bkg_time=bkg_time,
+                trigdat=trigdat,
+            )
+
+        return out
 
 
 class GRBInitError(Exception):

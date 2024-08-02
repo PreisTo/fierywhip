@@ -88,7 +88,7 @@ def default(force, custom_eff_area_dict=None):
     supplied
     """
     grb_list = GRBList(
-        run_det_sel=False, check_finished=False, testing=False, reverse=False
+        run_det_sel=False, check_finished=False, testing=False, reverse=False,
     )
     logging.info(f"We will be running Morgoth for {len(grb_list.grbs)} GRBs")
 
@@ -96,7 +96,7 @@ def default(force, custom_eff_area_dict=None):
         if check_exclude(g.name) or force:
             logging.info(f"Starting Morgoth for {g.name}")
             try:
-                run_morgoth(g)
+                run_morgoth(g,custom_eff_area_dict=custom_eff_area_dict)
             except (FitFailed, TimeSelectionError):
                 logging.error(f"\n{g.name} FAILED!\n")
         else:
@@ -121,7 +121,7 @@ def run_selection(grb_selection, force, custom_eff_area_dict=None):
                 )
                 grb = GRB(name=g, ra=0, dec=0)
             try:
-                run_morgoth(grb)
+                run_morgoth(grb,custom_eff_area_dict=custom_eff_area_dict)
             except (RuntimeError, FitFailed, IndexError):
                 pass
         else:

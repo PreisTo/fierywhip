@@ -166,6 +166,7 @@ class RunMorgoth:
 
         fit_script_path = f"{morgoth.__file__[:-12]}/auto_loc/fit_script.py"
         env = os.environ
+
         if os.path.exists(
             os.path.join(
                 base_dir,
@@ -370,6 +371,7 @@ class RunEffAreaMorgoth(RunMorgoth):
         grb_obj_path = os.path.join(
             base_dir, self._grb.name, "trigdat", "v00", "grb_object.yml"
         )
+
         self._grb.save_grb(grb_obj_path)
         self._config_tmp = os.path.join(
             base_dir, self._grb.name, "trigdat", "v00", "fierywhip_config.yml"
