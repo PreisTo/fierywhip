@@ -513,7 +513,10 @@ class GRB:
                 eff_area_dict[gd] = 1
 
         self._effective_area_dict = eff_area_dict
-
+    def _set_effective_area_correction(self,eff_area_dict):
+        """setter function for the effective area dict"""
+        self._effective_area_dict = eff_area_dict
+        
     def effective_area_correction(self, det):
         return self._effective_area_dict[det]
 
