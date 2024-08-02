@@ -296,8 +296,7 @@ class GRB:
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()
-        if "custom_effective_area_dict" in kwargs.keys():
-            self._set_effective_area_correction(kwargs["custom_effective_area_dict"])
+        self._effective_area_dict=kwargs.get("custom_effective_area_dict",None)
         run_det_sel = kwargs.get("run_det_sel", True)
         if run_det_sel:
             try:
@@ -530,7 +529,7 @@ class GRB:
     def save_grb(self, path):
         export_dict = {}
         export_dict["name"] = str(self._name)
-        export_dict["gbm_time"] = float(self._time_gbm.met)
+        export_dict["gbm_time"] = float(self.time_gbm.met)
         export_dict["ra"] = float(self._ra_icrs)
         export_dict["dec"] = float(self._dec_icrs)
 
