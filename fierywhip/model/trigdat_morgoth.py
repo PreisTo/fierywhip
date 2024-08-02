@@ -72,12 +72,16 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             logging.warning("USING DEFAULT FIERYWHIP CONFIG!!!")
         self._use_eff_area = use_eff_area
         self._grb_name = grb_name
-        if self._use_eff_area:
+        self._custom_eff_area_area_dict = kwargs.get("custom_eff_area_dict",None)
+        if self._use_eff_area and self._custom_eff_area_area_dict is None:
             self._grb._get_effective_area_correction(
                 NormalizationMatrix(
                     os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
                 ).matrix
             )
+        elif self._use_eff_area and self._custom_eff_area_area_dict is not None:
+            self._grb._set_effective_area_correction = self._custom_eff_area_area_dict
+            
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         if not hasattr(self._grb, "_detector_selection"):
             if det_sel_mode != "default":
