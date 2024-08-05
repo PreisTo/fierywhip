@@ -75,7 +75,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         if self._use_eff_area and self._custom_eff_area_area_dict is not None:
             self._grb._set_effective_area_correction = self._custom_eff_area_area_dict
         self._spectrum_model = kwargs.get("spectrum", "cpl")
-        if not hasattr(self._grb, "_detector_selection"):
+        if self._grb._detector_selection is None:
             if det_sel_mode != "default":
                 logging.debug(f"Using det_sel_mode {det_sel_mode}")
                 if det_sel_mode == "max_sig_old":

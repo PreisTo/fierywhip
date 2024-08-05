@@ -297,8 +297,9 @@ class GRB:
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()
-        self._effective_area_dict=kwargs.get("custom_effective_area_dict",None)
+        self._effective_area_dict = kwargs.get("custom_effective_area_dict", None)
         run_det_sel = kwargs.get("run_det_sel", True)
+        self._detector_selection = None
         if run_det_sel:
             try:
                 self._get_detector_selection()
