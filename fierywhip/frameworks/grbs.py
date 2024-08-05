@@ -508,6 +508,7 @@ class GRB:
     def _set_effective_area_correction(self, eff_area_dict):
         """setter function for the effective area dict"""
         self._effective_area_dict = eff_area_dict
+        logging.info(f"Set effective area to {self._effective_area_dict}")
         self._eff_area = EffectiveAreaNormalization(self._effective_area_dict)
 
     @property

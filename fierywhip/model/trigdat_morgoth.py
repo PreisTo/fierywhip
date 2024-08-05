@@ -73,7 +73,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         self._grb_name = grb_name
         self._custom_eff_area_area_dict = kwargs.get("custom_eff_area_dict", None)
         if self._use_eff_area and self._custom_eff_area_area_dict is not None:
-            self._grb._set_effective_area_correction = self._custom_eff_area_area_dict
+            self._grb._set_effective_area_correction(self._custom_eff_area_area_dict)
+        else:
+            raise NotImplementedError("Currently no default effective area correction - have to pass custom one")
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         if self._grb._detector_selection is None:
             logging.info("Detector Selection is None, running it")
@@ -276,7 +278,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             balrog_like = BALROGLike.from_spectrumlike(speclike, time=time)
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
-                balrog_like.fix_eff_area_correction(
+                balrog_like.fix_effective_area_correction(
                     self._grb.effective_area.get_eac_for_det(d, self._normalizing_det)
                 )
             trig_data.append(balrog_like)
