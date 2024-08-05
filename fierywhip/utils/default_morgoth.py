@@ -335,6 +335,8 @@ class RunEffAreaMorgoth(RunMorgoth):
         self._grb = grb
         self._use_eff_area = use_eff_area
         self._custom_eff_area_dict = kwargs.get("custom_eff_area_dict", None)
+        if self._custom_eff_area_dict is not None:
+            self._grb._set_effective_area_correction(self._custom_eff_area_dict)
         self._det_sel_mode = det_sel_mode
         super().__init__(grb, **kwargs)
         self.setup_use_dets()

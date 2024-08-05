@@ -512,6 +512,7 @@ class GRB:
         self._effective_area_dict = eff_area_dict
         if self._effective_area_dict is not None:
             self._eff_area = EffectiveAreaNormalization(self._effective_area_dict)
+            logging.info(f"Set effective area to {self._effective_area_dict}")
 
     @property
     def effective_area(self):

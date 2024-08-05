@@ -15,6 +15,7 @@ class EffectiveAreaNormalization:
         for d in lu:
             if d not in complete_dict.keys():
                 factor = 1 / complete_dict[self._ref_d][d]
+                complete_dict[d] = {}
                 for k in lu:
                     complete_dict[d][k] = complete_dict[self._ref_d][k] * factor
         self._complete_dict = complete_dict
