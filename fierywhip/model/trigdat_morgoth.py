@@ -194,6 +194,10 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     super().setup_essentials()
         else:
             logging.info("Detector selection was already run")
+
+            self._use_dets = self._grb._detector_selection.good_dets
+            self._normalizing_det = self._grb._detector_selection.normalizing_det
+
             assert isinstance(self._use_dets, list), "use dets is not list"
             if rank == 0:
                 with open(bkg_fit_yaml_file, "r") as f:
