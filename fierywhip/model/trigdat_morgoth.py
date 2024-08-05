@@ -76,6 +76,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             self._grb._set_effective_area_correction = self._custom_eff_area_area_dict
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         if self._grb._detector_selection is None:
+            logging.info("Detector Selection is None, running it")
             if det_sel_mode != "default":
                 logging.debug(f"Using det_sel_mode {det_sel_mode}")
                 if det_sel_mode == "max_sig_old":
@@ -192,6 +193,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                         self._bkg_fit_files = data["bkg_fit_files"]
                     super().setup_essentials()
         else:
+            logging.info("Detector selection was already run")
             if rank == 0:
                 with open(bkg_fit_yaml_file, "r") as f:
                     data = yaml.safe_load(f)
