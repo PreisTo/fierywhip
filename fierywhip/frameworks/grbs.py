@@ -24,6 +24,7 @@ from fierywhip.utils.detector_utils import detector_list, nai_list
 from fierywhip.timeselection.timeselection import TimeSelectionNew
 from fierywhip.timeselection.split_active_time import time_splitter
 from fierywhip.config.configuration import fierywhip_config
+from fierywhip.frameworks.eac import EffectiveAreaNormalization
 import numpy as np
 from threeML.utils.progress_bar import trange
 import logging
@@ -62,7 +63,7 @@ class GRBList:
         run_det_sel=fierywhip_config.config.grb_list.run_det_sel,
         testing=fierywhip_config.config.grb_list.testing,
         reverse=fierywhip_config.config.grb_list.reverse,
-        **kwargs
+        **kwargs,
     ):
         """
         :param check_finished:  looks up the localizing/results.yml if GRB is
@@ -504,28 +505,14 @@ class GRB:
             bkg_times.append(f"{bkg[x]['start']}-{bkg[x]['stop']}")
         self._bkg_time = bkg_times
 
-    def _get_effective_area_correction(self, nm):
-        self._normalizing_matrix = nm
-        norm_det = self._detector_selection.normalizing_det
-        good_dets = self._detector_selection.good_dets
-        norm_id = lu_nai.index(norm_det)
-        row = self._normalizing_matrix[norm_id]
-        eff_area_dict = {}
-        for gd in good_dets:
-            if gd != norm_det and gd not in ("b0", "b1"):
-                i = lu_nai.index(gd)
-                eff_area_dict[gd] = row[i]
-            else:
-                eff_area_dict[gd] = 1
-
-        self._effective_area_dict = eff_area_dict
-
     def _set_effective_area_correction(self, eff_area_dict):
         """setter function for the effective area dict"""
         self._effective_area_dict = eff_area_dict
+        self._eff_area = EffectiveAreaNormalization(self._effective_area_dict)
 
-    def effective_area_correction(self, det):
-        return self._effective_area_dict[det]
+    @property
+    def effective_area(self):
+        return self._eff_area
 
     def save_grb(self, path):
         export_dict = {}

@@ -5,7 +5,6 @@ from gbm_drm_gen.io.balrog_like import BALROGLike
 from gbmgeometry.gbm import GBM
 from gbmgeometry.position_interpolator import PositionInterpolator
 from threeML.data_list import DataList
-from fierywhip.normalizations.normalization_matrix import NormalizationMatrix
 from fierywhip.utils.detector_utils import name2id
 from fierywhip.frameworks.grbs import GRB
 from fierywhip.utils.balrog_like import BALROGLikeMultiple
@@ -72,16 +71,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             logging.warning("USING DEFAULT FIERYWHIP CONFIG!!!")
         self._use_eff_area = use_eff_area
         self._grb_name = grb_name
-        self._custom_eff_area_area_dict = kwargs.get("custom_eff_area_dict",None)
-        if self._use_eff_area and self._custom_eff_area_area_dict is None:
-            self._grb._get_effective_area_correction(
-                NormalizationMatrix(
-                    os.path.join(os.environ.get("GBMDATA"), "localizing/results.yml")
-                ).matrix
-            )
-        elif self._use_eff_area and self._custom_eff_area_area_dict is not None:
+        self._custom_eff_area_area_dict = kwargs.get("custom_eff_area_dict", None)
+        if self._use_eff_area and self._custom_eff_area_area_dict is not None:
             self._grb._set_effective_area_correction = self._custom_eff_area_area_dict
-            
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         if not hasattr(self._grb, "_detector_selection"):
             if det_sel_mode != "default":
@@ -277,7 +269,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
             balrog_like.set_active_measurements("c1-c6")
             if self._use_eff_area:
                 balrog_like.fix_eff_area_correction(
-                    self._grb.effective_area_correction(d)
+                    self._grb.effective_area.get_eac_for_det(d, self._normalizing_det)
                 )
             trig_data.append(balrog_like)
         self._data_list = DataList(*trig_data)
