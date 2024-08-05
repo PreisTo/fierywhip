@@ -297,7 +297,9 @@ class GRB:
         self._ra_icrs = float(self._position.ra.deg)
         self._dec_icrs = float(self._position.dec.deg)
         self._get_trigdat_path()
-        self._effective_area_dict = kwargs.get("custom_effective_area_dict", None)
+        self._set_effective_area_correction(
+            kwargs.get("custom_effective_area_dict", None)
+        )
         run_det_sel = kwargs.get("run_det_sel", True)
         self._detector_selection = None
         if run_det_sel:
@@ -508,7 +510,8 @@ class GRB:
     def _set_effective_area_correction(self, eff_area_dict):
         """setter function for the effective area dict"""
         self._effective_area_dict = eff_area_dict
-        self._eff_area = EffectiveAreaNormalization(self._effective_area_dict)
+        if self._effective_area_dict is not None:
+            self._eff_area = EffectiveAreaNormalization(self._effective_area_dict)
 
     @property
     def effective_area(self):
