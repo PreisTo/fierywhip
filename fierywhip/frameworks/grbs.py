@@ -526,6 +526,7 @@ class GRB:
         export_dict["dec"] = float(self._dec_icrs)
 
         if self._effective_area_dict is not None:
+            logging.debug("exported eff area")
             export_dict["eff_area_dict"] = self._effective_area_dict
 
         if self._active_time is not None:
@@ -553,6 +554,7 @@ class GRB:
         trigdat = import_dict["trigdat"]
 
         if "eff_area_dict" in import_dict.keys():
+            logging.debug("import eff area dict")
             custom_effective_area_dict = import_dict["eff_area_dict"]
             out = cls(
                 name=name,

@@ -75,7 +75,9 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
         if self._use_eff_area and self._custom_eff_area_area_dict is not None:
             self._grb._set_effective_area_correction(self._custom_eff_area_area_dict)
         else:
-            raise NotImplementedError("Currently no default effective area correction - have to pass custom one")
+            raise NotImplementedError(
+                "Currently no default effective area correction - have to pass custom one"
+            )
         self._spectrum_model = kwargs.get("spectrum", "cpl")
         if self._grb._detector_selection is None:
             logging.info("Detector Selection is None, running it")
