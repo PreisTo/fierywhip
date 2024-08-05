@@ -194,6 +194,7 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                     super().setup_essentials()
         else:
             logging.info("Detector selection was already run")
+            assert isinstance(self._use_dets, list), "use dets is not list"
             if rank == 0:
                 with open(bkg_fit_yaml_file, "r") as f:
                     data = yaml.safe_load(f)
@@ -201,10 +202,11 @@ class MultinestFitTrigdatEffArea(MultinestFitTrigdat):
                 with open(bkg_fit_yaml_file, "w") as f:
                     data["use_dets"] = list(map(name2id, self._use_dets))
                     yaml.safe_dump(data, f)
-            else:
-                with open(bkg_fit_yaml_file, "r") as f:
-                    data1 = yaml.safe_load(f)
-                    self._bkg_fit_files = data1["bkg_fit_files"]
+
+            comm.Barrier()
+            with open(bkg_fit_yaml_file, "r") as f:
+                data1 = yaml.safe_load(f)
+                self._bkg_fit_files = data1["bkg_fit_files"]
             self.setup_essentials()
 
         super().__init__(
